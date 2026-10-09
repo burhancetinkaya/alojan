@@ -1,123 +1,122 @@
-
 <a id="top"></a>
 
 <div align="center">
 
 # ☎️ Alojan
 
-### Senin çağrıların. Senin AI ajanların. Senin altyapın.
+### Your calls. Your AI agents. Your infrastructure.
 
-**Gerçek zamanlı telefon görüşmeleri için açık kaynaklı, kendi sunucunda çalışabilen yapay zekâ sesli ajan motoru.**
+**A self-hostable AI voice agent engine for real-time phone conversations, being developed as an open-source project.**
 
-Telefon çağrılarını karşılayan, doğal şekilde dinleyen, konuşan, anlayan ve gerektiğinde aksiyon alan yapay zekâ ajanları oluştur.
+Build AI agents that answer phone calls, listen naturally, understand callers, speak, and take action when needed.
 
-**Vapi veya Retell AI gibi hazır Voice AI platformlarına bağımlı olmadan.**
-
-<br />
-
-[![Durum](https://img.shields.io/badge/Durum-Geliştiriliyor-F59E0B?style=for-the-badge)](https://github.com/burhancetinkaya/alojan)
-[![Self Hosted](https://img.shields.io/badge/Deployment-Self--Hosted-10B981?style=for-the-badge)](#mimari)
-[![C++](https://img.shields.io/badge/C%2B%2B-20-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)](#teknoloji-yigini)
-[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](#teknoloji-yigini)
+**Without depending on hosted voice AI platforms such as Vapi or Retell AI.**
 
 <br />
 
-[![Python](https://img.shields.io/badge/Python-Agent%20%26%20Inference-3776AB?style=flat-square&logo=python&logoColor=white)](#teknoloji-yigini)
-[![NVIDIA](https://img.shields.io/badge/NVIDIA-CUDA-76B900?style=flat-square&logo=nvidia&logoColor=white)](#teknoloji-yigini)
-[![SIP](https://img.shields.io/badge/Telephony-SIP%20%2F%20RTP-7C3AED?style=flat-square)](#mimari)
-[![Turkish](https://img.shields.io/badge/Language-Turkish--First-EC4899?style=flat-square)](#neden-alojan)
+[![Status](https://img.shields.io/badge/Status-In%20Development-F59E0B?style=for-the-badge)](https://github.com/burhancetinkaya/alojan)
+[![Self Hosted](https://img.shields.io/badge/Deployment-Self--Hosted-10B981?style=for-the-badge)](#architecture)
+[![C++](https://img.shields.io/badge/C%2B%2B-20-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)](#technology-stack)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](#technology-stack)
 
 <br />
 
-[**Neden Alojan?**](#neden-alojan) ·
-[**Özellikler**](#planlanan-ozellikler) ·
-[**Mimari**](#mimari) ·
-[**Konuşma Motoru**](#dogal-konusma-motoru) ·
-[**Yol Haritası**](#yol-haritasi) ·
-[**Katkıda Bulun**](#katkida-bulun)
+[![Python](https://img.shields.io/badge/Python-Agent%20%26%20Inference-3776AB?style=flat-square&logo=python&logoColor=white)](#technology-stack)
+[![NVIDIA](https://img.shields.io/badge/NVIDIA-CUDA-76B900?style=flat-square&logo=nvidia&logoColor=white)](#technology-stack)
+[![SIP](https://img.shields.io/badge/Telephony-SIP%20%2F%20RTP-7C3AED?style=flat-square)](#architecture)
+[![Turkish](https://img.shields.io/badge/Language-Turkish--First-EC4899?style=flat-square)](#why-alojan)
+
+<br />
+
+[**Why Alojan?**](#why-alojan) ·
+[**Features**](#planned-features) ·
+[**Architecture**](#architecture) ·
+[**Conversation Engine**](#conversation-engine) ·
+[**Roadmap**](#roadmap) ·
+[**Contributing**](#contributing)
 
 </div>
 
 ---
 
-<a id="neden-alojan"></a>
+<a id="why-alojan"></a>
 
-## ✨ Neden Alojan?
+## ✨ Why Alojan?
 
-**Alo**, Türkçede bir telefon görüşmesinin başlangıcıdır.
+**Alo** is how a phone conversation begins in Turkish.
 
-**Ajan**, belirli görevleri yerine getirebilen otonom yapay zekâ sistemlerini ifade eder.
+**Ajan** means an agent: an autonomous AI system that can perform specific tasks.
 
 **Alo + Ajan = Alojan**
 
-Alojan, gelen telefon çağrılarını karşılayan, arayan kişiyi dinleyen, neden aradığını anlayan, doğal Türkçe konuşan ve gerektiğinde araçlar kullanarak aksiyon alabilen açık kaynaklı bir Voice AI Engine projesidir.
+Alojan aims to provide a voice AI engine that answers incoming calls, listens to callers, understands why they are calling, speaks natural Turkish, and uses tools to take action when appropriate.
 
-Başlangıç noktası kişisel bir yapay zekâ telefon asistanı olsa da uzun vadeli hedefimiz geliştiricilerin kendi sesli ajanlarını oluşturabilecekleri modüler bir altyapı sunmaktır.
+The starting point is a personal AI phone assistant. The long-term goal is modular infrastructure that developers can use to build their own voice agents.
 
 <table>
 <tr>
 <td width="33%" align="center">
-<strong>🎙️ Doğal Konuşmalar</strong><br/>
-<sub>Akıllı sessizlik algılama, konuşma sırası yönetimi ve söz kesme desteği.</sub>
+<strong>🎙️ Natural Conversations</strong><br/>
+<sub>Intelligent silence detection, turn management, and interruption handling.</sub>
 </td>
 <td width="33%" align="center">
 <strong>🧠 Agentic AI</strong><br/>
-<sub>LLM, tool calling, MCP ve genişletilebilir ajan yetenekleri.</sub>
+<sub>LLMs, tool calling, MCP, and extensible agent capabilities.</sub>
 </td>
 <td width="33%" align="center">
-<strong>🔐 Kontrol Sende</strong><br/>
-<sub>Kendi SIP altyapın, kendi ses motorun, kendi sunucun.</sub>
+<strong>🔐 You Are in Control</strong><br/>
+<sub>Your SIP infrastructure, your voice engine, your server.</sub>
 </td>
 </tr>
 </table>
 
 > [!IMPORTANT]
-> **Proje durumu: Aktif geliştirme**
+> **Project status: Early development / architecture planning**
 >
-> Alojan henüz production kullanımına hazır değildir.
-> Bu README içerisinde açıklanan özellikler ve mimari, projenin hedeflenen tasarımını temsil etmektedir.
-> Doğrulanan özellikler tamamlandıkça yol haritası güncellenecektir.
+> This repository currently contains the project README; there is no runnable implementation yet.
+> Alojan is not ready for production use. The features and architecture below describe the intended design, not completed functionality.
+> The roadmap will be updated as features are implemented and validated. An open-source license has not yet been selected; see [License](#license).
 
 ---
 
-<a id="planlanan-ozellikler"></a>
+<a id="planned-features"></a>
 
-## 🚀 Planlanan Özellikler
+## 🚀 Planned Features
 
-| | Özellik | Açıklama |
+| | Feature | Description |
 |:--:|---|---|
-| 📞 | **SIP / RTP Telefon Altyapısı** | SIP trunk üzerinden doğrudan telefon çağrılarını karşılama. |
-| 🎙️ | **Gerçek Zamanlı Konuşma** | Ses verisini düşük gecikmeyle işleme ve yanıt üretme. |
-| 🧠 | **Akıllı Konuşma Sırası Algılama** | Arayanın durakladığını mı yoksa sözünü tamamen bitirdiğini mi anlama. |
-| ✋ | **Barge-in** | Arayan konuşmaya başladığında AI'ın konuşmasını kesebilme. |
-| 🔊 | **Streaming TTS** | Yanıtın tamamını beklemeden konuşmaya başlama. |
-| 🎯 | **Türkçe Öncelikli Deneyim** | Türkçe telefon görüşmelerine göre optimize edilmiş ses işleme. |
-| 🧩 | **Tool Calling** | Takvim, rehber, bildirim ve özel API entegrasyonları. |
-| 🔌 | **MCP Desteği** | Harici MCP sunucularındaki araçlara erişim için genişletilebilir mimari. |
-| 📝 | **Çağrı Kayıtları ve Özetler** | Transkript, arayan bilgisi, görüşme özeti ve aksiyon listesi. |
-| 🐳 | **Self-Hosted Deployment** | Docker Compose ile kendi Linux sunucunda çalıştırma. |
-| ⚡ | **GPU Acceleration** | NVIDIA CUDA ile yerel STT ve TTS inference. |
-| 📊 | **Observability** | Gecikme, RTP kalitesi, interruption ve agent performans metrikleri. |
+| 📞 | **SIP / RTP Telephony** | Answer phone calls directly through a SIP trunk. |
+| 🎙️ | **Real-Time Conversation** | Process audio and generate responses with low latency. |
+| 🧠 | **Intelligent Turn Detection** | Distinguish a brief pause from the end of a caller's turn. |
+| ✋ | **Barge-in** | Stop the AI's speech when the caller starts speaking. |
+| 🔊 | **Streaming TTS** | Start speaking before the entire response is ready. |
+| 🎯 | **Turkish-First Experience** | Optimize speech processing for Turkish phone conversations. |
+| 🧩 | **Tool Calling** | Integrate calendars, contacts, notifications, and custom APIs. |
+| 🔌 | **MCP Support** | Provide an extensible architecture for tools on external MCP servers. |
+| 📝 | **Call Records and Summaries** | Store transcripts, caller details, summaries, and action items. |
+| 🐳 | **Self-Hosted Deployment** | Run on your own Linux server with Docker Compose. |
+| ⚡ | **GPU Acceleration** | Run local STT and TTS inference with NVIDIA CUDA. |
+| 📊 | **Observability** | Measure latency, RTP quality, interruptions, and agent performance. |
 
 ---
 
-<a id="mimari"></a>
+<a id="architecture"></a>
 
-## 🏗️ Sistem Mimarisi
+## 🏗️ System Architecture
 
-Alojan, telefon altyapısını ve gerçek zamanlı konuşma motorunu kendi içerisinde yöneten modüler bir sistem olarak tasarlanmaktadır.
+Alojan is designed as a modular system that manages its own telephony infrastructure and real-time conversation engine.
 
-SIP/RTP, STT, TTS ve konuşma orkestrasyonu kendi sunucumuzda çalışır. Seçilen GPT-6 Luna modeli ise harici API üzerinden kullanılır.
+SIP/RTP, STT, TTS, and conversation orchestration are intended to run on a self-hosted server. The planned GPT-6 Luna integration uses an external API.
 
 ```mermaid
 flowchart TB
-    CALLER["📱 Arayan Kişi"]
-    PHONE["📲 Kişisel Telefon Hattı"]
+    CALLER["📱 Caller"]
+    PHONE["📲 Personal Phone Line"]
     NETGSM["☎️ Netgsm 0850 SIP Trunk"]
-    FIREWALL["🛡️ Ofis Firewall / NAT"]
+    FIREWALL["🛡️ Firewall / NAT"]
 
-    CALLER -->|Telefon çağrısı| NETGSM
-    PHONE -.->|Opsiyonel çağrı yönlendirme| NETGSM
+    CALLER -->|Phone call| NETGSM
+    PHONE -.->|Optional call forwarding| NETGSM
     NETGSM <-->|SIP + RTP| FIREWALL
 
     subgraph SERVER["🖥️ Ubuntu Server / Docker / RTX 4080"]
@@ -135,7 +134,7 @@ flowchart TB
         TTS["🗣️ EMA Lightning TTS / CUDA"]
 
         DB[("🗄️ PostgreSQL")]
-        API["📊 Yönetim API / Bildirimler"]
+        API["📊 Management API / Notifications"]
         OBS["📈 Logs / Metrics / Traces"]
         TUNNEL["🔒 Cloudflare Tunnel / HTTPS"]
 
@@ -146,10 +145,10 @@ flowchart TB
         TURN --> ENGINE
         ENGINE <--> INTERRUPT
 
-        ENGINE -->|Gelen PCM ses| ASR
-        ASR -->|Transkript| AGENT
-        AGENT -->|Yanıt metni| TTS
-        TTS -->|Üretilen ses| ENGINE
+        ENGINE -->|Incoming PCM audio| ASR
+        ASR -->|Transcript| AGENT
+        AGENT -->|Response text| TTS
+        TTS -->|Generated audio| ENGINE
 
         ENGINE --> DB
         AGENT --> DB
@@ -165,7 +164,7 @@ flowchart TB
 
     AGENT <-->|Streaming API| LLM["☁️ GPT-6 Luna"]
 
-    OWNER["👤 Kullanıcı / Dashboard"]
+    OWNER["👤 User / Dashboard"]
     OWNER <-->|HTTPS| TUNNEL
 
     classDef external fill:#172554,stroke:#60a5fa,color:#ffffff
@@ -179,24 +178,24 @@ flowchart TB
     class FIREWALL,GATEWAY,DB,API,OBS,TUNNEL infra
 ```
 
-### Temel Mimari İlkeler
+### Core Architectural Principles
 
-- **Telefon altyapısı bağımsızdır.** SIP Gateway, agent framework'ünden bağımsız çalışır.
-- **Conversation Engine bize aittir.** VAD, konuşma sırası yönetimi ve interruption kontrolü kendi motorumuzda gerçekleştirilir.
-- **AI servisleri ayrıdır.** STT, TTS ve Agent servisleri bağımsız olarak geliştirilebilir.
-- **Model bağımlılığı azaltılır.** İleride farklı LLM, STT ve TTS sağlayıcılarına geçiş mümkün olacak şekilde arayüzler tasarlanır.
-- **gRPC Streaming kullanılır.** C++ ve Python servisleri düşük gecikmeli, çift yönlü iletişim kurar.
-- **Cloudflare Tunnel yalnızca HTTP içindir.** SIP/RTP UDP trafiği doğrudan firewall üzerinden yönlendirilir.
+- **Independent telephony infrastructure.** The SIP gateway operates independently of the agent framework.
+- **A dedicated conversation engine.** VAD, turn management, and interruption control belong to the engine.
+- **Separate AI services.** STT, TTS, and agent services can be developed independently.
+- **Replaceable model providers.** Interfaces are designed to support alternative LLM, STT, and TTS providers in the future.
+- **gRPC streaming.** C++ and Python services communicate through low-latency, bidirectional streams.
+- **Cloudflare Tunnel is for HTTP only.** SIP/RTP UDP traffic is routed directly through the firewall.
 
 ---
 
-## 📡 Bir Telefon Görüşmesi Nasıl İşlenir?
+## 📡 How a Phone Call Will Be Processed
 
 ```mermaid
 sequenceDiagram
     autonumber
 
-    participant C as Arayan
+    participant C as Caller
     participant N as Netgsm
     participant V as Voice Engine
     participant S as Whisper STT
@@ -204,115 +203,105 @@ sequenceDiagram
     participant T as EMA Lightning
     participant DB as PostgreSQL
 
-    C->>N: Telefon araması
-    N->>V: SIP INVITE + Arayan Numara
+    C->>N: Phone call
+    N->>V: SIP INVITE + Caller ID
     V-->>N: SIP 200 OK / RTP
 
-    V->>T: Karsilama metni
-    T-->>V: Streaming ses
-    V-->>C: Merhaba, ben AI asistan...
+    V->>T: Greeting text
+    T-->>V: Streaming audio
+    V-->>C: Hello, I am an AI assistant...
 
-    loop Dogal Konusma
-        C->>V: RTP ses paketleri
-        V->>S: Ses parcalarini isle
+    loop Natural Conversation
+        C->>V: RTP audio packets
+        V->>S: Process audio chunks
         S-->>V: Partial / Final Transcript
 
-        Note over V,S: VAD ve Smart Turn analizi
+        Note over V,S: VAD and Smart Turn analysis
 
-        V->>A: Tamamlanan konusma sirasi
-        A->>A: LLM + Opsiyonel Tool Calling
-        A-->>V: Streaming yanit
+        V->>A: Completed caller turn
+        A->>A: LLM + Optional Tool Calling
+        A-->>V: Streaming response
 
-        V->>T: TTS metin parcalari
+        V->>T: TTS text segments
         T-->>V: Streaming audio
-        V-->>C: Sesli yanit
+        V-->>C: Spoken response
 
-        opt Arayan AI konusurken araya girer
-            C->>V: Yeni konusma
-            V->>V: Barge-in algila
-            V->>V: Audio buffer temizle
-            V-->>A: Eski yaniti iptal et
-            V-->>T: TTS uretimini iptal et
+        opt Caller interrupts the AI
+            C->>V: New speech
+            V->>V: Detect barge-in
+            V->>V: Clear audio buffer
+            V-->>A: Cancel outdated response
+            V-->>T: Cancel TTS generation
         end
     end
 
-    V->>DB: Cagri olaylari ve transkript
-    A->>DB: Ozet ve aksiyonlar
+    V->>DB: Call events and transcript
+    A->>DB: Summary and actions
 
-    Note over A,DB: Kullaniciya bildirim gonderilir
+    Note over A,DB: Notify the user
 ```
 
 ---
 
-<a id="dogal-konusma-motoru"></a>
+<a id="conversation-engine"></a>
 
-## 🧠 Doğal Konuşma Motoru
+## 🧠 Natural Conversation Engine
 
-İyi bir Voice AI sistemi yalnızca aşağıdaki akıştan ibaret değildir:
+A voice AI system needs more than a **Speech-to-Text → LLM → Text-to-Speech** pipeline.
 
-**Speech-to-Text → LLM → Text-to-Speech**
+During a phone call, the assistant needs to know when to speak, when to remain silent, and how to react when interrupted. Alojan aims to manage these behaviors within its **Real-Time Conversation Engine**.
 
-Gerçek bir telefon görüşmesinde asistanın ne zaman konuşacağını, ne zaman susacağını ve araya girildiğinde nasıl davranacağını bilmesi gerekir.
+### 🎯 Intelligent Turn Detection
 
-Alojan bu davranışları kendi **Real-Time Conversation Engine** içerisinde yönetmeyi hedefler.
+A caller may pause briefly while speaking:
 
-### 🎯 Akıllı Turn Detection
-
-Arayan kişi konuşurken kısa süreli duraklayabilir.
-
-Örneğin:
-
-> "Merhaba, yarınki toplantıyla ilgili..."
+> "Hello, about tomorrow's meeting..."
 >
-> *(1 saniye sessizlik)*
+> *(one second of silence)*
 >
-> "...bir değişiklik yapmak istiyordum."
+> "...I wanted to make a change."
 
-Sistem yalnızca sessizlik süresine göre karar verirse AI yanlışlıkla araya girer.
+If the system relies only on silence duration, the AI may interrupt too early. The planned process is:
 
-Bu nedenle:
+1. Detect speech and silence using **Silero VAD**.
+2. Estimate whether the caller has finished using **Smart Turn**.
+3. Consider the ongoing dialogue through **conversation context**.
+4. Send the completed turn to the AI agent.
 
-1. **Silero VAD** ile konuşma ve sessizlik tespit edilir.
-2. **Smart Turn** ile konuşmanın tamamlanıp tamamlanmadığı tahmin edilir.
-3. **Conversation Context** ile mevcut diyalog dikkate alınır.
-4. Gerçekten tamamlanan konuşma sırası AI Agent'a gönderilir.
+### ✋ Barge-in: Interrupting the AI
 
-### ✋ Barge-in: AI'ın Sözünü Kesebilme
+Callers should be able to interrupt the AI naturally:
 
-Doğal bir görüşmede arayan kişi AI konuşurken araya girebilmelidir.
-
-Örnek:
-
-> **Alojan:** Tamamdır, toplantıyı yarın saat...
+> **Alojan:** All right, the meeting is tomorrow at...
 >
-> **Arayan:** Hayır, yarın değil cuma günü.
+> **Caller:** No, not tomorrow. Friday.
 >
-> **Alojan:** Anladım, cuma günü olarak düzeltiyorum.
+> **Alojan:** Understood. I'll correct that to Friday.
 
-Bu senaryoda:
+In this scenario, the engine is intended to:
 
-- Arayanın yeni konuşması algılanır.
-- AI'ın bekleyen ses paketleri temizlenir.
-- Devam eden TTS üretimi iptal edilir.
-- Geçersiz LLM yanıtı durdurulur.
-- Yeni konuşma işlenir.
+- Detect the caller's new speech.
+- Clear queued AI audio packets.
+- Cancel ongoing TTS generation.
+- Stop the outdated LLM response.
+- Process the new speech.
 
-Yanlış interruption'ları azaltmak için arka plan gürültüsü, kısa onay ifadeleri ve ses yankısı da dikkate alınır.
+Background noise, brief acknowledgments, and audio echo will also be considered to reduce false interruptions.
 
 ### ⚡ Streaming LLM + Streaming TTS
 
-LLM'in bütün yanıtı üretmesini beklemek yerine yanıtlar parçalara ayrılır.
+Responses will be split into segments instead of waiting for the LLM to finish the entire response.
 
 ```mermaid
 flowchart LR
-    A["🧠 LLM İlk Cümle"]
+    A["🧠 First LLM Sentence"]
     B["🗣️ EMA Lightning"]
     C["🔊 RTP Playback"]
 
-    A -->|Metin segmenti| B
-    B -->|Audio Chunk| C
+    A -->|Text segment| B
+    B -->|Audio chunk| C
 
-    D["🧠 LLM Sonraki Cümle"]
+    D["🧠 Next LLM Sentence"]
     A -.-> D
 
     classDef llm fill:#581c87,stroke:#c084fc,color:#fff
@@ -322,123 +311,115 @@ flowchart LR
     class B,C audio
 ```
 
-Böylece TTS ilk cümleyi seslendirirken LLM sonraki cümleyi üretmeye devam edebilir.
+This allows the LLM to generate the next sentence while TTS speaks the first one.
 
-### 🔧 Conversation Engine Bileşenleri
+### 🔧 Conversation Engine Components
 
-| Bileşen | Görevi |
+| Component | Responsibility |
 |---|---|
-| Silero VAD | Konuşma ve sessizlik tespiti |
-| Smart Turn v3.2 | Konuşma sırasının tamamlandığını tahmin etme |
-| Adaptive Endpointing | Dinamik bekleme süreleri |
-| Barge-in Controller | Gerçek söz kesmeleri yönetme |
-| Echo-aware Detection | Ses yankısından kaynaklanan yanlış algılamaları azaltma |
-| Playback Accounting | Arayanın gerçekten duyduğu konuşma bölümünü takip etme |
-| Response Cancellation | Geçersiz LLM ve TTS işlemlerini iptal etme |
-| Conversation State | Görüşme bağlamı ve durum yönetimi |
+| Silero VAD | Detect speech and silence |
+| Smart Turn v3.2 | Estimate when a caller's turn is complete |
+| Adaptive Endpointing | Adjust waiting periods dynamically |
+| Barge-in Controller | Handle intentional interruptions |
+| Echo-aware Detection | Reduce false detections caused by audio echo |
+| Playback Accounting | Track which part of a response the caller actually heard |
+| Response Cancellation | Cancel outdated LLM and TTS work |
+| Conversation State | Manage dialogue context and call state |
 
 <details>
-<summary><strong>⚡ İlk Performans Hedefleri</strong></summary>
+<summary><strong>⚡ Initial Performance Targets</strong></summary>
 
-Bunlar hedef değerlerdir. Henüz ölçülmüş benchmark sonuçları değildir.
+These are goals, not measured benchmark results.
 
-| Metrik | Hedef |
+| Metric | Target |
 |---|---|
-| P50 yanıt başlangıcı | 1 saniyenin altı |
-| P95 yanıt başlangıcı | 1,8 saniyenin altı |
-| Barge-in durdurma süresi | 250 ms altı |
-| Erken konuşma kesme oranı | %2 altı |
-| Yanlış interruption oranı | %3 altı |
+| P50 response onset | Under 1 second |
+| P95 response onset | Under 1.8 seconds |
+| Barge-in stop latency | Under 250 ms |
+| Premature turn cutoff rate | Under 2% |
+| False interruption rate | Under 3% |
 
-Gerçek sonuçlar Türkçe telefon görüşmelerinden oluşturulacak test veri seti üzerinde ölçülecektir.
+Actual results will be measured against a test dataset of Turkish phone conversations.
 
 </details>
 
 ---
 
-<a id="teknoloji-yigini"></a>
+<a id="technology-stack"></a>
 
-## 🛠️ Teknoloji Yığını
+## 🛠️ Planned Technology Stack
 
-| Katman | Teknoloji | Amaç |
+| Layer | Technology | Purpose |
 |---|---|---|
-| Telefon Altyapısı | **C++20 + PJSIP / PJSUA2** | SIP, RTP, çağrı yönetimi |
-| Voice Engine | **Custom C++ Engine** | Ses ve konuşma orkestrasyonu |
-| VAD | **Silero VAD / ONNX** | Konuşma algılama |
-| Turn Detection | **Smart Turn v3.2** | Konuşma bitişi tespiti |
-| STT | **Faster-Whisper** | Türkçe konuşma tanıma |
-| Agent Runtime | **OpenAI Agents SDK** | Agent yönetimi ve tool calling |
-| LLM | **GPT-6 Luna API** | Diyalog ve karar mekanizması |
-| TTS | **EMA Lightning** | Türkçe ses üretimi |
-| İletişim | **gRPC + Protocol Buffers** | Servisler arası streaming |
-| Veritabanı | **PostgreSQL** | Çağrı kayıtları ve aksiyonlar |
-| Deployment | **Docker Compose** | Self-hosted çalıştırma |
-| GPU | **NVIDIA CUDA** | Hızlandırılmış inference |
-| Yönetim API | **HTTP API** | Çağrı sonuçları ve bildirimler |
-| Observability | **OpenTelemetry** | Log, trace ve metrikler |
+| Telephony | **C++20 + PJSIP / PJSUA2** | SIP, RTP, and call management |
+| Voice Engine | **Custom C++ Engine** | Audio and conversation orchestration |
+| VAD | **Silero VAD / ONNX** | Speech detection |
+| Turn Detection | **Smart Turn v3.2** | End-of-turn detection |
+| STT | **Faster-Whisper** | Turkish speech recognition |
+| Agent Runtime | **OpenAI Agents SDK** | Agent orchestration and tool calling |
+| LLM | **GPT-6 Luna API** | Dialogue and decision-making |
+| TTS | **EMA Lightning** | Turkish speech generation |
+| Communication | **gRPC + Protocol Buffers** | Streaming between services |
+| Database | **PostgreSQL** | Call records and actions |
+| Deployment | **Docker Compose** | Self-hosted operation |
+| GPU | **NVIDIA CUDA** | Accelerated inference |
+| Management API | **HTTP API** | Call results and notifications |
+| Observability | **OpenTelemetry** | Logs, traces, and metrics |
 
 ### 🗣️ EMA Lightning
 
-Türkçe ses üretimi için:
-
-[Hugging Face — EMA Lightning](https://huggingface.co/canberkkkkkk/ema-lightning)
-
-Model, streaming ses üretimi için kullanılacaktır.
+[EMA Lightning on Hugging Face](https://huggingface.co/canberkkkkkk/ema-lightning) is the planned model for streaming Turkish speech generation.
 
 ### 🎧 Faster-Whisper
 
-Konuşma tanıma için CUDA üzerinde çalışan Faster-Whisper kullanılacaktır.
-
-Hedeflenen başlangıç modeli:
-
-`large-v3-turbo`
+Speech recognition is planned to use Faster-Whisper with CUDA, starting with the `large-v3-turbo` model.
 
 ### 🧠 AI Agent
 
-Agent katmanında **OpenAI Agents SDK** kullanılacaktır.
+The agent layer is planned around the **OpenAI Agents SDK**, with support for:
 
-Hedeflenen yetenekler:
-
-- Streaming LLM yanıtları
+- Streaming LLM responses
 - Function calling
-- MCP araç entegrasyonları
+- MCP tool integrations
 - Conversation context
-- Arayanın niyetini anlama
-- Görüşme sonunda yapılandırılmış özet
-- Yetkilendirilmiş harici sistem işlemleri
+- Caller intent recognition
+- Structured post-call summaries
+- Authorized actions in external systems
 
 > [!NOTE]
-> Alojan'ın SIP, konuşma yönetimi, STT ve TTS bileşenleri kendi sunucusunda çalışacak şekilde tasarlanmıştır.
+> Alojan's SIP, conversation management, STT, and TTS components are designed to be self-hosted.
 >
-> GPT-6 Luna harici API üzerinden kullanılacağından, varsayılan mimari tamamen offline değildir.
+> The default architecture is not fully offline because the planned GPT-6 Luna integration uses an external API.
 
 ---
 
-## 💬 Örnek Telefon Görüşmesi
+## 💬 Example Phone Conversation
+
+The following example is translated into English; the initial experience targets Turkish conversations.
 
 **Alojan:**
 
-> Merhaba! Ben aradığınız kişinin yapay zekâ asistanıyım. Şu anda kendisine doğrudan ulaşılamıyor. Kiminle görüşüyorum?
+> Hello! I'm the AI assistant for the person you're calling. They are unavailable right now. Who am I speaking with?
 
-**Arayan:**
+**Caller:**
 
-> Merhaba, ben Ayşe. Yarınki toplantımızı saat 16.00'ya almak istiyorum.
-
-**Alojan:**
-
-> Anladım Ayşe Hanım. Yarınki toplantıyı saat 16.00'ya alma talebinizi ileteceğim. Eklemek istediğiniz başka bir şey var mı?
-
-**Arayan:**
-
-> Hayır, teşekkürler.
+> Hi, I'm Ayşe. I'd like to move our meeting tomorrow to 4:00 PM.
 
 **Alojan:**
 
-> Rica ederim. Talebinizi not aldım. İyi günler!
+> Understood, Ayşe. I'll pass along your request to move tomorrow's meeting to 4:00 PM. Is there anything else you'd like to add?
 
-### 📝 Görüşme Sonrası
+**Caller:**
 
-Alojan aşağıdaki bilgileri kaydetmeyi hedefler:
+> No, thank you.
+
+**Alojan:**
+
+> You're welcome. I've noted your request. Have a good day!
+
+### 📝 After the Call
+
+Alojan aims to record structured information such as the following. The summary and action text are translated into English for this example; `language` identifies the original call language.
 
 ```json
 {
@@ -447,20 +428,22 @@ Alojan aşağıdaki bilgileri kaydetmeyi hedefler:
   "caller_name": "Ayşe",
   "language": "tr",
   "intent": "meeting_reschedule",
-  "summary": "Arayan kişi yarınki toplantı saatinin 16:00 olarak değiştirilmesini istiyor.",
+  "summary": "The caller wants to reschedule tomorrow's meeting to 4:00 PM.",
   "priority": "medium",
   "action_required": true,
-  "action": "Toplantı değişiklik talebini kullanıcıya ilet.",
+  "action": "Notify the user of the meeting rescheduling request.",
   "status": "completed"
 }
 ```
 
-> Bu yalnızca örnek bir çağrı sonucudur.
-> Arayan numarası operatör tarafından sağlanabiliyorsa otomatik alınır. Telefon numarası tek başına kimlik doğrulaması olarak kabul edilmez.
+> This is an illustrative call result, not output from a working implementation.
+> Caller ID is obtained automatically when provided by the carrier. A phone number alone is not treated as proof of identity.
 
 ---
 
-## 🧱 Planlanan Repository Yapısı
+## 🧱 Planned Repository Structure
+
+The following directories and files describe the intended layout; they have not yet been created.
 
 ```text
 alojan/
@@ -505,31 +488,31 @@ alojan/
 
 ---
 
-<a id="yol-haritasi"></a>
+<a id="roadmap"></a>
 
-## 🗺️ Geliştirme Yol Haritası
+## 🗺️ Development Roadmap
 
-Alojan aşamalı olarak geliştirilmektedir.
+Development is planned in stages. All milestones below remain open.
 
 - [ ] **M0 — Foundation**
-  - Proje altyapısının oluşturulması
-  - Docker Compose yapılandırması
-  - NVIDIA GPU erişimi
-  - C++ / Python servis yapısı
-  - gRPC sözleşmeleri
+  - Project scaffolding
+  - Docker Compose configuration
+  - NVIDIA GPU access
+  - C++ / Python service structure
+  - gRPC contracts
 
 - [ ] **M1 — SIP / RTP**
-  - PJSIP entegrasyonu
-  - Gelen çağrıların karşılanması
-  - G.711 codec desteği
-  - RTP ses gönderme ve alma
-  - NAT ve firewall testleri
+  - PJSIP integration
+  - Incoming call handling
+  - G.711 codec support
+  - RTP audio transmission and reception
+  - NAT and firewall testing
 
 - [ ] **M2 — Speech Pipeline**
   - Faster-Whisper STT
   - EMA Lightning TTS
   - Streaming audio pipeline
-  - GPU optimizasyonları
+  - GPU optimizations
 
 - [ ] **M3 — Conversation Engine**
   - Silero VAD
@@ -540,131 +523,126 @@ Alojan aşamalı olarak geliştirilmektedir.
   - Echo-aware interruption
 
 - [ ] **M4 — AI Agent**
-  - GPT-6 Luna entegrasyonu
+  - GPT-6 Luna integration
   - OpenAI Agents SDK
-  - Streaming yanıtlar
+  - Streaming responses
   - Tool calling
-  - Görüşme özetleri
-  - MCP için genişletilebilir altyapı
+  - Call summaries
+  - Extensible infrastructure for MCP
 
 - [ ] **M5 — Operations**
   - PostgreSQL
-  - Çağrı geçmişi
-  - Transkript ve aksiyon kayıtları
-  - Kullanıcı bildirimleri
-  - Yönetim API
-  - Monitoring ve güvenlik
+  - Call history
+  - Transcript and action records
+  - User notifications
+  - Management API
+  - Monitoring and security
 
-- [ ] **M6 — Gerçek Dünya Testleri**
-  - Netgsm SIP trunk testleri
-  - Turkcell çağrı yönlendirme
-  - Caller ID doğrulama
-  - Türkçe konuşma testleri
-  - Latency ve performans benchmark
+- [ ] **M6 — Real-World Testing**
+  - Netgsm SIP trunk tests
+  - Turkcell call forwarding
+  - Caller ID validation
+  - Turkish conversation tests
+  - Latency and performance benchmarks
 
-Geliştirme sürecini [GitHub Issues](https://github.com/burhancetinkaya/alojan/issues) üzerinden takip edebilirsiniz.
+Follow development through [GitHub Issues](https://github.com/burhancetinkaya/alojan/issues).
 
 ---
 
 ## 🐳 Development & Deployment
 
-### Referans Donanım
+### Reference Hardware
 
-Alojan'ın ilk geliştirme ortamı:
+The initial development environment targets:
 
-| Bileşen | Yapılandırma |
+| Component | Configuration |
 |---|---|
-| İşletim Sistemi | Ubuntu Linux |
+| Operating System | Ubuntu Linux |
 | GPU | NVIDIA RTX 4080 |
 | VRAM | 16 GB |
 | Container Runtime | Docker |
 | Orchestration | Docker Compose |
 | GPU Runtime | NVIDIA Container Toolkit |
-| Telefon Bağlantısı | SIP Trunk / Public IPv4 |
+| Telephony Connection | SIP Trunk / Public IPv4 |
 
-### Repository
+### Clone the Repository
 
 ```bash
 git clone https://github.com/burhancetinkaya/alojan.git
-
 cd alojan
 ```
 
 > [!WARNING]
-> Proje geliştirme aşamasındadır.
-> Çalışan deployment adımları ilk doğrulanmış sürümle birlikte yayınlanacaktır.
+> The project is in early development. Cloning the repository does not provide a runnable service yet.
+> Working deployment instructions will be published with the first validated release.
 
-### Telefon Altyapısı
+### Telephony
 
-Başlangıç yapılandırması:
+The proposed initial configuration is:
 
 ```text
 SIP: UDP 5060
 RTP: UDP 10000-10100
 ```
 
-Bu portlar yapılandırılabilir olacaktır.
-
-Güvenlik amacıyla SIP ve RTP erişimi yalnızca yetkili operatör IP adresleriyle sınırlandırılmalıdır.
+These ports are intended to be configurable. SIP and RTP access should be restricted to authorized carrier IP addresses.
 
 ### GPU Inference
 
-ASR ve TTS modelleri NVIDIA GPU erişimi olan Docker container'larında çalışacak şekilde tasarlanmıştır.
-
-Modeller çağrı başına yeniden yüklenmeyecek, inference servisleri sürekli hazır tutulacaktır.
+ASR and TTS models are designed to run in Docker containers with NVIDIA GPU access. Inference services will remain ready between calls instead of reloading models for every call.
 
 ---
 
-## 🔐 Gizlilik ve Güvenlik
+## 🔐 Privacy and Security
 
-Alojan tasarımında güvenlik ve kişisel verilerin korunması temel ilkeler arasındadır.
+Security and personal data protection are core design goals. Planned safeguards include:
 
-- AI asistan görüşmenin başında kendisini yapay zekâ olarak tanıtır.
-- Arayan kişiye gerçek telefon sahibi gibi davranmaz.
-- Ham ses kaydı varsayılan olarak tutulmaz.
-- Telefon numarası, transkript ve çağrı geçmişi erişim kontrolüne tabidir.
-- Telefon numarası tek başına kimlik doğrulama yöntemi değildir.
-- Tool calling işlemleri yetkilendirme kontrollerinden geçer.
-- Takvim değiştirme ve mesaj gönderme gibi işlemler uygun kullanıcı yetkisi ve onayı gerektirir.
-- Hassas bilgiler loglardan korunur.
-- API anahtarları ve SIP şifreleri repository içerisinde tutulmaz.
-- Yönetim API'si kimlik doğrulama ile korunur.
-- SIP/RTP erişimi firewall kurallarıyla sınırlandırılır.
+- The assistant identifies itself as AI at the beginning of the call.
+- It does not impersonate the phone's owner.
+- Raw audio is not recorded by default.
+- Phone numbers, transcripts, and call history are access-controlled.
+- A phone number alone is not accepted as authentication.
+- Tool calls pass through authorization checks.
+- Actions such as changing calendars or sending messages require appropriate user authorization and approval.
+- Sensitive information is excluded from logs.
+- API keys and SIP credentials are kept out of the repository.
+- The management API requires authentication.
+- Firewall rules restrict SIP/RTP access.
 
-Gerçek kullanımda geçerli KVKK ve diğer kişisel veri koruma yükümlülükleri dikkate alınmalıdır.
+Real-world deployments must account for applicable personal data protection obligations, including Türkiye's KVKK.
 
 ---
 
-<a id="katkida-bulun"></a>
+<a id="contributing"></a>
 
-## 🤝 Katkıda Bulun
+## 🤝 Contributing
 
-Alojan açık kaynak geliştirme yaklaşımıyla oluşturulmaktadır.
+Alojan is being developed with an open-source approach. Contributions are especially welcome in:
 
-Özellikle aşağıdaki alanlarda katkılar değerlidir:
+- SIP / RTP protocol development
+- Real-time audio processing
+- Turkish speech recognition optimization
+- TTS model integration
+- Turn detection and barge-in
+- Agent framework integration
+- Performance and latency optimization
+- Security and documentation
 
-- SIP / RTP protokol geliştirmeleri
-- Gerçek zamanlı ses işleme
-- Türkçe konuşma tanıma optimizasyonları
-- TTS model entegrasyonları
-- Turn detection ve barge-in
-- Agent framework entegrasyonları
-- Performans ve gecikme optimizasyonları
-- Güvenlik ve dokümantasyon
+**Get involved:**
 
-**Projeye katkı sağlamak için:**
+- 💡 [Open an issue](https://github.com/burhancetinkaya/alojan/issues)
+- 🔧 [Submit a pull request](https://github.com/burhancetinkaya/alojan/pulls)
+- ⭐ Star the project to follow its progress.
 
-- 💡 [Issue oluştur](https://github.com/burhancetinkaya/alojan/issues)
-- 🔧 [Pull Request gönder](https://github.com/burhancetinkaya/alojan/pulls)
-- ⭐ Projeyi yıldızlayarak gelişimini takip et.
+<a id="license"></a>
 
-### 📜 Lisans
+### 📜 License
 
-Projenin açık kaynak lisansı ilk dağıtılabilir sürümden önce belirlenecektir.
+An open-source license will be selected before the first distributable release.
 
-PJSIP'nin GPL ve ticari lisans koşulları dahil olmak üzere kullanılan bağımlılıkların dağıtım uyumluluğu değerlendirilecektir.
+Distribution compatibility of dependencies, including PJSIP's GPL and commercial licensing terms, will be evaluated.
 
-Lisans eklenene kadar kaynak kodunun sınırsız yeniden kullanım hakkı verdiği varsayılmamalıdır.
+Until a license is added, do not assume unrestricted rights to reuse the source code.
 
 ---
 
@@ -674,15 +652,15 @@ Lisans eklenene kadar kaynak kodunun sınırsız yeniden kullanım hakkı verdi�
 
 ### Alo + Ajan = Alojan
 
-**Senin çağrıların. Senin AI ajanların. Senin altyapın.**
+**Your calls. Your AI agents. Your infrastructure.**
 
-*Telefon görüşmelerini yapay zekâ ile yeniden düşün.*
+*Rethink phone conversations with AI.*
 
 <br />
 
 [**GitHub**](https://github.com/burhancetinkaya/alojan) ·
 [**Issues**](https://github.com/burhancetinkaya/alojan/issues) ·
-[**Başa Dön**](#top)
+[**Back to Top**](#top)
 
 <br />
 
