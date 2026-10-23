@@ -1,0 +1,21 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: Python lint
+        entry: uv run --frozen ruff check
+        language: system
+        types: [python]
+        exclude: ^generated/
+      - id: ruff-format
+        name: Python format
+        entry: uv run --frozen ruff format --check
+        language: system
+        types: [python]
+        exclude: ^generated/
+      - id: clang-format
+        name: C++ format
+        entry: uv run --frozen clang-format --dry-run --Werror
+        language: system
+        types_or: [c++, c, cuda]
+        exclude: ^generated/

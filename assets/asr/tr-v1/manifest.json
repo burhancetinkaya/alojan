@@ -1,0 +1,51 @@
+{
+  "model": "canberkkkkkk/ema-lightning",
+  "model_revision": "e7c96f2fc0ba843cd0f86e02786655bb56f50df8",
+  "weight_sha256": {
+    "ema.pt": "95aec03dafbe0e1d69bca774ab597c779464729a14bc99bfcb52480090c7dfe6",
+    "decoder.pt": "9595819b173f411340f63d11332695121a97f8bf1f6d8b6fef0b21cf99c7ad67"
+  },
+  "packages": {
+    "ema-lightning": "1.1.2",
+    "torch": "2.6.0+cu124",
+    "numpy": "2.5.4",
+    "normalizer-tr": "0.8.0",
+    "huggingface-hub": "2.3.0"
+  },
+  "device": "NVIDIA GeForce RTX 4080",
+  "cuda_runtime": "12.4",
+  "seed": 0,
+  "speed": 1.0,
+  "batch_size": 1,
+  "profile": "tr-asr-v1-ema-synthetic",
+  "files": [
+    {
+      "file": "date-time.wav",
+      "text_file": "date-time.txt",
+      "sha256": "542992221868b2a6a109bb5b354ca84f37a411d4dc273b6b13e1e024d4a3710d",
+      "text_sha256": "7ce0cdbf6be60812d5232754dbae2801203a9b383d20331d217728bc2a4273bb",
+      "sample_rate_hz": 48000,
+      "samples": 216960,
+      "duration_ms": 4520,
+      "chunks": 2,
+      "first_chunk_ms": 4.112,
+      "generation_ms": 6.974,
+      "peak": 0.48613178730010986,
+      "rms": 0.04977613752157711
+    },
+    {
+      "file": "phone.wav",
+      "text_file": "phone.txt",
+      "sha256": "fd86f6dddc72009d0412b8cc57770005b3cc81769d38b4d71ba592d69a8fed44",
+      "text_sha256": "44a29a4cb5d352a539c686a76d39e6f41452367a76730c0d16dd006ec690b635",
+      "sample_rate_hz": 48000,
+      "samples": 289920,
+      "duration_ms": 6040,
+      "chunks": 3,
+      "first_chunk_ms": 4.222,
+      "generation_ms": 8.725,
+      "peak": 0.5527827739715576,
+      "rms": 0.05160729341560027
+    }
+  ]
+}

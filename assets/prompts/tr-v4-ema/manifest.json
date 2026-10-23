@@ -1,0 +1,27 @@
+{
+  "profile": "tr-v4-ema-carrier-pad",
+  "source_profile": "tr-v3-ema",
+  "source_manifest_sha256": "056e48b6712dcf6ac0660a842f6ad33c3a59464ad81f0dafcaa3d84e3afc932a",
+  "transformation": "prepend 3200 zero PCM16 samples (400 ms) to greeting only",
+  "listening_status": "pending_carrier_retest",
+  "files": [
+    {
+      "file": "greeting.wav",
+      "text_file": "greeting.txt",
+      "sha256": "5b2f78989ecd830d22403d404550feb093febcf13f554c0399131acc8da151ca",
+      "text_sha256": "7f6603b3c0b3516fb7381698fd991a44c134693b27716112b9f8644f00371674",
+      "sample_rate_hz": 8000,
+      "samples": 27840,
+      "duration_ms": 3480.0
+    },
+    {
+      "file": "unavailable.wav",
+      "text_file": "unavailable.txt",
+      "sha256": "b0d128fcafd2b3da17aef73fea48462108cd805e93a8303a946873f37bf9be18",
+      "text_sha256": "08ef7354000c950c9efc1a6e480166e3f83bdf66f7a30f9d4d22620e85c5adc9",
+      "sample_rate_hz": 8000,
+      "samples": 32000,
+      "duration_ms": 4000.0
+    }
+  ]
+}

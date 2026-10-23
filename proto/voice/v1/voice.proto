@@ -1,0 +1,72 @@
+syntax = "proto3";
+package voice.v1;
+
+message AudioFrame {
+  string call_id = 1;
+  uint64 sequence = 2;
+  int64 captured_at_unix_ms = 3;
+  uint32 sample_rate_hz = 4;
+  uint32 channels = 5;
+  string format = 6;          // pcm_s16le | pcm_f32le
+  bytes audio = 7;
+  string generation_id = 8;   // stream identity, including TTS responses
+}
+message TurnEvent {
+  string call_id = 1;
+  string generation_id = 2;
+  string type = 3;            // vad_start/turn_end/interrupted/...
+  int64 at_unix_ms = 4;
+  float confidence = 5;
+  string detail_json = 6;
+}
+message AgentRequest {
+  string call_id = 1;
+  string generation_id = 2;
+  string final_user_text = 3;
+  string context_json = 4;
+}
+message AgentEvent {
+  string call_id = 1;
+  string generation_id = 2;
+  string type = 3;            // text_delta/tool_started/tool_finished/end/error
+  string text = 4;
+  string detail_json = 5;
+}
+
+message RecognitionEvent {
+  string call_id = 1;
+  string generation_id = 2;
+  string text = 3;
+  bool is_final = 4;
+  uint32 processed_audio_ms = 5; // decoded input coverage; zero means legacy/unknown
+}
+message SynthesisRequest {
+  string call_id = 1;
+  string generation_id = 2;
+  string text = 3;
+}
+message CancelRequest {
+  string call_id = 1;
+  string generation_id = 2;
+}
+message CancelReply { bool cancelled = 1; }
+service Recognition { rpc StreamRecognize(stream AudioFrame) returns (stream RecognitionEvent); }
+service Synthesis { rpc StreamSynthesize(SynthesisRequest) returns (stream AudioFrame); }
+message PlaybackReport {
+  string call_id = 1;
+  string generation_id = 2;
+  uint32 phrase_index = 3;
+  uint32 sent_audio_ms = 4;
+  bool completed = 5;
+}
+message CallEnd {
+  string call_id = 1;
+  string reason = 2; // completed/disconnected/failed
+}
+message AgentAck { bool accepted = 1; }
+service Agent {
+  rpc RunTurn(AgentRequest) returns (stream AgentEvent);
+  rpc ReportPlayback(PlaybackReport) returns (AgentAck);
+  rpc EndCall(CallEnd) returns (AgentAck);
+}
+service GenerationControl { rpc CancelGeneration(CancelRequest) returns (CancelReply); }

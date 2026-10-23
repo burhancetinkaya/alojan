@@ -1,0 +1,28 @@
+{
+  "profile": "tr-v5-kubra-ema",
+  "model": "canberkkkkkk/ema-lightning",
+  "model_revision": "e7c96f2fc0ba843cd0f86e02786655bb56f50df8",
+  "generation": "resident EMA gRPC synthesis, PCM16 8kHz; prepend 400ms silence to greeting",
+  "greeting_pad_ms": 400,
+  "listening_status": "pending_owner_listening",
+  "files": [
+    {
+      "file": "greeting.wav",
+      "text_file": "greeting.txt",
+      "sha256": "6b3451931fe830dabadadf4617907586f7403049b7c074cbdae2b21ccc036189",
+      "text_sha256": "c332e94166c444a76b4d57741f00a34607787915c045227b7fae8a8541c1afbf",
+      "sample_rate_hz": 8000,
+      "samples": 42880,
+      "duration_ms": 5360.0
+    },
+    {
+      "file": "unavailable.wav",
+      "text_file": "unavailable.txt",
+      "sha256": "b0d128fcafd2b3da17aef73fea48462108cd805e93a8303a946873f37bf9be18",
+      "text_sha256": "08ef7354000c950c9efc1a6e480166e3f83bdf66f7a30f9d4d22620e85c5adc9",
+      "sample_rate_hz": 8000,
+      "samples": 32000,
+      "duration_ms": 4000.0
+    }
+  ]
+}

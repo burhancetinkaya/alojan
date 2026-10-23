@@ -1,0 +1,92 @@
+{
+  "profile": "tr-v2-ema-cuda",
+  "model": "canberkkkkkk/ema-lightning",
+  "model_revision": "e7c96f2fc0ba843cd0f86e02786655bb56f50df8",
+  "weight_sha256": {
+    "ema.pt": "95aec03dafbe0e1d69bca774ab597c779464729a14bc99bfcb52480090c7dfe6",
+    "decoder.pt": "9595819b173f411340f63d11332695121a97f8bf1f6d8b6fef0b21cf99c7ad67"
+  },
+  "packages": {
+    "ema-lightning": "1.1.2",
+    "torch": "2.6.0+cu124",
+    "numpy": "2.5.4",
+    "normalizer-tr": "0.8.0",
+    "huggingface-hub": "2.3.0"
+  },
+  "device": "NVIDIA GeForce RTX 4080",
+  "cuda_runtime": "12.4",
+  "seed": 0,
+  "speed": 1.0,
+  "batch_size": 1,
+  "warmup_seconds": 44.073,
+  "warmup_warnings": [
+    "TensorFloat32 tensor cores for float32 matrix multiplication available but not enabled. Consider setting `torch.set_float32_matmul_precision('high')` for better performance."
+  ],
+  "listening_status": "accepted_by_owner",
+  "files": [
+    {
+      "file": "greeting.wav",
+      "text_file": "greeting.txt",
+      "sha256": "d3dacfb7e34a889f5e529f4a26944d8771450f15d4fce1a214caf6acaf5210ee",
+      "text_sha256": "1a2d78eb44faa3303f2a31156f7d37c1e3f8bf060cc8cfeceb80cc7451f7eee0",
+      "sample_rate_hz": 8000,
+      "samples": 25920,
+      "duration_ms": 3240,
+      "chunks": 3,
+      "first_chunk_ms": 13.651,
+      "generation_ms": 26.025,
+      "peak": 0.39928776025772095,
+      "rms": 0.05846000648634782
+    },
+    {
+      "file": "unavailable.wav",
+      "text_file": "unavailable.txt",
+      "sha256": "3d53c83b65916bffc1847f7f28c7597d87099f28de409a8785c578e03f76ffa5",
+      "text_sha256": "08ef7354000c950c9efc1a6e480166e3f83bdf66f7a30f9d4d22620e85c5adc9",
+      "sample_rate_hz": 8000,
+      "samples": 32000,
+      "duration_ms": 4000,
+      "chunks": 3,
+      "first_chunk_ms": 6.879,
+      "generation_ms": 17.343,
+      "peak": 0.3701477646827698,
+      "rms": 0.04790767550747013
+    }
+  ],
+  "previews": [
+    {
+      "file": "greeting-48000.wav",
+      "text_file": "greeting.txt",
+      "sha256": "78313499bb18e0dee8b1d66ff2176a432f73acf6590208d7b2fd05400124e12b",
+      "text_sha256": "1a2d78eb44faa3303f2a31156f7d37c1e3f8bf060cc8cfeceb80cc7451f7eee0",
+      "sample_rate_hz": 48000,
+      "samples": 155520,
+      "duration_ms": 3240,
+      "chunks": 2,
+      "first_chunk_ms": 5.117,
+      "generation_ms": 7.924,
+      "peak": 0.43341943621635437,
+      "rms": 0.062144254847620074
+    },
+    {
+      "file": "unavailable-48000.wav",
+      "text_file": "unavailable.txt",
+      "sha256": "55412be4a5794a262ee6b912e5eb234d35212887c8b198ee34ab31e425efe444",
+      "text_sha256": "08ef7354000c950c9efc1a6e480166e3f83bdf66f7a30f9d4d22620e85c5adc9",
+      "sample_rate_hz": 48000,
+      "samples": 192000,
+      "duration_ms": 4000,
+      "chunks": 2,
+      "first_chunk_ms": 4.289,
+      "generation_ms": 7.181,
+      "peak": 0.6325332522392273,
+      "rms": 0.0517422322799466
+    }
+  ],
+  "peak_allocated_mib": 8471.5,
+  "peak_reserved_mib": 8876.0,
+  "listening_review": {
+    "date": "2026-10-23",
+    "scope": "Owner accepted the intelligibility of v2 and requested a named greeting for v3. This does not constitute a carrier-call test."
+  }
+}

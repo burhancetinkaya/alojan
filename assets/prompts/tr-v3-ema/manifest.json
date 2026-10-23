@@ -1,0 +1,90 @@
+{
+  "profile": "tr-v3-ema-cuda",
+  "model": "canberkkkkkk/ema-lightning",
+  "model_revision": "e7c96f2fc0ba843cd0f86e02786655bb56f50df8",
+  "weight_sha256": {
+    "ema.pt": "95aec03dafbe0e1d69bca774ab597c779464729a14bc99bfcb52480090c7dfe6",
+    "decoder.pt": "9595819b173f411340f63d11332695121a97f8bf1f6d8b6fef0b21cf99c7ad67"
+  },
+  "packages": {
+    "ema-lightning": "1.1.2",
+    "torch": "2.6.0+cu124",
+    "numpy": "2.5.4",
+    "normalizer-tr": "0.8.0",
+    "huggingface-hub": "2.3.0"
+  },
+  "device": "NVIDIA GeForce RTX 4080",
+  "cuda_runtime": "12.4",
+  "seed": 0,
+  "speed": 1.0,
+  "batch_size": 1,
+  "warmup_seconds": 17.496,
+  "warmup_warnings": [],
+  "listening_status": "accepted_by_owner",
+  "files": [
+    {
+      "file": "greeting.wav",
+      "text_file": "greeting.txt",
+      "sha256": "29ef43e49532cb52e9a5e2a31b180dde6bee3068a87f2c35b64ae849f3fe45c2",
+      "text_sha256": "7f6603b3c0b3516fb7381698fd991a44c134693b27716112b9f8644f00371674",
+      "sample_rate_hz": 8000,
+      "samples": 24640,
+      "duration_ms": 3080,
+      "chunks": 3,
+      "first_chunk_ms": 12.21,
+      "generation_ms": 24.031,
+      "peak": 0.3551519811153412,
+      "rms": 0.05004174559682209
+    },
+    {
+      "file": "unavailable.wav",
+      "text_file": "unavailable.txt",
+      "sha256": "b0d128fcafd2b3da17aef73fea48462108cd805e93a8303a946873f37bf9be18",
+      "text_sha256": "08ef7354000c950c9efc1a6e480166e3f83bdf66f7a30f9d4d22620e85c5adc9",
+      "sample_rate_hz": 8000,
+      "samples": 32000,
+      "duration_ms": 4000,
+      "chunks": 3,
+      "first_chunk_ms": 4.394,
+      "generation_ms": 16.971,
+      "peak": 0.3701702952384949,
+      "rms": 0.047909507605296255
+    }
+  ],
+  "previews": [
+    {
+      "file": "greeting-48000.wav",
+      "text_file": "greeting.txt",
+      "sha256": "e90ea37f2218fa4c53fa620a9ce3165a6db7597a643ed6e0b95768971474ad84",
+      "text_sha256": "7f6603b3c0b3516fb7381698fd991a44c134693b27716112b9f8644f00371674",
+      "sample_rate_hz": 48000,
+      "samples": 147840,
+      "duration_ms": 3080,
+      "chunks": 2,
+      "first_chunk_ms": 3.928,
+      "generation_ms": 6.76,
+      "peak": 0.3876141607761383,
+      "rms": 0.05341122758826562
+    },
+    {
+      "file": "unavailable-48000.wav",
+      "text_file": "unavailable.txt",
+      "sha256": "a9794de0a68adcab9da49281062e724c33a062c6847bd13f49fa4f9b2b8d2d29",
+      "text_sha256": "08ef7354000c950c9efc1a6e480166e3f83bdf66f7a30f9d4d22620e85c5adc9",
+      "sample_rate_hz": 48000,
+      "samples": 192000,
+      "duration_ms": 4000,
+      "chunks": 2,
+      "first_chunk_ms": 4.227,
+      "generation_ms": 7.244,
+      "peak": 0.6325464248657227,
+      "rms": 0.051743601910838564
+    }
+  ],
+  "peak_allocated_mib": 8471.5,
+  "peak_reserved_mib": 8640.0,
+  "listening_review": {
+    "date": "2026-10-23",
+    "scope": "Owner accepted the delivered named greeting and requested the next task. This is local listening feedback, not a carrier-call test."
+  }
+}

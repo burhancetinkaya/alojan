@@ -73,13 +73,24 @@ The starting point is a personal AI phone assistant. The long-term goal is modul
 > [!IMPORTANT]
 > **Project status: Early development / architecture planning**
 >
-> This repository currently contains the project README; there is no runnable implementation yet.
+> This repository now has a runnable local SIP/WAV gateway, PostgreSQL migrations, API health checks, tested C++/Python gRPC contracts and automated tests. The default gateway plays a Turkish AI introduction and an unavailable-service announcement, then closes. The gRPC peer uses synthetic fixtures; message collection and model inference are still pending. The complete AI phone assistant is not implemented yet.
 > Alojan is not ready for production use. The features and architecture below describe the intended design, not completed functionality.
 > The roadmap will be updated as features are implemented and validated. An open-source license has not yet been selected; see [License](#license).
 
 ---
 
 <a id="planned-features"></a>
+
+## Preparation and implementation entry points
+
+- [Technical requirements](docs/REQUIREMENTS.md) — maintained scope, behavior and contracts.
+- [Agent development rules](AGENTS.md) and [contribution guide](CONTRIBUTING.md).
+- [Development setup](docs/DEV_SETUP.md) — primary Linux GPU development, source synchronization, optional macOS checks and pinned Ponytail skill.
+- [Task plan](docs/PLAN.md) — detailed M0/M1 tasks and current implementation status.
+- [Architecture decision](docs/ADR/0001-architecture.md), [network setup](docs/NETWORK_NETGSM.md), and [acceptance gates](docs/CALL_TEST_PLAN.md).
+- [Security policy](SECURITY.md), [code of conduct](CODE_OF_CONDUCT.md), and [license proposal](docs/LICENSING.md).
+
+The MVP targets one personal assistant and one active call. Dashboard and contacts are P1; calendar writes, multi-tenancy, voice cloning, and hosted voice orchestration are outside v1. Broader examples below describe future capabilities, not expanded MVP scope.
 
 ## 🚀 Planned Features
 
@@ -322,7 +333,7 @@ This allows the LLM to generate the next sentence while TTS speaks the first one
 | Adaptive Endpointing | Adjust waiting periods dynamically |
 | Barge-in Controller | Handle intentional interruptions |
 | Echo-aware Detection | Reduce false detections caused by audio echo |
-| Playback Accounting | Track which part of a response the caller actually heard |
+| Playback Accounting | Track sent audio and estimate the corresponding spoken text; remote playback is not guaranteed |
 | Response Cancellation | Cancel outdated LLM and TTS work |
 | Conversation State | Manage dialogue context and call state |
 
@@ -368,11 +379,12 @@ Actual results will be measured against a test dataset of Turkish phone conversa
 
 ### 🗣️ EMA Lightning
 
-[EMA Lightning on Hugging Face](https://huggingface.co/canberkkkkkk/ema-lightning) is the planned model for streaming Turkish speech generation.
+[EMA Lightning on Hugging Face](https://huggingface.co/canberkkkkkk/ema-lightning) is selected for Turkish speech generation. The two versioned [greeting/fallback prompts](assets/prompts/tr-v3-ema/README.md) were generated with real EMA CUDA inference on the development server. The owner accepted the v2 EMA voice and the v3 greeting naming Burhan Çetinkaya. A [persistent EMA worker](services/tts/README.md) now streams bounded audio and has passed limited concurrent ASR/GPU checks. A [scripted native gateway profile](services/voice-gateway/README.md) now connects both speech directions. Turn decisions, agent responses, broader pronunciation quality and carrier intelligibility remain pending.
 
 ### 🎧 Faster-Whisper
 
-Speech recognition is planned to use Faster-Whisper with CUDA, starting with the `large-v3-turbo` model.
+The native Linux development worker now provides pinned large-v3-turbo CUDA float16 transcription over gRPC, with partial/final text, bounded admission and cancellation. [Setup and limits](services/asr/README.md) · [Measured evidence](docs/validation/linux-asr-2026-10-23.md). It is not yet connected to live phone media.
+
 
 ### 🧠 AI Agent
 
@@ -443,7 +455,7 @@ Alojan aims to record structured information such as the following. The summary 
 
 ## 🧱 Planned Repository Structure
 
-The following directories and files describe the intended layout; they have not yet been created.
+The layout below is the target. The voice gateway, API foundation, protobuf, database and tests now exist; inference/agent services remain planned.
 
 ```text
 alojan/
@@ -468,13 +480,14 @@ alojan/
 │       └── gRPC Contracts
 │
 ├── infra/
-│   ├── docker/
-│   └── compose/
+│   ├── compose.yaml
+│   └── migrations/
 │
 ├── docs/
-│   ├── architecture/
-│   ├── deployment/
-│   └── security/
+│   ├── ADR/
+│   ├── DEV_SETUP.md
+│   ├── PLAN.md
+│   └── CALL_TEST_PLAN.md
 │
 ├── tests/
 │   ├── unit/
@@ -482,7 +495,8 @@ alojan/
 │   └── performance/
 │
 ├── scripts/
-├── PRD.md
+├── AGENTS.md
+├── CONTRIBUTING.md
 └── README.md
 ```
 
@@ -492,7 +506,7 @@ alojan/
 
 ## 🗺️ Development Roadmap
 
-Development is planned in stages. All milestones below remain open.
+The native foundation now builds and tests on the authorized Linux GPU server. All full product milestones below remain open; see the [task plan](docs/PLAN.md) for dependencies and acceptance criteria. The [native Linux G1 SIP/RTP scenario set is complete](docs/validation/linux-m1-development-report-2026-10-23.md), including owner listening acceptance; M2-01 now provides a [persistent Turkish CUDA ASR worker](services/asr/README.md); M2-02 now provides [persistent EMA streaming and measured GPU coexistence](docs/validation/linux-tts-2026-10-23.md). M2-03 now connects the gateway to both speech services through an explicit [scripted test profile](services/voice-gateway/README.md); M3 turn decisions and M4 agent responses remain pending. Real inference and Netgsm acceptance remain separate under [ADR 0003](docs/ADR/0003-linux-development.md).
 
 - [ ] **M0 — Foundation**
   - Project scaffolding
@@ -507,6 +521,7 @@ Development is planned in stages. All milestones below remain open.
   - G.711 codec support
   - RTP audio transmission and reception
   - NAT and firewall testing
+  - Real Netgsm inbound call with bidirectional audio (G2)
 
 - [ ] **M2 — Speech Pipeline**
   - Faster-Whisper STT
@@ -539,7 +554,6 @@ Development is planned in stages. All milestones below remain open.
   - Monitoring and security
 
 - [ ] **M6 — Real-World Testing**
-  - Netgsm SIP trunk tests
   - Turkcell call forwarding
   - Caller ID validation
   - Turkish conversation tests
@@ -551,7 +565,11 @@ Follow development through [GitHub Issues](https://github.com/burhancetinkaya/al
 
 ## 🐳 Development & Deployment
 
-### Reference Hardware
+Start with the [development setup](docs/DEV_SETUP.md). It includes working native build, local SIP test, migration and health commands.
+
+The planned Mac development profile runs gateway/Python services natively and PostgreSQL in Docker. CPU inference is attempted where supported; explicitly selected test services cover local contracts otherwise. Production hardware and live acceptance remain Ubuntu-only.
+
+### Production Reference Hardware
 
 The initial development environment targets:
 
@@ -573,7 +591,7 @@ cd alojan
 ```
 
 > [!WARNING]
-> The project is in early development. Cloning the repository does not provide a runnable service yet.
+> The project is in early development. The local WAV gateway is runnable; it is not a complete AI assistant or production service.
 > Working deployment instructions will be published with the first validated release.
 
 ### Telephony
@@ -628,6 +646,8 @@ Alojan is being developed with an open-source approach. Contributions are especi
 - Performance and latency optimization
 - Security and documentation
 
+Read [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) first. Use [SECURITY.md](SECURITY.md) for sensitive reports.
+
 **Get involved:**
 
 - 💡 [Open an issue](https://github.com/burhancetinkaya/alojan/issues)
@@ -638,7 +658,7 @@ Alojan is being developed with an open-source approach. Contributions are especi
 
 ### 📜 License
 
-An open-source license will be selected before the first distributable release.
+An open-source license will be selected before the first distributable release. [GPL-3.0-or-later is proposed](docs/LICENSING.md), pending owner approval and dependency review; no license has been adopted.
 
 Distribution compatibility of dependencies, including PJSIP's GPL and commercial licensing terms, will be evaluated.
 

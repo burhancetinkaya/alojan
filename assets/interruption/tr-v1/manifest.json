@@ -1,0 +1,30 @@
+{
+  "model": "canberkkkkkk/ema-lightning",
+  "model_revision": "e7c96f2fc0ba843cd0f86e02786655bb56f50df8",
+  "weight_sha256": {
+    "ema.pt": "95aec03dafbe0e1d69bca774ab597c779464729a14bc99bfcb52480090c7dfe6",
+    "decoder.pt": "9595819b173f411340f63d11332695121a97f8bf1f6d8b6fef0b21cf99c7ad67"
+  },
+  "packages": {
+    "ema-lightning": "1.1.2",
+    "torch": "2.6.0+cu124",
+    "numpy": "2.5.4",
+    "normalizer-tr": "0.8.0",
+    "huggingface-hub": "2.3.0"
+  },
+  "device": "NVIDIA GeForce RTX 4080",
+  "cuda_runtime": "12.4",
+  "speed": 1.0,
+  "batch_size": 1,
+  "profile": "tr-interruption-v1-ema-synthetic",
+  "listening_status": "not_human_validated",
+  "files": [
+    {
+      "file": "acknowledgment.wav",
+      "text": "Evet.",
+      "sha256": "06963c7828f4e1082576f38d9fca8fc19c183c48a6bdb585e477b5020db7748d",
+      "sample_rate_hz": 8000,
+      "duration_ms": 440
+    }
+  ]
+}

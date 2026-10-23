@@ -1,0 +1,9 @@
+[project]
+name = "alojan-turn-eval"
+version = "0.1.0"
+description = "Offline CPU numerical calibration for M3 native turn detection"
+requires-python = ">=3.12,<3.13"
+dependencies = ["numpy==2.5.4", "onnxruntime==1.31.0", "transformers==4.51.3"]
+
+[tool.uv]
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "profile": "tr-v1-formant-test",
+  "engine": "espeak-ng",
+  "engine_version": "1.51+dfsg-12build1",
+  "engine_binary_sha256": "34191438b1e0f8f5aac5d4fdc5df574762b6fbb3c7a219a8c6f14feceb1bd076",
+  "engine_package_sha256": "ffeac730f1f43b5cdbca708a8215d6b7310bf3bd40d7dcf0affd6a62f86aa6df",
+  "voice": "tr",
+  "words_per_minute": 155,
+  "amplitude": 80,
+  "resampler": "CPython 3.12.3 audioop.ratecv, default weights",
+  "format": "pcm_s16le",
+  "sample_rate_hz": 8000,
+  "channels": 1,
+  "files": [
+    {
+      "file": "greeting.wav",
+      "text_file": "greeting.txt",
+      "text_sha256": "1a2d78eb44faa3303f2a31156f7d37c1e3f8bf060cc8cfeceb80cc7451f7eee0",
+      "sha256": "87bd4a7c16592d495c4d77415130c07dc6db93cae6d17f6edada31a25f2abd03",
+      "samples": 38240,
+      "duration_ms": 4780
+    },
+    {
+      "file": "unavailable.wav",
+      "text_file": "unavailable.txt",
+      "text_sha256": "08ef7354000c950c9efc1a6e480166e3f83bdf66f7a30f9d4d22620e85c5adc9",
+      "sha256": "567d87d40a6048aac0a0c8f2e04adee86a60432cec3eb519679e58b656dfef66",
+      "samples": 52640,
+      "duration_ms": 6580
+    }
+  ]
+}

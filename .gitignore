@@ -1,0 +1,25 @@
+# Local secrets (templates may be committed)
+.env
+.env.*
+!.env.example
+!.env.*.example
+secrets/
+*.pem
+*.key
+
+# Private operational evidence
+.local/
+artifacts/
+recordings/
+captures/
+*.pcap
+*.pcapng
+
+# Tool caches and build outputs
+.DS_Store
+.codebase-memory/
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+build/

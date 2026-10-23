@@ -1,0 +1,19 @@
+name: alojan-local
+services:
+  postgres:
+    image: postgres:17.4-bookworm@sha256:304ab813518754228f9f792f79d6da36359b82d8ecf418096c636725f8c930ad
+    environment:
+      POSTGRES_DB: alojan
+      POSTGRES_USER: alojan
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in a private environment file}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-15432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U alojan -d alojan"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+volumes:
+  postgres_data:

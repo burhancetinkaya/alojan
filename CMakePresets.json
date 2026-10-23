@@ -1,0 +1,6 @@
+{
+  "version": 6,
+  "configurePresets": [{"name": "local", "generator": "Ninja", "binaryDir": "${sourceDir}/build/local", "cacheVariables": {"CMAKE_BUILD_TYPE": "Debug"}}],
+  "buildPresets": [{"name": "local", "configurePreset": "local"}],
+  "testPresets": [{"name": "local", "configurePreset": "local", "output": {"outputOnFailure": true}}]
+}

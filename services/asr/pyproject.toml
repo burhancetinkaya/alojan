@@ -1,0 +1,19 @@
+[project]
+name = "alojan-asr"
+version = "0.1.0"
+description = "Persistent Turkish recognition worker for the native Linux profile"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "faster-whisper==1.2.1",
+    "ctranslate2==4.6.0",
+    "numpy==2.5.4",
+    "grpcio==1.78.0",
+    "grpcio-health-checking==1.78.0",
+    "protobuf==6.33.5",
+    "huggingface-hub==2.3.0",
+    "nvidia-cublas-cu12==12.4.5.8",
+    "nvidia-cudnn-cu12==9.1.0.70",
+]
+
+[tool.uv]
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
