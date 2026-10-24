@@ -1016,3 +1016,15 @@ process and three worker listeners were verified available. The capture is
 stopped and remains private; no packet, actual number or transcript is committed.
 A fresh carrier call must still verify normalized persistence and Telegram display;
 forwarded/withheld identity acceptance remains separate.
+
+
+### Standard Whisper large-v3 live activation
+
+M2-01 / M5-03, DEC-08 / §8.1 / US-02/04/06: owner requested switching from Turbo
+to standard large-v3. ADR 0008 records the default amendment. Updated the pinned
+manifest and setup documentation, retaining FP16/beam five and existing service
+behavior. Linux: 45 ASR tests passed (3.11 seconds); seven real CUDA gRPC cases
+and lifecycle checks passed both before and after the carrier worker switch.
+The live ASR reports the pinned large-v3 revision and SERVING, as do TTS/agent;
+no active call was present at switch. Handset quality/latency acceptance remains
+pending; [activation evidence](validation/whisper-large-v3-live-2026-10-24.md).

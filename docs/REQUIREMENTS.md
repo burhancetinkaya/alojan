@@ -17,7 +17,7 @@ A personal, self-hosted Turkish phone assistant answers Netgsm 0850 calls, inclu
 | DEC-05 | Netgsm 0850 IP-directed SIP trunk through office public IPv4/NAT |
 | DEC-06 | Owner-controlled Turkcell forwarding and cancellation; no unattended USSD guarantee |
 | DEC-07 | C++ conversation control, VAD/turn decisions, jitter/playout, interruption, state, cancellation and echo policy |
-| DEC-08 | Configurable CUDA ASR: faster-whisper large-v3-turbo by default; optional Nemotron 3.5 under ADR 0008; application-managed partial transcription |
+| DEC-08 | Configurable CUDA ASR: faster-whisper standard large-v3 by default; optional Nemotron 3.5 under ADR 0008; application-managed partial transcription |
 | DEC-09 | canberkkkkkk/ema-lightning, Turkish single voice, stream(), lightning() warm-up; no cloning |
 | DEC-10 | Silero ONNX VAD and Smart Turn v3.2, CPU inference |
 | DEC-11 | Python OpenAI Agents SDK, OpenRouter `openai/gpt-oss-120b` on Cerebras, Responses streaming, native tools and MCP boundary; owner-approved ADR 0005 amendment (activation conditional on quality/speed validation) |
@@ -112,7 +112,7 @@ response-latency metrics. Music must not delay a ready response.
 
 ### 8.1 ASR
 
-Default to faster-whisper large-v3-turbo on CUDA with compute_type=float16. ADR 0008 authorizes an optional pinned Nemotron 3.5 backend selected by configuration; change the live default only after comparative quality and service validation. Smaller models require a recorded decision supported by VRAM/WER evidence. Decode mono 16 kHz input using rolling/chunk partial hypotheses and finalization; this is not native incremental token streaming. Evaluate names, Turkish mobile numbers, dates and times; optional lexicon/prompts may help proper names. Keep VAD, transcription and completion detection distinct. Owner-configured exact multiword spelling aliases may normalize known terms without modifying numeric tokens or single-word acknowledgments. Keep vocabulary private; do not enable decoder/denoising changes that regress entity accuracy or latency in the available evaluation.
+Default to faster-whisper standard large-v3 (owner-authorized ADR 0008 amendment) on CUDA with compute_type=float16. ADR 0008 authorizes an optional pinned Nemotron 3.5 backend selected by configuration; change the live default only after comparative quality and service validation. Smaller models require a recorded decision supported by VRAM/WER evidence. Decode mono 16 kHz input using rolling/chunk partial hypotheses and finalization; this is not native incremental token streaming. Evaluate names, Turkish mobile numbers, dates and times; optional lexicon/prompts may help proper names. Keep VAD, transcription and completion detection distinct. Owner-configured exact multiword spelling aliases may normalize known terms without modifying numeric tokens or single-word acknowledgments. Keep vocabulary private; do not enable decoder/denoising changes that regress entity accuracy or latency in the available evaluation.
 
 ### 8.2 TTS
 

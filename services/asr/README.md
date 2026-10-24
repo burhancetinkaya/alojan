@@ -1,7 +1,7 @@
 # Persistent Turkish ASR (M2-01)
 
 The native Linux worker implements `voice.v1.Recognition` and
-`voice.v1.GenerationControl` using one persistent faster-whisper large-v3-turbo
+`voice.v1.GenerationControl` using one persistent faster-whisper standard large-v3
 model on CUDA float16. It binds only `127.0.0.1:15071`. The [M2-03 scripted
 gateway profile](../voice-gateway/README.md) now supplies live loopback media.
 Turn detection, caller recording, transcript storage and external APIs remain
@@ -17,6 +17,11 @@ uv sync --frozen --project services/asr
 PYTHONPATH=services/asr uv run --frozen --project services/asr python -m alojan_asr.model
 scripts/run-asr.sh
 ```
+
+The standard large-v3 pin is `Systran/faster-whisper-large-v3` at
+`edaa852ec7e145841d8ffdb056a99866b5f0a478`; CUDA FP16 and beam five remain unchanged.
+This model improved paired human-speech accuracy but took longer than Turbo;
+see [evaluation](../../docs/validation/whisper-large-v3-2026-10-24.md).
 
 The explicit preparation command downloads only the five files pinned in
 `model.json`, then verifies every SHA-256. Model cache and virtual environment

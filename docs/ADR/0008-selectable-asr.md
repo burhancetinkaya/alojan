@@ -33,3 +33,19 @@ only if it outperforms Whisper. This authorizes the isolated M2-01/M5-03 GPU
 comparison and conditional promotion, subject to the same quality, latency,
 resource and service-lifecycle gates above. Keep the current default until those
 gates pass; an upstream benchmark alone is not promotion evidence.
+
+
+## Standard Whisper large-v3 activation (2026-10-24)
+
+The owner explicitly requested replacing the live ASR with standard Whisper
+large-v3. This amends DEC-08's default from large-v3-turbo to the pinned
+`Systran/faster-whisper-large-v3` conversion at
+`edaa852ec7e145841d8ffdb056a99866b5f0a478`. Keep CUDA FP16, beam five and the
+existing service contract, cancellation, vocabulary and offline hash checks.
+The [paired evaluation](../validation/whisper-large-v3-2026-10-24.md) found better
+pooled human PCMA/quiet accuracy with additional inference time; the
+[speed study](../validation/whisper-large-v3-speed-2026-10-24.md) does not justify
+greedy decoding or other accuracy tradeoffs. Validate real gRPC recognition and
+lifecycle before switching the carrier worker; retain the previous pin/cache for
+rollback. Handset response latency and conversational quality remain separate
+from synthetic GPU validation. No license or model redistribution is approved.

@@ -118,6 +118,7 @@ and SHA-256 values. It does not alter the root development or EMA environments.
 |---|---|---|
 | faster-whisper | 1.2.1, [upstream](https://github.com/SYSTRAN/faster-whisper/tree/v1.2.1) | MIT; retain notices |
 | CTranslate2 | 4.6.0, [upstream](https://github.com/OpenNMT/CTranslate2/tree/v4.6.0) | MIT; native inference engine and bundled dependencies need release inventory |
+| standard large-v3 conversion (default) | [Systran model at edaa852ec7e145841d8ffdb056a99866b5f0a478](https://huggingface.co/Systran/faster-whisper-large-v3/tree/edaa852ec7e145841d8ffdb056a99866b5f0a478) | Model card declares MIT; owner-selected standard Whisper large-v3, CUDA float16; pinned file checksums in `services/asr/model.json`; redistribution not approved |
 | large-v3-turbo conversion | [dropbox-dash model at 0a363e9161cbc7ed1431c9597a8ceaf0c4f78fcf](https://huggingface.co/dropbox-dash/faster-whisper-large-v3-turbo/tree/0a363e9161cbc7ed1431c9597a8ceaf0c4f78fcf) | Model card declares MIT; conversion of OpenAI Whisper large-v3-turbo in float16, not a smaller-model substitution |
 | grpcio-health-checking | 1.78.0, [gRPC source](https://github.com/grpc/grpc/tree/v1.78.0/src/python/grpcio_health_checking) | Apache-2.0; standard model-readiness endpoint |
 | PyAV | 19.0.2, [source](https://github.com/PyAV-Org/PyAV) | BSD-3-Clause; bundled FFmpeg/component licenses require separate review |
@@ -129,11 +130,11 @@ Shared pins: grpcio 1.78.0, protobuf 6.33.5, NumPy 2.5.4 and huggingface-hub 2.3
 The CUDA 12/cuDNN 9 requirements are documented by
 [faster-whisper](https://github.com/SYSTRAN/faster-whisper#gpu). This pin was tested
 with the existing 550.120 driver and RTX 4080; host packages were not upgraded.
-The model binary SHA-256 is
-`e76620f83d5f5b69efd3d87e3dc180c1bd21df9fbebacfd4335e5e1efcc018da`;
+The standard large-v3 model binary SHA-256 is
+`69f74147e3334731bc3a76048724833325d2ec74642fb52620eda87352e3d4f1`;
 all five model-file checksums are enforced by `services/asr/model.json` at startup.
-The repository's earlier `mobiuslabsgmbh` model URL redirects to `dropbox-dash`;
-the resolved repository and immutable revision are pinned explicitly.
+The earlier Turbo profile used the `mobiuslabsgmbh` model URL, which redirects
+to `dropbox-dash`; its immutable pin remains in Git history for rollback.
 This inventory establishes reproducibility and observed runtime compatibility,
 not a security audit or blanket distribution clearance.
 

@@ -298,7 +298,7 @@ is implied by server access. See the [Linux evidence report](validation/linux-de
 
 ## Native ASR worker (M2-01)
 
-The persistent large-v3-turbo worker runs independently on loopback port 15071.
+The persistent standard large-v3 worker runs independently on loopback port 15071.
 Follow [setup, contract limits and shutdown](../services/asr/README.md). Its isolated
 `uv.lock` pins CUDA 12/cuDNN 9 libraries for the existing host driver; runtime
 weights are offline and checksummed. Model health is serving only after real

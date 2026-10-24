@@ -859,3 +859,15 @@ caller number and identity source, then correlate its Telegram delivery receipt
 and owner-visible number. This finding does not establish forwarded or withheld
 caller behavior. Raw signaling capture is stopped and stored only in private
 ignored files; no raw audio capture was enabled.
+
+
+## Standard large-v3 carrier ASR activation — 2026-10-24
+
+M2-01 / M5-03: the owner requested standard Whisper large-v3. The live ASR worker
+now uses the verified standard model with unchanged FP16/beam-five settings.
+45 Linux regression tests and seven synthetic real-GPU gRPC cases on the live
+worker passed; cancellation, recovery and model readiness passed separately from
+phone acceptance. See [activation evidence](validation/whisper-large-v3-live-2026-10-24.md).
+Next handset validation should cover quiet speech, names, dates, phone numbers,
+turn pauses and interruption, and compare transcript accuracy and response delay.
+Do not infer a handset pass from synthetic checks or the earlier pooled WER study.
