@@ -40,7 +40,7 @@ Keep the production admission limit at one call unless capacity is deliberately 
 | EXT-05 | Ubuntu CUDA/PyTorch/ASR/EMA compatibility and measured VRAM | U0-01; M2-02 | CUDA smoke and persistent ASR/EMA warm-up, concurrent synthetic streams and cancellation/recovery passed within 16 GB; broader quality, soak and deployment remain pending |
 | EXT-06 | Account access to requested model, streaming/settings and quota | M4-01 | Selected OpenRouter Pro streaming/tool requests verified; broader quota/capacity/latency acceptance pending (ADR 0005) |
 | EXT-07 | Owner license/distribution decision; exact dependency review | Release | Proposal only |
-| EXT-08 | Owner Telegram bot token and verified private chat | M5-01 | Selected 2026-10-24; credential entry and pairing pending |
+| EXT-08 | Owner Telegram bot token and verified private chat | M5-01 | Selected 2026-10-24; bot identity verified, owner pairing pending |
 
 SSH access and the `~/ai/alojan` workspace were supplied/authorized on 2026-10-23. ADR 0003 makes this the primary build/test environment. Connection details remain in ignored local configuration; carrier prerequisites are still pending. Public security and conduct reporting channels remain release/community prerequisites.
 

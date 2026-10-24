@@ -962,7 +962,10 @@ Isolated Linux validation passed: 22 tests, zero failures/skips, 4.56 seconds;
 Ruff lint/format checks and the systemd user-unit verifier passed. Coverage includes
 the real Store end/summary lifecycle with synthetic Telegram transport, restart,
 concurrent enqueue/delivery, 429 backoff, exhausted/permanent errors, summary
-failure, message bounds and private-chat pairing. Actual bot pairing, Telegram
-delivery and real post-call G5 acceptance remain pending owner bot setup.
+failure, message bounds and private-chat pairing. The owner subsequently supplied
+bot credentials: real getMe identity verification passed, the additive live DB
+migration applied, and the independent user service was installed but not started.
+User linger is enabled. Private-chat challenge completion, Telegram delivery and
+real post-call G5 acceptance remain pending.
 See [Telegram setup](TELEGRAM.md) and [validation](validation/telegram-2026-10-24.md);
 no publication or production delivery is claimed.
