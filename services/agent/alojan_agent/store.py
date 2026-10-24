@@ -98,6 +98,35 @@ class Store:
             ).fetchone()
         )
 
+    async def reconcile_stale(self, age_seconds):
+        """Recover missing end events after the deployment's hard call limit plus margin."""
+        if not 300 <= age_seconds <= 86400:
+            raise ValueError("reconciliation age must be 300..86400 seconds")
+
+        def recover(c):
+            # Recovery time is not a measured hangup time; leave duration unknown.
+            rows = c.execute(
+                "WITH stale AS (SELECT id FROM calls WHERE status='active' AND ended_at IS NULL "
+                "AND started_at < now()-make_interval(secs=>%s) "
+                "ORDER BY started_at LIMIT 100 FOR UPDATE SKIP LOCKED) "
+                "UPDATE calls SET status='ended',ended_at=now(),duration_ms=NULL,"
+                "hangup_reason='failed',failure_code='missing_end_event' "
+                "WHERE id IN (SELECT id FROM stale) RETURNING id",
+                (age_seconds,),
+            ).fetchall()
+            for (cid,) in rows:
+                c.execute(
+                    "INSERT INTO summary_jobs(call_id) VALUES(%s) ON CONFLICT DO NOTHING", (cid,)
+                )
+                c.execute(
+                    "INSERT INTO call_events(id,call_id,event_type,metadata_jsonb) "
+                    "VALUES(%s,%s,'call_reconciled',%s)",
+                    (uuid.uuid4(), cid, Jsonb({"reason": "missing_end_event"})),
+                )
+            return len(rows)
+
+        return await self.run(recover)
+
     async def summary_input(self, cid):
         def load(c):
             rows = c.execute(

@@ -33,12 +33,16 @@ def notification_text(call):
             pass
     ended = call["ended_at"].astimezone(ZoneInfo("Europe/Istanbul"))
     started = call["started_at"].astimezone(ZoneInfo("Europe/Istanbul"))
+    recovered = call.get("failure_code") == "missing_end_event"
     lines = [
-        "Alojan · Arama tamamlandı",
+        "Alojan · Kesintiye uğrayan arama" if recovered else "Alojan · Arama tamamlandı",
         "Arama zamanı: " + started.strftime("%d.%m.%Y %H:%M:%S (Türkiye)"),
-        "Bitiş: " + ended.strftime("%d.%m.%Y %H:%M:%S (Türkiye)"),
+        ("Kayıt kurtarma zamanı: " if recovered else "Bitiş: ")
+        + ended.strftime("%d.%m.%Y %H:%M:%S (Türkiye)"),
         "Arayan numara: " + clipped(call["from_number_e164"], 40),
     ]
+    if recovered:
+        lines += ["Bağlantının kesin kapanış zamanı alınamadı; mevcut kayıtlar korundu."]
     if summary:
         lines += [
             "İsim: " + clipped(summary.caller_name, 100),
@@ -151,15 +155,17 @@ class Notifications:
                 raise ValueError("activate the owner notification channel first")
             with conn.cursor(row_factory=dict_row) as cursor:
                 calls = cursor.execute(
-                    "SELECT c.id,c.started_at,c.ended_at,c.from_number_e164,j.status AS job_status,"
+                    "SELECT c.id,c.started_at,c.ended_at,c.from_number_e164,c.failure_code,"
+                    "j.status AS job_status,"
                     "s.detail_jsonb,s.json_schema_version FROM calls c "
                     "LEFT JOIN summary_jobs j ON j.call_id=c.id "
                     "LEFT JOIN call_summaries s ON s.call_id=c.id "
                     "WHERE c.ended_at >= %s AND c.status='ended' "
+                    "AND (c.failure_code IS DISTINCT FROM 'missing_end_event' OR c.started_at >= %s) "
                     "AND (j.status IN ('done','failed') OR c.ended_at < now()-interval '2 minutes') "
                     "AND NOT EXISTS (SELECT 1 FROM notification_outbox o "
                     "WHERE o.call_id=c.id AND o.target=%s) ORDER BY c.ended_at,c.id LIMIT 100",
-                    (channel[0], self.target),
+                    (channel[0], channel[0], self.target),
                 ).fetchall()
             for call in calls:
                 utterances = conn.execute(
@@ -267,11 +273,14 @@ def main():
         for sig in (signal.SIGTERM, signal.SIGINT):
             signal.signal(sig, lambda *_: stopping.set())
         worker.enqueue()
+        heartbeat = os.environ.get("ALOJAN_NOTIFICATION_HEARTBEAT")
         print("event=notification_worker_ready", flush=True)
         while not stopping.is_set():
             try:
                 worker.enqueue()
                 result = worker.deliver_one()
+                if heartbeat:
+                    Path(heartbeat).touch(mode=0o600)
                 if result != "idle":
                     print(f"event=notification_{result}", flush=True)
             except Exception:

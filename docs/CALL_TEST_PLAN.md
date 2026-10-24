@@ -1,5 +1,16 @@
 # Call acceptance and external validation
 
+## 2026-10-24 — Docker service-recovery validation
+
+M0-03/06/08 and M5-03 / US-01/07: the owner requested the complete Docker runtime.
+All seven services are deployed and healthy; native/container regression, isolated
+ASR crash/hang recovery and a synthetic real-model local conversation passed.
+The 1,803-second container soak passed 56 samples with zero restarts; see
+[evidence and remaining limits](validation/docker-runtime-2026-10-24.md).
+After the soak, the owner reported a live handset test; Docker gateway events and
+the completed call record corroborated the container path. This is one live-call
+check, not closure of full G3/G4/G5/G7 acceptance.
+
 ## 2026-10-24 — README evidence reconciliation
 
 The README now distinguishes recorded carrier/GPU checks from simulated tests and

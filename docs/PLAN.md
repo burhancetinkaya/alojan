@@ -1,5 +1,21 @@
 # Implementation plan
 
+## 2026-10-24 — Docker runtime and service recovery (selected slice complete)
+
+Owner selected service resilience, then explicitly required all components to run
+in Docker. ADR 0011 amends the runtime profile under M0-03/06/08 and M5-03;
+US-01/07 and requirements sections 12/15. All seven services are deployed in Compose
+with bounded health watchdogs, restart policies, stale-call recovery and explicit
+notification recovery labels. The existing database volume and bot pairing survive.
+
+Linux Docker validation: nine native CTests and 130 Python/SIP tests passed;
+isolated ASR crash/hang recovery and a real-model synthetic conversation passed.
+The 1,803-second soak passed all 56 samples with zero container restarts.
+See [sanitized evidence](validation/docker-runtime-2026-10-24.md). The owner then
+reported a live handset test, corroborated by Docker gateway events and a completed
+call record. No host reboot was performed. Full M5-03, call-state lifetime reclamation
+and broader capacity/quality/restore gates remain open.
+
 ## 2026-10-24 — README implementation snapshot
 
 Documentation follow-up for M2-01/02, M3, M4 and M5-01/03; requirements
@@ -68,7 +84,11 @@ live carrier process while validating an opt-in adaptive single-turn profile.
 M3-02 continues on `codex/barge-in` with opt-in interruption, generation invalidation
 and conservative sent-history accounting; live carrier behavior is preserved.
 
-## Current implementation status
+## Foundation implementation status (historical)
+
+The dated follow-ups supersede this original foundation snapshot. In particular,
+standard large-v3, Telegram delivery and the Docker runtime have later evidence;
+use [the current README](../README.md) and linked validation reports for the deployed state.
 
 Evidence: [macOS foundation report](validation/macos-foundation-2026-10-09.md), [Linux development report](validation/linux-development-2026-10-23.md), [Linux SIP isolation report](validation/linux-sip-isolation-2026-10-23.md), [Linux caller identity report](validation/linux-caller-identity-2026-10-23.md), [Linux spoken fallback report](validation/linux-spoken-fallback-2026-10-23.md), [Linux audio conversion report](validation/linux-audio-conversion-2026-10-23.md), and [Linux EMA prompt report](validation/linux-ema-prompts-2026-10-23.md).
 

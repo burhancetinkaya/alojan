@@ -228,3 +228,14 @@ DTLN reuses ONNX Runtime 1.31.0 (MIT), CPU provider, and existing NumPy 2.5.4.
 No LiveKit package or new live dependency is introduced. The upstream notice is
 retained in `tools/denoise-compare/DTLN-NOTICE.txt`; review model redistribution
 separately before publishing a bundle.
+
+## Docker runtime (ADR 0011)
+
+`infra/docker/Dockerfile` pins Ubuntu 24.04 and uv 0.11.9 by registry digest,
+and direct Ubuntu build/runtime packages by version. Existing service lockfiles
+retain Python/CUDA library pins; gateway builds retain PJSIP/gRPC and ONNX pins.
+Ubuntu packages carry their individual licenses (including GPL compiler tools,
+PSF Python and LGPL system libraries); image redistribution is not yet approved.
+The runtime uses the already installed NVIDIA Container Toolkit and host driver.
+No new voice framework or Docker-socket agent is introduced. Transitive apt
+package inventory must accompany each built release; see [Docker setup](DOCKER.md).

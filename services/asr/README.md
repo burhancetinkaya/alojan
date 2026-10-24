@@ -1,5 +1,13 @@
 # Persistent Turkish ASR (M2-01)
 
+## Current Docker deployment
+
+The owner-selected runtime is [Docker Compose](../../docs/DOCKER.md), under
+[ADR 0011](../../docs/ADR/0011-docker-runtime.md). Use that guide for startup,
+private configuration, health checks and recovery. Native commands below remain
+development and rollback references; do not start a duplicate worker beside the
+container using the same port or GPU model.
+
 The native Linux worker implements `voice.v1.Recognition` and
 `voice.v1.GenerationControl` using one persistent faster-whisper standard large-v3
 model on CUDA float16. It binds only `127.0.0.1:15071`. The [M2-03 scripted

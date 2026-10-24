@@ -136,6 +136,24 @@ def test_real_store_end_and_summary_lifecycle_drives_outbox(database):
     assert len(telegram.sent) == 1
 
 
+def test_recovered_calls_label_unknown_end_and_exclude_historical_records(database):
+    worker, telegram = setup(database)
+    current = create_call(database)
+    historical = create_call(database)
+    with psycopg.connect(database) as conn:
+        conn.execute("UPDATE calls SET failure_code='missing_end_event'")
+        conn.execute(
+            "UPDATE calls SET started_at=now()-interval '1 day' WHERE id=%s", (historical,)
+        )
+    assert worker.enqueue() == 1
+    assert worker.deliver_one() == "delivered"
+    text = telegram.sent[0][1]
+    assert str(current) in text and str(historical) not in text
+    assert "Kesintiye uğrayan arama" in text and "Kayıt kurtarma zamanı:" in text
+    assert "Bitiş:" not in text
+    assert worker.enqueue() == 0
+
+
 def test_retries_rate_limit_permanent_failure_and_exhaustion(database):
     worker, telegram = setup(database)
     create_call(database)

@@ -1,0 +1,145 @@
+# Linux-only overlay: docker compose --env-file PRIVATE -f infra/compose.yaml
+# -f infra/compose.voice.yaml up -d --build --wait
+x-runtime: &runtime
+  restart: unless-stopped
+  init: true
+  network_mode: host
+  user: "${ALOJAN_UID:-1000}:${ALOJAN_GID:-1000}"
+  security_opt: [no-new-privileges:true]
+  cap_drop: [ALL]
+  stop_grace_period: 30s
+  logging:
+    driver: local
+    options: {max-size: 10m, max-file: "3"}
+  healthcheck: &health
+    interval: 10s
+    timeout: 5s
+    retries: 3
+    start_period: 180s
+
+x-agent-image: &agent-image
+  image: alojan-agent:${ALOJAN_RELEASE:-local}
+  build:
+    context: ..
+    dockerfile: infra/docker/Dockerfile
+    target: python
+    args: {SERVICE: agent}
+
+services:
+  postgres:
+    restart: unless-stopped
+    logging:
+      driver: local
+      options: {max-size: 10m, max-file: "3"}
+
+  asr:
+    <<: *runtime
+    image: alojan-asr:${ALOJAN_RELEASE:-local}
+    build:
+      context: ..
+      dockerfile: infra/docker/Dockerfile
+      target: python
+      args: {SERVICE: asr}
+    runtime: nvidia
+    environment:
+      NVIDIA_VISIBLE_DEVICES: "${ALOJAN_GPU_DEVICE:-0}"
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+      OPENBLAS_NUM_THREADS: "1"
+      LD_LIBRARY_PATH: /opt/alojan/services/asr/.venv/lib/python3.12/site-packages/nvidia/cublas/lib:/opt/alojan/services/asr/.venv/lib/python3.12/site-packages/nvidia/cudnn/lib
+    volumes:
+      - ${ALOJAN_STATE_DIR:?Set absolute private state directory}/asr/models:/opt/alojan/.local/asr/models:ro
+    secrets: [asr_env]
+    command: [services/asr/.venv/bin/python, infra/docker/supervise.py, asr, --, uv, run, --frozen, --no-sync, --project, services/asr, --env-file, /run/secrets/asr_env, python, -m, alojan_asr, --port, "15173"]
+    healthcheck:
+      <<: *health
+      test: [CMD, services/asr/.venv/bin/python, infra/docker/health.py, asr]
+
+  tts:
+    <<: *runtime
+    image: alojan-tts:${ALOJAN_RELEASE:-local}
+    build:
+      context: ..
+      dockerfile: infra/docker/Dockerfile
+      target: python
+      args: {SERVICE: tts}
+    runtime: nvidia
+    environment:
+      NVIDIA_VISIBLE_DEVICES: "${ALOJAN_GPU_DEVICE:-0}"
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    volumes:
+      - ${ALOJAN_STATE_DIR}/ema:/opt/alojan/.local/ema
+    command: [services/tts/.venv/bin/python, infra/docker/supervise.py, tts, --, services/tts/.venv/bin/python, -m, alojan_tts, --port, "15072"]
+    healthcheck:
+      <<: *health
+      test: [CMD, services/tts/.venv/bin/python, infra/docker/health.py, tts]
+
+  agent:
+    <<: [*runtime, *agent-image]
+    depends_on:
+      postgres: {condition: service_healthy}
+    environment:
+      ALOJAN_RECONCILE_AFTER_SECONDS: "300"
+    secrets: [database_env, agent_env]
+    command: [services/agent/.venv/bin/python, infra/docker/supervise.py, agent, --, uv, run, --frozen, --no-sync, --project, services/agent, --env-file, /run/secrets/database_env, --env-file, /run/secrets/agent_env, python, -m, alojan_agent]
+    healthcheck:
+      <<: *health
+      test: [CMD, services/agent/.venv/bin/python, infra/docker/health.py, agent]
+
+  api:
+    <<: [*runtime, *agent-image]
+    depends_on:
+      postgres: {condition: service_healthy}
+    secrets: [database_env]
+    command: [services/agent/.venv/bin/python, infra/docker/supervise.py, api, --, uv, run, --frozen, --no-sync, --project, services/agent, --env-file, /run/secrets/database_env, python, -m, alojan.health]
+    healthcheck:
+      <<: *health
+      test: [CMD, services/agent/.venv/bin/python, infra/docker/health.py, api]
+
+  telegram:
+    <<: [*runtime, *agent-image]
+    depends_on:
+      postgres: {condition: service_healthy}
+    environment:
+      ALOJAN_NOTIFICATION_HEARTBEAT: /tmp/alojan-notification-heartbeat
+    secrets: [database_env, telegram_env, telegram_owner_env]
+    command: [services/agent/.venv/bin/python, infra/docker/supervise.py, telegram, --, uv, run, --frozen, --no-sync, --project, services/agent, --env-file, /run/secrets/database_env, --env-file, /run/secrets/telegram_env, --env-file, /run/secrets/telegram_owner_env, python, -m, alojan_agent.notifications]
+    healthcheck:
+      <<: *health
+      test: [CMD, services/agent/.venv/bin/python, infra/docker/health.py, telegram]
+
+  gateway:
+    <<: *runtime
+    image: alojan-gateway:${ALOJAN_RELEASE:-local}
+    build:
+      context: ..
+      dockerfile: infra/docker/Dockerfile
+      target: gateway
+    depends_on:
+      asr: {condition: service_healthy}
+      tts: {condition: service_healthy}
+      agent: {condition: service_healthy}
+    env_file: ${ALOJAN_STATE_DIR}/netgsm.env
+    environment:
+      ALOJAN_NETGSM_ENV: /run/secrets/netgsm_env
+      ALOJAN_VOICE_PROFILE: agent
+      ALOJAN_ASR_PORT: "15173"
+      ALOJAN_AGENT_PORT: "15073"
+    secrets: [netgsm_env]
+    command: [python3, infra/docker/supervise.py, gateway, --, scripts/run-netgsm.sh]
+    healthcheck:
+      <<: *health
+      test: [CMD, python3, infra/docker/health.py, gateway]
+
+secrets:
+  database_env:
+    file: ${ALOJAN_STATE_DIR}/dev.env
+  agent_env:
+    file: ${ALOJAN_STATE_DIR}/agent.env
+  asr_env:
+    file: ${ALOJAN_STATE_DIR}/asr.env
+  netgsm_env:
+    file: ${ALOJAN_STATE_DIR}/netgsm.env
+  telegram_env:
+    file: ${ALOJAN_STATE_DIR}/telegram.env
+  telegram_owner_env:
+    file: ${ALOJAN_STATE_DIR}/telegram-owner.env

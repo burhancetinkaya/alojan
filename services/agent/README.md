@@ -1,5 +1,13 @@
 # Agent service (M4)
 
+## Current Docker deployment
+
+The owner-selected runtime is [Docker Compose](../../docs/DOCKER.md), under
+[ADR 0011](../../docs/ADR/0011-docker-runtime.md). Use that guide for startup,
+private configuration, health checks and recovery. Native commands below remain
+development and rollback references; do not start a duplicate worker beside the
+container using the same port or GPU model.
+
 A private loopback gRPC service uses OpenAI Agents SDK 0.24.0 against OpenRouter's
 Responses endpoint, with owner-selected `openai/gpt-oss-120b`, reasoning `medium`,
 and Cerebras-only routing without provider fallback. There is no SDK tracing,
