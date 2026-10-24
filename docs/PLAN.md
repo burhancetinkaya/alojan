@@ -964,8 +964,10 @@ the real Store end/summary lifecycle with synthetic Telegram transport, restart,
 concurrent enqueue/delivery, 429 backoff, exhausted/permanent errors, summary
 failure, message bounds and private-chat pairing. The owner subsequently supplied
 bot credentials: real getMe identity verification passed, the additive live DB
-migration applied, and the independent user service was installed but not started.
-User linger is enabled. Private-chat challenge completion, Telegram delivery and
-real post-call G5 acceptance remain pending.
+migration applied, and private-chat challenge pairing completed. The labeled
+Telegram test received a provider receipt and owner confirmation. The independent
+user service is enabled and active/running with zero restarts; linger is enabled.
+A first check found no calls ending after activation and no outbox rows, so a fresh
+phone call with a correlated delivery receipt is still required for G5.
 See [Telegram setup](TELEGRAM.md) and [validation](validation/telegram-2026-10-24.md);
-no publication or production delivery is claimed.
+no publication or real post-call acceptance is claimed; the labeled setup test was delivered.

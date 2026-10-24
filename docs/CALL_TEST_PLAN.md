@@ -40,7 +40,7 @@ Keep the production admission limit at one call unless capacity is deliberately 
 | EXT-05 | Ubuntu CUDA/PyTorch/ASR/EMA compatibility and measured VRAM | U0-01; M2-02 | CUDA smoke and persistent ASR/EMA warm-up, concurrent synthetic streams and cancellation/recovery passed within 16 GB; broader quality, soak and deployment remain pending |
 | EXT-06 | Account access to requested model, streaming/settings and quota | M4-01 | Selected OpenRouter Pro streaming/tool requests verified; broader quota/capacity/latency acceptance pending (ADR 0005) |
 | EXT-07 | Owner license/distribution decision; exact dependency review | Release | Proposal only |
-| EXT-08 | Owner Telegram bot token and verified private chat | M5-01 | Selected 2026-10-24; bot identity verified, owner pairing pending |
+| EXT-08 | Owner Telegram bot token and verified private chat | M5-01 | Verified 2026-10-24: owner private chat paired, labeled test delivered; real post-call receipt pending |
 
 SSH access and the `~/ai/alojan` workspace were supplied/authorized on 2026-10-23. ADR 0003 makes this the primary build/test environment. Connection details remain in ignored local configuration; carrier prerequisites are still pending. Public security and conduct reporting channels remain release/community prerequisites.
 
@@ -824,7 +824,9 @@ not replace handset acceptance. Live services were not restarted for publication
 
 [Isolated Linux evidence](validation/telegram-2026-10-24.md): 22 tests passed with
 synthetic Telegram transport and real PostgreSQL in disposable schemas. No live
-voice process was restarted. G5 is still pending: pair the owner's private chat,
-verify a labeled bot test, complete a phone call and correlate its UUID with one
-delivered outbox receipt and the owner's received notification. Include a failed
-summary case; verify that no message is sent before the persisted call end.
+voice process was restarted. The real owner private chat is now paired and a
+labeled Telegram test was delivered and owner-confirmed. The independent worker
+is enabled/running. G5 still needs a fresh completed phone call correlated with
+one delivered outbox receipt and the owner's received notification; the first
+check found no calls ending after activation. Include a failed summary case;
+verify that no message is sent before the persisted call end.
