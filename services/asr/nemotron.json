@@ -1,0 +1,13 @@
+{
+  "repository": "nvidia/nemotron-3.5-asr-streaming-0.6b",
+  "revision": "ea30d66debe3740a08b573244286791d423d6b3e",
+  "license": "OpenMDW-1.1",
+  "sha256": {
+    "model.safetensors": "9eebdd6590289cb3030f310858f3df93256600a800a3e8200c5993d5f967e174",
+    "processor_config.json": "ec47870f1091ea4f25539208387b45b902c92d0e3f997a30061ef88f73437ab0",
+    "tokenizer.json": "3f3d481deb073b64c2082e8c7860d487a3a62774bf4e9e4faac83007e181f246",
+    "config.json": "62d186fd91f518e00e7867500f1f5819225e8ee95ea3e21b546514bf2048e845",
+    "generation_config.json": "993e5d4cb74a6fe9d6e7084a76b3313c1446740679be4676570c23b664fdc07e",
+    "tokenizer_config.json": "5c641c5b3f50702a60082690d27c1ce7fcb5a92c4a624793bcae0f21eda3d6e0"
+  }
+}

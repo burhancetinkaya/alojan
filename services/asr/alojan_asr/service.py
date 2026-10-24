@@ -100,10 +100,13 @@ class RecognitionService(GenerationControl, rpc.RecognitionServicer):
                         grpc.StatusCode.RESOURCE_EXHAUSTED, "turn exceeds 30 seconds"
                     )
                 audio.extend(frame.audio)
-                if samples >= next_partial:
+                # Spend the next periodic decode at most 400 ms early, never add a
+                # decode per hint. Repeated hints cannot accelerate the one-second budget.
+                hinted = frame.partial_hint and samples >= next_partial - 6400
+                if samples >= next_partial or hinted:
                     text = await self.decode(audio, frame.format, state, context, frame.call_id)
                     decoded_samples = samples
-                    next_partial = samples + 16000
+                    next_partial = max(next_partial, samples) + 16000
                     await self.wait(
                         context.write(
                             pb.RecognitionEvent(

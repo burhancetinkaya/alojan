@@ -269,7 +269,8 @@ inline constexpr AudioFrame::Impl_::Impl_(
         sequence_{::uint64_t{0u}},
         captured_at_unix_ms_{::int64_t{0}},
         sample_rate_hz_{0u},
-        channels_{0u} {}
+        channels_{0u},
+        partial_hint_{false} {}
 
 template <typename>
 PROTOBUF_CONSTEXPR AudioFrame::AudioFrame(::_pbi::ConstantInitialized)
@@ -401,7 +402,7 @@ const ::uint32_t
         protodesc_cold) = {
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::voice::v1::AudioFrame, _impl_._has_bits_),
-        11, // hasbit index offset
+        12, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::voice::v1::AudioFrame, _impl_.call_id_),
         PROTOBUF_FIELD_OFFSET(::voice::v1::AudioFrame, _impl_.sequence_),
         PROTOBUF_FIELD_OFFSET(::voice::v1::AudioFrame, _impl_.captured_at_unix_ms_),
@@ -410,6 +411,7 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::voice::v1::AudioFrame, _impl_.format_),
         PROTOBUF_FIELD_OFFSET(::voice::v1::AudioFrame, _impl_.audio_),
         PROTOBUF_FIELD_OFFSET(::voice::v1::AudioFrame, _impl_.generation_id_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::AudioFrame, _impl_.partial_hint_),
         0,
         4,
         5,
@@ -418,6 +420,7 @@ const ::uint32_t
         1,
         2,
         3,
+        8,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::voice::v1::TurnEvent, _impl_._has_bits_),
         9, // hasbit index offset
@@ -521,16 +524,16 @@ const ::uint32_t
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, sizeof(::voice::v1::AudioFrame)},
-        {19, sizeof(::voice::v1::TurnEvent)},
-        {34, sizeof(::voice::v1::AgentRequest)},
-        {45, sizeof(::voice::v1::AgentEvent)},
-        {58, sizeof(::voice::v1::RecognitionEvent)},
-        {71, sizeof(::voice::v1::SynthesisRequest)},
-        {80, sizeof(::voice::v1::CancelRequest)},
-        {87, sizeof(::voice::v1::CancelReply)},
-        {92, sizeof(::voice::v1::PlaybackReport)},
-        {105, sizeof(::voice::v1::CallEnd)},
-        {112, sizeof(::voice::v1::AgentAck)},
+        {21, sizeof(::voice::v1::TurnEvent)},
+        {36, sizeof(::voice::v1::AgentRequest)},
+        {47, sizeof(::voice::v1::AgentEvent)},
+        {60, sizeof(::voice::v1::RecognitionEvent)},
+        {73, sizeof(::voice::v1::SynthesisRequest)},
+        {82, sizeof(::voice::v1::CancelRequest)},
+        {89, sizeof(::voice::v1::CancelReply)},
+        {94, sizeof(::voice::v1::PlaybackReport)},
+        {107, sizeof(::voice::v1::CallEnd)},
+        {114, sizeof(::voice::v1::AgentAck)},
 };
 static const ::_pb::Message* PROTOBUF_NONNULL const file_default_instances[] = {
     &::voice::v1::_AudioFrame_default_instance_._instance,
@@ -547,49 +550,50 @@ static const ::_pb::Message* PROTOBUF_NONNULL const file_default_instances[] = {
 };
 const char descriptor_table_protodef_voice_2fv1_2fvoice_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
-    "\n\024voice/v1/voice.proto\022\010voice.v1\"\254\001\n\nAud"
+    "\n\024voice/v1/voice.proto\022\010voice.v1\"\302\001\n\nAud"
     "ioFrame\022\017\n\007call_id\030\001 \001(\t\022\020\n\010sequence\030\002 \001"
     "(\004\022\033\n\023captured_at_unix_ms\030\003 \001(\003\022\026\n\016sampl"
     "e_rate_hz\030\004 \001(\r\022\020\n\010channels\030\005 \001(\r\022\016\n\006for"
     "mat\030\006 \001(\t\022\r\n\005audio\030\007 \001(\014\022\025\n\rgeneration_i"
-    "d\030\010 \001(\t\"~\n\tTurnEvent\022\017\n\007call_id\030\001 \001(\t\022\025\n"
-    "\rgeneration_id\030\002 \001(\t\022\014\n\004type\030\003 \001(\t\022\022\n\nat"
-    "_unix_ms\030\004 \001(\003\022\022\n\nconfidence\030\005 \001(\002\022\023\n\013de"
-    "tail_json\030\006 \001(\t\"e\n\014AgentRequest\022\017\n\007call_"
-    "id\030\001 \001(\t\022\025\n\rgeneration_id\030\002 \001(\t\022\027\n\017final"
-    "_user_text\030\003 \001(\t\022\024\n\014context_json\030\004 \001(\t\"e"
-    "\n\nAgentEvent\022\017\n\007call_id\030\001 \001(\t\022\025\n\rgenerat"
-    "ion_id\030\002 \001(\t\022\014\n\004type\030\003 \001(\t\022\014\n\004text\030\004 \001(\t"
-    "\022\023\n\013detail_json\030\005 \001(\t\"v\n\020RecognitionEven"
-    "t\022\017\n\007call_id\030\001 \001(\t\022\025\n\rgeneration_id\030\002 \001("
-    "\t\022\014\n\004text\030\003 \001(\t\022\020\n\010is_final\030\004 \001(\010\022\032\n\022pro"
-    "cessed_audio_ms\030\005 \001(\r\"H\n\020SynthesisReques"
-    "t\022\017\n\007call_id\030\001 \001(\t\022\025\n\rgeneration_id\030\002 \001("
-    "\t\022\014\n\004text\030\003 \001(\t\"7\n\rCancelRequest\022\017\n\007call"
-    "_id\030\001 \001(\t\022\025\n\rgeneration_id\030\002 \001(\t\" \n\013Canc"
-    "elReply\022\021\n\tcancelled\030\001 \001(\010\"x\n\016PlaybackRe"
-    "port\022\017\n\007call_id\030\001 \001(\t\022\025\n\rgeneration_id\030\002"
-    " \001(\t\022\024\n\014phrase_index\030\003 \001(\r\022\025\n\rsent_audio"
-    "_ms\030\004 \001(\r\022\021\n\tcompleted\030\005 \001(\010\"*\n\007CallEnd\022"
-    "\017\n\007call_id\030\001 \001(\t\022\016\n\006reason\030\002 \001(\t\"\034\n\010Agen"
-    "tAck\022\020\n\010accepted\030\001 \001(\0102V\n\013Recognition\022G\n"
-    "\017StreamRecognize\022\024.voice.v1.AudioFrame\032\032"
-    ".voice.v1.RecognitionEvent(\0010\0012S\n\tSynthe"
-    "sis\022F\n\020StreamSynthesize\022\032.voice.v1.Synth"
-    "esisRequest\032\024.voice.v1.AudioFrame0\0012\264\001\n\005"
-    "Agent\0229\n\007RunTurn\022\026.voice.v1.AgentRequest"
-    "\032\024.voice.v1.AgentEvent0\001\022>\n\016ReportPlayba"
-    "ck\022\030.voice.v1.PlaybackReport\032\022.voice.v1."
-    "AgentAck\0220\n\007EndCall\022\021.voice.v1.CallEnd\032\022"
-    ".voice.v1.AgentAck2W\n\021GenerationControl\022"
-    "B\n\020CancelGeneration\022\027.voice.v1.CancelReq"
-    "uest\032\025.voice.v1.CancelReplyb\006proto3"
+    "d\030\010 \001(\t\022\024\n\014partial_hint\030\t \001(\010\"~\n\tTurnEve"
+    "nt\022\017\n\007call_id\030\001 \001(\t\022\025\n\rgeneration_id\030\002 \001"
+    "(\t\022\014\n\004type\030\003 \001(\t\022\022\n\nat_unix_ms\030\004 \001(\003\022\022\n\n"
+    "confidence\030\005 \001(\002\022\023\n\013detail_json\030\006 \001(\t\"e\n"
+    "\014AgentRequest\022\017\n\007call_id\030\001 \001(\t\022\025\n\rgenera"
+    "tion_id\030\002 \001(\t\022\027\n\017final_user_text\030\003 \001(\t\022\024"
+    "\n\014context_json\030\004 \001(\t\"e\n\nAgentEvent\022\017\n\007ca"
+    "ll_id\030\001 \001(\t\022\025\n\rgeneration_id\030\002 \001(\t\022\014\n\004ty"
+    "pe\030\003 \001(\t\022\014\n\004text\030\004 \001(\t\022\023\n\013detail_json\030\005 "
+    "\001(\t\"v\n\020RecognitionEvent\022\017\n\007call_id\030\001 \001(\t"
+    "\022\025\n\rgeneration_id\030\002 \001(\t\022\014\n\004text\030\003 \001(\t\022\020\n"
+    "\010is_final\030\004 \001(\010\022\032\n\022processed_audio_ms\030\005 "
+    "\001(\r\"H\n\020SynthesisRequest\022\017\n\007call_id\030\001 \001(\t"
+    "\022\025\n\rgeneration_id\030\002 \001(\t\022\014\n\004text\030\003 \001(\t\"7\n"
+    "\rCancelRequest\022\017\n\007call_id\030\001 \001(\t\022\025\n\rgener"
+    "ation_id\030\002 \001(\t\" \n\013CancelReply\022\021\n\tcancell"
+    "ed\030\001 \001(\010\"x\n\016PlaybackReport\022\017\n\007call_id\030\001 "
+    "\001(\t\022\025\n\rgeneration_id\030\002 \001(\t\022\024\n\014phrase_ind"
+    "ex\030\003 \001(\r\022\025\n\rsent_audio_ms\030\004 \001(\r\022\021\n\tcompl"
+    "eted\030\005 \001(\010\"*\n\007CallEnd\022\017\n\007call_id\030\001 \001(\t\022\016"
+    "\n\006reason\030\002 \001(\t\"\034\n\010AgentAck\022\020\n\010accepted\030\001"
+    " \001(\0102V\n\013Recognition\022G\n\017StreamRecognize\022\024"
+    ".voice.v1.AudioFrame\032\032.voice.v1.Recognit"
+    "ionEvent(\0010\0012S\n\tSynthesis\022F\n\020StreamSynth"
+    "esize\022\032.voice.v1.SynthesisRequest\032\024.voic"
+    "e.v1.AudioFrame0\0012\264\001\n\005Agent\0229\n\007RunTurn\022\026"
+    ".voice.v1.AgentRequest\032\024.voice.v1.AgentE"
+    "vent0\001\022>\n\016ReportPlayback\022\030.voice.v1.Play"
+    "backReport\032\022.voice.v1.AgentAck\0220\n\007EndCal"
+    "l\022\021.voice.v1.CallEnd\032\022.voice.v1.AgentAck"
+    "2W\n\021GenerationControl\022B\n\020CancelGeneratio"
+    "n\022\027.voice.v1.CancelRequest\032\025.voice.v1.Ca"
+    "ncelReplyb\006proto3"
 };
 static ::absl::once_flag descriptor_table_voice_2fv1_2fvoice_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_voice_2fv1_2fvoice_2eproto = {
     false,
     false,
-    1475,
+    1497,
     descriptor_table_protodef_voice_2fv1_2fvoice_2eproto,
     "voice/v1/voice.proto",
     &descriptor_table_voice_2fv1_2fvoice_2eproto_once,
@@ -651,9 +655,9 @@ AudioFrame::AudioFrame(
                offsetof(Impl_, sequence_),
            reinterpret_cast<const char *>(&from._impl_) +
                offsetof(Impl_, sequence_),
-           offsetof(Impl_, channels_) -
+           offsetof(Impl_, partial_hint_) -
                offsetof(Impl_, sequence_) +
-               sizeof(Impl_::channels_));
+               sizeof(Impl_::partial_hint_));
 
   // @@protoc_insertion_point(copy_constructor:voice.v1.AudioFrame)
 }
@@ -671,9 +675,9 @@ inline void AudioFrame::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   ::memset(reinterpret_cast<char *>(&_impl_) +
                offsetof(Impl_, sequence_),
            0,
-           offsetof(Impl_, channels_) -
+           offsetof(Impl_, partial_hint_) -
                offsetof(Impl_, sequence_) +
-               sizeof(Impl_::channels_));
+               sizeof(Impl_::partial_hint_));
 }
 AudioFrame::~AudioFrame() {
   // @@protoc_insertion_point(destructor:voice.v1.AudioFrame)
@@ -733,16 +737,16 @@ AudioFrame::GetClassData() const {
   return AudioFrame_class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<3, 8, 0, 62, 2>
+const ::_pbi::TcParseTable<4, 9, 0, 62, 2>
 AudioFrame::_table_ = {
   {
     PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_._has_bits_),
     0, // no _extensions_
-    8, 56,  // max_field_number, fast_idx_mask
+    9, 120,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967040,  // skipmap
+    4294966784,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    8,  // num_field_entries
+    9,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     AudioFrame_class_data_.base(),
@@ -752,9 +756,7 @@ AudioFrame::_table_ = {
     ::_pbi::TcParser::GetTable<::voice::v1::AudioFrame>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    // string generation_id = 8;
-    {::_pbi::TcParser::FastUS1,
-     {66, 3, 0, PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.generation_id_)}},
+    {::_pbi::TcParser::MiniParse, {}},
     // string call_id = 1;
     {::_pbi::TcParser::FastUS1,
      {10, 0, 0, PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.call_id_)}},
@@ -776,6 +778,18 @@ AudioFrame::_table_ = {
     // bytes audio = 7;
     {::_pbi::TcParser::FastBS1,
      {58, 2, 0, PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.audio_)}},
+    // string generation_id = 8;
+    {::_pbi::TcParser::FastUS1,
+     {66, 3, 0, PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.generation_id_)}},
+    // bool partial_hint = 9;
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(AudioFrame, _impl_.partial_hint_), 8>(),
+     {72, 8, 0, PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.partial_hint_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
   }}, {{
     65535, 65535
   }}, {{
@@ -803,6 +817,9 @@ AudioFrame::_table_ = {
     // string generation_id = 8;
     {PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.generation_id_), _Internal::kHasBitsOffset + 3, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // bool partial_hint = 9;
+    {PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.partial_hint_), _Internal::kHasBitsOffset + 8, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kBool)},
   }},
   // no aux_entries
   {{
@@ -840,6 +857,7 @@ PROTOBUF_NOINLINE void AudioFrame::Clear() {
         reinterpret_cast<char*>(&_impl_.channels_) -
         reinterpret_cast<char*>(&_impl_.sequence_)) + sizeof(_impl_.channels_));
   }
+  _impl_.partial_hint_ = false;
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -933,6 +951,15 @@ PROTOBUF_NOINLINE void AudioFrame::Clear() {
     }
   }
 
+  // bool partial_hint = 9;
+  if ((this_._impl_._has_bits_[0] & 0x00000100u) != 0) {
+    if (this_._internal_partial_hint() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteBoolToArray(
+          9, this_._internal_partial_hint(), target);
+    }
+  }
+
   if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
     target =
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -1016,6 +1043,14 @@ PROTOBUF_NOINLINE void AudioFrame::Clear() {
       }
     }
   }
+   {
+    // bool partial_hint = 9;
+    if ((cached_has_bits & 0x00000100u) != 0) {
+      if (this_._internal_partial_hint() != 0) {
+        total_size += 2;
+      }
+    }
+  }
   return this_.MaybeComputeUnknownFieldsSize(total_size,
                                              &this_._impl_._cached_size_);
 }
@@ -1087,6 +1122,11 @@ void AudioFrame::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::goog
       }
     }
   }
+  if ((cached_has_bits & 0x00000100u) != 0) {
+    if (from._internal_partial_hint() != 0) {
+      _this->_impl_.partial_hint_ = from._impl_.partial_hint_;
+    }
+  }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -1110,8 +1150,8 @@ void AudioFrame::InternalSwap(AudioFrame* PROTOBUF_RESTRICT PROTOBUF_NONNULL oth
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.audio_, &other->_impl_.audio_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.generation_id_, &other->_impl_.generation_id_, arena);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.channels_)
-      + sizeof(AudioFrame::_impl_.channels_)
+      PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.partial_hint_)
+      + sizeof(AudioFrame::_impl_.partial_hint_)
       - PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.sequence_)>(
           reinterpret_cast<char*>(&_impl_.sequence_),
           reinterpret_cast<char*>(&other->_impl_.sequence_));

@@ -2,6 +2,7 @@
 
 import asyncio
 from contextlib import asynccontextmanager
+import json
 import struct
 import threading
 
@@ -273,6 +274,11 @@ def test_same_call_handoff_waits_for_cancelled_native_decode_without_queueing(su
             assert await asyncio.to_thread(decoder.started.wait, 1)
             await control.CancelGeneration(pb.CancelRequest(call_id="a", generation_id="monitor"))
             await error_code(old, grpc.StatusCode.CANCELLED)
+            # Client cancellation can arrive before the server's finally block runs.
+            for _ in range(100):
+                if not service.active:
+                    break
+                await asyncio.sleep(0.005)
             assert not service.active and not service.inference.done()
             new = recognition.StreamRecognize(frames(generation_id="next"), timeout=3)
             read = asyncio.create_task(new.read())
@@ -372,5 +378,142 @@ def test_asr_invalid_model_output_is_rejected_without_leaking(output):
             await error_code(
                 recognition.StreamRecognize(frames(), timeout=1), grpc.StatusCode.INTERNAL
             )
+
+    asyncio.run(scenario())
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        None,
+        "x" * 2049,
+        "{",
+        "[]",
+        '{"Example":"Example Product"}',
+        '{"Example Product":"1234 Number"}',
+        '{"Example Product":null}',
+        '{"Example  Product":"Example Brand"}',
+        '{"Example\\nProduct":"Example Brand"}',
+        '{"Example Product":"Example-Brand"}',
+        json.dumps({"Example " + chr(65 + i): "Example Brand" for i in range(9)}),
+    ],
+)
+def test_asr_replacements_reject_invalid_configuration_without_echoing_it(raw):
+    from alojan_asr.model import compile_replacements
+
+    with pytest.raises(ValueError, match="ASR replacements") as error:
+        compile_replacements(raw)
+    assert (
+        str(error.value) == "ASR replacements must contain at most eight short alphabetic phrases"
+    )
+
+
+@pytest.mark.parametrize(
+    "text,expected",
+    [
+        ("Orion akredit için arıyorum.", "Orion Accredit için arıyorum."),
+        ("ORION AKREDIT için arıyorum.", "Orion Accredit için arıyorum."),
+        ("Orion akredit'in desteği.", "Orion Accredit'in desteği."),
+        ("Orion akreditli değil.", "Orion akreditli değil."),
+        ("XOrion akredit", "XOrion akredit"),
+        ("Evet. Hayır. Lenovo bilgisayar.", "Evet. Hayır. Lenovo bilgisayar."),
+        ("0555 000 00 01, 12 Kasım 14.30", "0555 000 00 01, 12 Kasım 14.30"),
+        ("Orion akredit, Orion Akredit.", "Orion Accredit, Orion Accredit."),
+        ("Orion akredat", "Orion akredat"),
+    ],
+)
+def test_asr_replacements_are_exact_bounded_and_do_not_cascade(text, expected):
+    from types import SimpleNamespace
+    from alojan_asr.model import WhisperBackend, compile_replacements
+
+    def transcribe(audio, **options):
+        assert options["beam_size"] == 5 and options["max_new_tokens"] == 440
+        assert "without_timestamps" not in options and "hotwords" not in options
+        return iter([SimpleNamespace(text=text)]), None
+
+    backend = WhisperBackend.__new__(WhisperBackend)
+    backend.model = SimpleNamespace(transcribe=transcribe)
+    backend.replacement_pattern, backend.replacements = compile_replacements(
+        json.dumps(
+            {
+                "Orion akredit": "Orion Accredit",
+                "Orion Accredit": "Another Product",
+            }
+        )
+    )
+    assert backend._decode([0.1]) == expected
+
+
+def test_asr_replacements_default_is_disabled():
+    from alojan_asr.model import compile_replacements
+
+    assert compile_replacements("{}") == (None, {})
+
+
+def test_asr_replacements_prefer_longest_whole_phrase():
+    from alojan_asr.model import compile_replacements
+
+    pattern, replacements = compile_replacements(
+        json.dumps(
+            {
+                "Example Product": "Example Brand",
+                "Example Product Suite": "Example Collection",
+            }
+        )
+    )
+    assert (
+        pattern.sub(
+            lambda match: replacements[match.lastgroup], "Example Product Suite ve Example Product."
+        )
+        == "Example Collection ve Example Brand."
+    )
+
+
+def test_asr_backend_selection_fails_closed_and_preserves_configuration(monkeypatch):
+    from alojan_asr import __main__ as startup
+    from alojan_asr import nemotron
+
+    calls = []
+    monkeypatch.setattr(startup, "WhisperBackend", lambda **kw: calls.append(("whisper", kw)))
+    monkeypatch.setattr(nemotron, "NemotronBackend", lambda **kw: calls.append(("nemotron", kw)))
+    with pytest.raises(ValueError, match="ALOJAN_ASR_BACKEND must be"):
+        startup.create_backend("unknown", "{}")
+    assert calls == []
+    startup.create_backend("whisper", "{}")
+    startup.create_backend("nemotron", '{"Example Product":"Example Brand"}')
+    assert calls == [
+        ("whisper", {"replacements": "{}"}),
+        ("nemotron", {"replacements": '{"Example Product":"Example Brand"}'}),
+    ]
+
+
+def test_partial_hint_retimes_but_does_not_multiply_decode_budget():
+    async def scenario():
+        async with running() as (_, decoder, recognition, _):
+            events = [
+                e
+                async for e in recognition.StreamRecognize(
+                    frames(150, partial_hint=True), timeout=3
+                )
+            ]
+            assert [e.processed_audio_ms for e in events] == [600, 1600, 2600, 3000]
+            assert [e.is_final for e in events] == [False, False, False, True]
+            assert [size for size, _ in decoder.calls] == [19200, 51200, 83200, 96000]
+
+    asyncio.run(scenario())
+
+
+def test_hint_clears_on_resumption_and_final_covers_all_audio():
+    async def source():
+        for index in range(110):
+            yield frame(index, partial_hint=20 <= index < 25 or 70 <= index < 85)
+
+    async def scenario():
+        async with running() as (_, decoder, recognition, _):
+            events = [e async for e in recognition.StreamRecognize(source(), timeout=3)]
+            # First candidate clears before eligibility; a later hint replaces the 2 s partial.
+            assert [e.processed_audio_ms for e in events] == [1000, 1600, 2200]
+            assert events[-1].is_final
+            assert decoder.calls[-1][0] == 2200 * 32
 
     asyncio.run(scenario())

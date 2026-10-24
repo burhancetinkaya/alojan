@@ -1885,6 +1885,7 @@ class AudioFrame final : public ::google::protobuf::Message
     kCapturedAtUnixMsFieldNumber = 3,
     kSampleRateHzFieldNumber = 4,
     kChannelsFieldNumber = 5,
+    kPartialHintFieldNumber = 9,
   };
   // string call_id = 1;
   void clear_call_id() ;
@@ -1986,11 +1987,21 @@ class AudioFrame final : public ::google::protobuf::Message
   void _internal_set_channels(::uint32_t value);
 
   public:
+  // bool partial_hint = 9;
+  void clear_partial_hint() ;
+  bool partial_hint() const;
+  void set_partial_hint(bool value);
+
+  private:
+  bool _internal_partial_hint() const;
+  void _internal_set_partial_hint(bool value);
+
+  public:
   // @@protoc_insertion_point(class_scope:voice.v1.AudioFrame)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<3, 8,
+  static const ::google::protobuf::internal::TcParseTable<4, 9,
                                    0, 62,
                                    2>
       _table_;
@@ -2020,6 +2031,7 @@ class AudioFrame final : public ::google::protobuf::Message
     ::int64_t captured_at_unix_ms_;
     ::uint32_t sample_rate_hz_;
     ::uint32_t channels_;
+    bool partial_hint_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -3100,6 +3112,30 @@ inline void AudioFrame::set_allocated_generation_id(::std::string* PROTOBUF_NULL
     _impl_.generation_id_.Set("", GetArena());
   }
   // @@protoc_insertion_point(field_set_allocated:voice.v1.AudioFrame.generation_id)
+}
+
+// bool partial_hint = 9;
+inline void AudioFrame::clear_partial_hint() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.partial_hint_ = false;
+  _impl_._has_bits_[0] &= ~0x00000100u;
+}
+inline bool AudioFrame::partial_hint() const {
+  // @@protoc_insertion_point(field_get:voice.v1.AudioFrame.partial_hint)
+  return _internal_partial_hint();
+}
+inline void AudioFrame::set_partial_hint(bool value) {
+  _internal_set_partial_hint(value);
+  _impl_._has_bits_[0] |= 0x00000100u;
+  // @@protoc_insertion_point(field_set:voice.v1.AudioFrame.partial_hint)
+}
+inline bool AudioFrame::_internal_partial_hint() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.partial_hint_;
+}
+inline void AudioFrame::_internal_set_partial_hint(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.partial_hint_ = value;
 }
 
 // -------------------------------------------------------------------

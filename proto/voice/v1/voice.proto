@@ -10,6 +10,7 @@ message AudioFrame {
   string format = 6;          // pcm_s16le | pcm_f32le
   bytes audio = 7;
   string generation_id = 8;   // stream identity, including TTS responses
+  bool partial_hint = 9;      // advisory ASR scheduling only; never a final-turn signal
 }
 message TurnEvent {
   string call_id = 1;

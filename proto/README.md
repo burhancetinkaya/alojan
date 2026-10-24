@@ -131,3 +131,31 @@ are `turn-N-pI`, while ASR monitoring and model cancellation retain the parent
 turn ID. Native queues hold at most eight pending text phrases and 32 PCM frames.
 `EndCall` schedules durable post-call analysis separately from media teardown.
 Deploy regenerated bindings and the new agent service before enabling the profile.
+
+
+## M3-01 recovery input metadata (additive v1 convention)
+
+`AgentRequest.context_json` additionally accepts `input_event` with exactly one of
+`silence_reminder`, `clarification`, or `silence_timeout`. Such a request must have
+empty `final_user_text`; ordinary requests still require nonempty caller text and
+omit `input_event`. Unknown values, null, mixed event/text and extra fields fail
+validation. This is internal gateway control data on the existing loopback RPC,
+not a command parsed from caller speech or model output.
+
+Recovery generates fixed Turkish speech without model/tools, never writes a
+caller utterance, and preserves normal phrase receipts/cancellation. A reminder
+is accepted once per call. Only `silence_timeout` sets `finish_call`; reminder and
+clarification continue listening. Existing 16-turn and call resource bounds apply.
+No protobuf field or generated binding changes. Upgrade the agent before the
+native gateway: older agents reject event metadata; ordinary older gateways
+remain compatible with the upgraded service. Roll back both for the old profile.
+
+
+## Optional partial scheduling hint
+
+`AudioFrame.partial_hint` (v1 field 9) is an additive boolean, default false.
+It requests an earlier scheduled ASR partial, never a final transcript or a turn
+boundary. Receivers keep a bounded one-second decode budget with at most 400 ms
+advance; all frame/identity/deadline checks still apply. Old receivers ignore the
+field. A final message still covers the actual half-close position. The gateway
+emits hints only through the opt-in endpoint experiment; it is not a live default.

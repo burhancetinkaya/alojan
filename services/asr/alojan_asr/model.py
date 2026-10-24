@@ -3,6 +3,7 @@
 import hashlib
 import json
 from pathlib import Path
+import re
 
 ROOT = Path(__file__).resolve().parents[3]
 PIN = json.loads((Path(__file__).resolve().parents[1] / "model.json").read_text())
@@ -27,8 +28,42 @@ def model_path(download=False):
     return directory
 
 
+def compile_replacements(raw):
+    """Compile a small owner dictionary; never fuzzy-match or rewrite numbers."""
+    error = "ASR replacements must contain at most eight short alphabetic phrases"
+    if not isinstance(raw, str) or len(raw.encode("utf-8")) > 2048:
+        raise ValueError(error)
+    try:
+        aliases = json.loads(raw)
+    except (ValueError, TypeError):
+        raise ValueError(error) from None
+    if not isinstance(aliases, dict) or len(aliases) > 8:
+        raise ValueError(error)
+    for alias, canonical in aliases.items():
+        for phrase in (alias, canonical):
+            if (
+                not isinstance(phrase, str)
+                or len(phrase) > 80
+                or not 2 <= len(phrase.split(" ")) <= 4
+                or not all(word.isalpha() for word in phrase.split(" "))
+            ):
+                raise ValueError(error)
+    # Longest exact phrase wins; a single substitution pass cannot cascade mappings.
+    ordered = sorted(aliases, key=len, reverse=True)
+    patterns = [f"(?P<t{index}>{re.escape(alias)})" for index, alias in enumerate(ordered)]
+    pattern = (
+        re.compile(r"(?<!\w)(?:" + "|".join(patterns) + r")(?!\w)", re.IGNORECASE)
+        if patterns
+        else None
+    )
+    return pattern, {f"t{index}": aliases[alias] for index, alias in enumerate(ordered)}
+
+
 class WhisperBackend:
-    def __init__(self):
+    pin = PIN
+
+    def __init__(self, replacements="{}"):
+        self.replacement_pattern, self.replacements = compile_replacements(replacements)
         import ctranslate2
         import numpy as np
         from faster_whisper import WhisperModel
@@ -71,7 +106,12 @@ class WhisperBackend:
             word_timestamps=False,
             max_new_tokens=440,
         )
-        return "".join(segment.text for segment in segments).strip()
+        text = "".join(segment.text for segment in segments).strip()
+        if self.replacement_pattern:
+            text = self.replacement_pattern.sub(
+                lambda match: self.replacements[match.lastgroup], text
+            )
+        return text
 
 
 if __name__ == "__main__":

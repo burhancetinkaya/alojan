@@ -2,16 +2,28 @@
 
 import argparse
 import asyncio
+import os
 import signal
 
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 
-from .model import PIN, WhisperBackend
+from .model import WhisperBackend
 from .service import RecognitionService, create_server
 
 
+def create_backend(name, replacements):
+    if name == "whisper":
+        return WhisperBackend(replacements=replacements)
+    if name == "nemotron":
+        from .nemotron import NemotronBackend
+
+        return NemotronBackend(replacements=replacements)
+    raise ValueError("ALOJAN_ASR_BACKEND must be whisper or nemotron")
+
+
 async def serve(port):
-    backend = WhisperBackend()
+    name = os.environ.get("ALOJAN_ASR_BACKEND", "whisper")
+    backend = create_backend(name, os.environ.get("ALOJAN_ASR_REPLACEMENTS", "{}"))
     service = RecognitionService(backend)
     server = create_server(service)
     readiness = health.aio.HealthServicer()
@@ -26,7 +38,9 @@ async def serve(port):
     await readiness.set("voice.v1.Recognition", health_pb2.HealthCheckResponse.SERVING)
     await server.start()
     print(
-        f"event=asr_ready device=cuda compute_type=float16 revision={PIN['revision']}", flush=True
+        f"event=asr_ready device=cuda backend={name} revision={backend.pin['revision']} "
+        f"vocabulary_entries={len(backend.replacements)}",
+        flush=True,
     )
     try:
         await stopping.wait()
