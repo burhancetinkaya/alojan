@@ -1026,5 +1026,7 @@ manifest and setup documentation, retaining FP16/beam five and existing service
 behavior. Linux: 45 ASR tests passed (3.11 seconds); seven real CUDA gRPC cases
 and lifecycle checks passed both before and after the carrier worker switch.
 The live ASR reports the pinned large-v3 revision and SERVING, as do TTS/agent;
-no active call was present at switch. Handset quality/latency acceptance remains
-pending; [activation evidence](validation/whisper-large-v3-live-2026-10-24.md).
+no active call was present at switch. The owner then reported a successful live
+call; the latest call was persisted as ended and all three services remained
+SERVING. Single-call owner acceptance is recorded; broader quality/latency targets
+remain open. See [activation evidence](validation/whisper-large-v3-live-2026-10-24.md).

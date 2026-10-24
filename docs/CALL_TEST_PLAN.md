@@ -871,3 +871,10 @@ phone acceptance. See [activation evidence](validation/whisper-large-v3-live-202
 Next handset validation should cover quiet speech, names, dates, phone numbers,
 turn pauses and interruption, and compare transcript accuracy and response delay.
 Do not infer a handset pass from synthetic checks or the earlier pooled WER study.
+
+
+Standard large-v3 owner follow-up: the owner reported a successful live call after
+activation. The latest persisted call was ended, with caller number present
+(`gateway_hint`); ASR, TTS and agent remained SERVING. This is one-call subjective
+acceptance, not a transcript WER or latency-target pass. Telegram number display,
+noisy cases, concurrency and soak checks are not established by this report.

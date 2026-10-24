@@ -54,6 +54,13 @@ To roll back, wait for no active calls, restore that manifest and restart only t
 carrier ASR worker on its existing port, then check readiness. New source checkouts
 use the standard pinned-model preparation command from the ASR README.
 
-Real handset accuracy, turn/response latency, noisy conversations, concurrency
-and soak acceptance remain pending. No new model redistribution approval follows
-from this activation.
+The owner subsequently completed a live call and reported that the experience
+was successful. The latest persisted call had an end timestamp and `ended` status;
+its caller-number field was populated with source `gateway_hint`. Recognition,
+Synthesis and Agent health all remained SERVING, and the ASR readiness log retained
+the pinned standard large-v3 revision. This records owner acceptance for one live
+call; no independent transcript accuracy score or measured handset latency is
+claimed. Telegram number display was not separately confirmed in this follow-up.
+
+Broader noisy-speech, latency-target, concurrency and soak acceptance remain open.
+No new model redistribution approval follows from this activation.
