@@ -25,6 +25,7 @@ esac
 exec build/local/voice-gateway \
     --bind-address "$ALOJAN_SIP_BIND" --public-address "$ALOJAN_SIP_PUBLIC" \
     --allow-sip-ip "$ALOJAN_SIP_SOURCE" --trusted-identity-ip "$ALOJAN_SIP_SOURCE" \
+    --caller-national-prefix "${ALOJAN_CALLER_NATIONAL_PREFIX:-0}" \
     --port 5060 --rtp-port 10000 --rtp-port-range 98 \
     --prompt-dir "$root/assets/prompts/tr-v5-kubra" \
     --answer-delay-ms 3000 "$@"

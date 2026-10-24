@@ -842,3 +842,20 @@ The live worker now includes number, stored call time, summary and final dialogu
 Long recordings here mean text records, not audio: numbered text parts resume from
 the last stored receipt. Real phone acceptance must compare all recorded turns
 and speaker labels with the delivered parts; no new-format carrier pass is claimed.
+
+
+## M1-04 caller identity / M5-01 notification follow-up — 2026-10-24
+
+Private SIP-only observation of an owner test call found a national-format caller
+number in `From`; no asserted-identity header was present in that observed INVITE.
+The live gateway rejected the number because national conversion was disabled.
+The Netgsm launcher now enables the existing Turkish normalization policy, with
+an explicit opt-out. Linux launcher tests: 2 passed (0.04 seconds); existing native
+caller-identity suite: 1/1 passed (1.04 seconds). The gateway was restarted while
+no database calls were active; other launch arguments were preserved.
+
+Pending handset check: place a fresh direct call, verify the persisted normalized
+caller number and identity source, then correlate its Telegram delivery receipt
+and owner-visible number. This finding does not establish forwarded or withheld
+caller behavior. Raw signaling capture is stopped and stored only in private
+ignored files; no raw audio capture was enabled.

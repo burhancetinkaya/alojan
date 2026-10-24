@@ -997,3 +997,22 @@ filtering, malformed cursor rejection and legacy delivery. Ruff and formatting
 passed. Switched only the independent notification worker to the tested dialogue
 release; zero undelivered legacy rows needed conversion. Real new-format phone
 acceptance remains pending; see the [updated evidence](validation/telegram-2026-10-24.md).
+
+
+### Netgsm caller-number normalization follow-up
+
+M1-04 / US-03, supporting M5-01 / US-07: an owner-authorized private SIP-only
+capture found a national-format mobile number in the inbound `From` header.
+The gateway reported invalid identity because its live launch arguments omitted
+Turkish national-number normalization. The Netgsm launcher now defaults to
+`--caller-national-prefix 0`, with an explicit environment override. Existing
+trust, privacy and international-number parsing behavior is unchanged.
+
+Linux: two launcher regression cases passed in 0.04 seconds; the existing native
+caller-identity CTest passed (1/1, 1.04 seconds). Ruff and formatting passed.
+After verifying zero active database calls, the native gateway was restarted
+with its original arguments/environment plus the normalization option. Its
+process and three worker listeners were verified available. The capture is
+stopped and remains private; no packet, actual number or transcript is committed.
+A fresh carrier call must still verify normalized persistence and Telegram display;
+forwarded/withheld identity acceptance remains separate.

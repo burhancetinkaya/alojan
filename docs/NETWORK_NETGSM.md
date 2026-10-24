@@ -36,6 +36,14 @@ ALOJAN_SIP_PUBLIC=<forwarded public IPv4>
 ALOJAN_SIP_SOURCE=<verified carrier signaling IPv4>
 ```
 
+The Netgsm launcher enables Turkish national-number normalization by default
+(`ALOJAN_CALLER_NATIONAL_PREFIX=0`). An observed direct carrier INVITE used a
+national-format mobile number in `From`; without this option the gateway rejected
+it as invalid. Set `ALOJAN_CALLER_NATIONAL_PREFIX=none` to disable national-format
+conversion for a deployment that requires international-format input. This does
+not change the carrier source allowlist, identity precedence or privacy handling.
+Caller ID remains a hint, never authentication.
+
 Actual values were recovered from the owner's earlier network test and the
 current egress address was checked against that public mapping. They are not
 committed. The launcher uses UDP 5060, RTP candidates 10000–10098 and paired
