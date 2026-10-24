@@ -12,7 +12,21 @@ from .service import AgentService, create_server
 from .store import Store
 
 
+async def reconcile(store, age_seconds):
+    while True:
+        try:
+            count = await store.reconcile_stale(age_seconds)
+            if count:
+                print(f"event=calls_reconciled count={count}", flush=True)
+        except Exception:
+            print("event=call_reconciliation_unavailable", flush=True)
+        await asyncio.sleep(30)
+
+
 async def serve(port):
+    age = int(os.environ.get("ALOJAN_RECONCILE_AFTER_SECONDS", "0"))
+    if age and not 300 <= age <= 86400:
+        raise ValueError("invalid reconciliation age")
     backend = Backend()
     store = Store(os.environ["ALOJAN_DATABASE_URL"])
     await store.run(lambda c: c.execute("SELECT call_id FROM summary_jobs LIMIT 0"))
@@ -29,6 +43,7 @@ async def serve(port):
     await readiness.set("voice.v1.Agent", health_pb2.HealthCheckResponse.SERVING)
     await server.start()
     summaries = asyncio.create_task(service.summaries())
+    maintenance = asyncio.create_task(reconcile(store, age)) if age else None
     print("event=agent_ready provider=openrouter api_access=separate_acceptance", flush=True)
     try:
         await stopping.wait()
@@ -39,6 +54,9 @@ async def serve(port):
         await server.stop(2)
         summaries.cancel()
         await asyncio.gather(summaries, return_exceptions=True)
+        if maintenance:
+            maintenance.cancel()
+            await asyncio.gather(maintenance, return_exceptions=True)
         await backend.close()
 
 

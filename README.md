@@ -39,10 +39,11 @@ separate operations.
 
 ## Architecture
 
-The validated development profile runs the gateway and Python workers natively on
-Ubuntu with an NVIDIA GPU. Docker Compose currently provides **PostgreSQL**, not a
-complete containerized voice deployment. Speech inference is local; conversation
-and summary requests use OpenRouter. Telegram delivery also requires Internet access.
+The Linux Docker Compose profile runs the gateway, ASR, TTS, agent, API, PostgreSQL
+and Telegram worker. ASR/TTS use the host NVIDIA GPU through its container runtime;
+SIP and loopback gRPC retain the host network layout. Speech inference is local;
+conversation and summary requests use OpenRouter. Telegram requires Internet access.
+See [Docker setup and recovery](docs/DOCKER.md) for deployment and validation limits.
 
 ```mermaid
 flowchart LR
@@ -89,6 +90,7 @@ path, not broad production, noise-robustness or latency guarantees.
 
 | Evidence | Recorded result and scope |
 |---|---|
+| [Docker runtime and recovery](docs/validation/docker-runtime-2026-10-24.md) | Seven services run in Compose; container regression and process-recovery evidence, soak status and limits are recorded separately. |
 | [Consolidated Linux validation](docs/validation/main-publication-2026-10-24.md) | Native build and all nine CTests passed. The full Python run had 385 passes, one contract-test failure and 18 skips; after correcting that test, the affected 76-test subset passed. The complete suite was not repeated. |
 | [Standard large-v3 activation](docs/validation/whisper-large-v3-live-2026-10-24.md) | 45 ASR tests passed; seven real CUDA gRPC cases and lifecycle checks passed before and after activation. One successful live call was subsequently reported. |
 | [Real carrier conversation](docs/validation/carrier-m3m4-2026-10-24.md) | Call records, interruption/accounting and successful closing were inspected; the report retains recognition and timing limitations. |
@@ -107,9 +109,10 @@ Known limits and unfinished work:
   denoising comparisons are optional tools; no RNNoise/DTLN preprocessing stage is
   enabled in the default live pipeline. Standard large-v3 trades additional decode
   time for improved accuracy on the evaluated small corpus.
-- **Lifecycle:** voice-worker restart supervision, bounded-state reclamation and
-  reconciliation of calls missing an end event need further work. Telegram has a
-  systemd user-service template; it does not supervise the voice pipeline.
+- **Lifecycle:** Compose restart policies and local worker watchdogs recover process
+  failures. The single-installation profile reconciles missing end records after the
+  hard call-duration limit. In-memory call/generation reclamation beyond the existing
+  lifetime bounds still needs work; a worker restart does not resume an active call.
 - **Notification delivery:** retries and per-part receipts are durable, but Telegram
   does not provide an exactly-once guarantee. A failure after remote acceptance and
   before receipt persistence can duplicate a part. Summary failure produces an
@@ -126,6 +129,7 @@ Known limits and unfinished work:
 
 ## Development setup
 
+Use [DOCKER.md](docs/DOCKER.md) for the complete Linux deployment and recovery.
 Use [DEV_SETUP.md](docs/DEV_SETUP.md) for pinned build tools, migrations and checks.
 Its early foundation profiles remain useful transport tests; starting the default
 WAV gateway alone does **not** launch the complete assistant.
@@ -137,18 +141,19 @@ real CUDA speech validation takes place on Linux.
 
 Set up the components in this order:
 
-1. Prepare the native build and generated contracts using the development guide.
+1. Build the service images using the Docker guide; the gateway compiles inside Docker.
 2. Configure private database credentials, start PostgreSQL with
    [`infra/compose.yaml`](infra/compose.yaml), and apply migrations.
-3. Prepare the pinned models and start [ASR](services/asr/README.md) and
-   [TTS](services/tts/README.md); verify their real-model health checks.
-4. Configure an OpenRouter key privately and start the [agent](services/agent/README.md).
+3. Prepare the pinned model caches for [ASR](services/asr/README.md) and
+   [TTS](services/tts/README.md); mount them into their containers.
+4. Configure an OpenRouter key privately for the [agent](services/agent/README.md).
 5. Configure the [gateway profile](services/voice-gateway/README.md) and your
    [carrier network](docs/NETWORK_NETGSM.md). Keep evaluation listeners on loopback
    and restrict carrier-facing SIP/RTP at the firewall.
 6. Optionally create your own bot and pair a private chat using
    [Telegram setup](docs/TELEGRAM.md). Each installation supplies its own token and
    recipient; the worker is single-owner, not a shared multi-tenant bot platform.
+7. Start the Compose runtime and verify all container health checks before carrier testing.
 
 There is no one-command production installer. Adapt the assistant identity, owner
 references and prepared greeting assets before using the project for another person;
@@ -166,7 +171,7 @@ recipient identifiers and installation-specific values in ignored private files.
 | `services/agent/` | Dialogue, local note tools, summaries and Telegram worker |
 | `services/app-api/` | API health and database/migration foundation |
 | `services/voice-contracts/`, `proto/`, `generated/` | Shared validation and versioned gRPC contracts |
-| `infra/` | PostgreSQL Compose configuration, migrations and service templates |
+| `infra/` | Full-runtime Compose overlay, Docker builds/watchdogs, database migrations and legacy service template |
 | `assets/` | Prepared prompts and waiting audio |
 | `tests/`, `tools/` | Regression suites, integration probes and optional evaluations |
 | `docs/` | Requirements, decisions, task status and sanitized acceptance evidence |

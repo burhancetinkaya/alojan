@@ -1,5 +1,13 @@
 # Native gateway speech integration (M2-03)
 
+## Current Docker deployment
+
+The owner-selected runtime is [Docker Compose](../../docs/DOCKER.md), under
+[ADR 0011](../../docs/ADR/0011-docker-runtime.md). Use that guide for startup,
+private configuration, health checks and recovery. Native commands below remain
+development and rollback references; do not start a duplicate worker beside the
+container using the same port or GPU model.
+
 The gateway now connects loopback SIP/RTP to the existing ASR/TTS gRPC contracts.
 This is a **scripted development profile**, not a conversational assistant. M3
 owns end-of-turn/barge-in decisions; M4 owns GPT responses. Default execution

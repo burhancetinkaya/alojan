@@ -1,6 +1,12 @@
 # Development setup
 
-## Current state
+## Docker runtime
+
+The owner selected the complete [Docker runtime](DOCKER.md) under
+[ADR 0011](ADR/0011-docker-runtime.md). Use that guide for the current deployment.
+The native commands below remain development and rollback references.
+
+## Historical native foundation
 
 The first local foundation is implemented: native loopback PJSIP gateway, a PostgreSQL
 schema/migration runner, API health endpoints, C++/Python protobuf bindings and automated

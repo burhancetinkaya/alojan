@@ -1,5 +1,13 @@
 # Native EMA speech worker (M2-02)
 
+## Current Docker deployment
+
+The owner-selected runtime is [Docker Compose](../../docs/DOCKER.md), under
+[ADR 0011](../../docs/ADR/0011-docker-runtime.md). Use that guide for startup,
+private configuration, health checks and recovery. Native commands below remain
+development and rollback references; do not start a duplicate worker beside the
+container using the same port or GPU model.
+
 This worker keeps one pinned EMA instance on CUDA, compiles/warms it once, and
 serves `voice.v1.Synthesis` and `GenerationControl` on **127.0.0.1:15072**. Standard
 gRPC health for `voice.v1.Synthesis` becomes `SERVING` only after model checksum
