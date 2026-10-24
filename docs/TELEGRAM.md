@@ -14,22 +14,35 @@ and setup test message (owner preference, 2026-10-24).
 A separate process polls ended calls every two seconds. It uses the existing
 finalized, schema-validated summary without another LLM request. The notification
 contains the available caller name, carrier-supplied number (a hint, not verified
-identity), subject, summary, requested callback/action and unresolved questions.
+identity), stored start/end times in Europe/Istanbul, subject, summary, requested
+callback/action and unresolved questions. The owner additionally requested the
+complete available final dialogue ([ADR 0010](ADR/0010-telegram-dialogue.md)),
+labeled Arayan/Alojan and ordered by persisted timestamp and row ID. Assistant
+text requires positive sent-audio accounting; interrupted records without complete
+text are marked explicitly. Unpersisted speech is never reconstructed.
 A separately supplied contact number is labeled as the caller's declaration.
 Plain text and disabled link previews prevent caller text becoming HTML or fetching
-caller-provided links. A bounded message preserves the call UUID for correlation.
+caller-provided links. Long dialogue is preserved in numbered messages below the
+Telegram limit, each correlated with the call UUID. Final ASR may contain recognition
+errors; recorded call times reflect the stored agent lifecycle, not independently
+measured carrier ringing timestamps.
 
 Summary failure, invalid stored summary, or two minutes without a final summary
-produces a status-only message; no fabricated summary or transcript is sent.
-This is still one notification per call, not a later second summary update.
+labels the summary as unavailable and still includes available dialogue. No text
+is invented. There is one logical notification per call, possibly comprising
+several numbered messages, and no later second summary update.
 Calls without a persisted end event cannot yet be detected as completed here.
 Summary quality and durable end-event reconciliation remain separate agent work.
 
-The PostgreSQL outbox stores the frozen payload and provider receipt. Activation
+The PostgreSQL outbox stores the frozen payload and provider receipts. Version 2
+contains numbered messages, the next part and completed message IDs. Each part is
+committed independently, with at least two seconds before the next attempt; restart
+resumes at the first uncommitted part. The notification is marked delivered only
+when every part has a receipt. Legacy version 1 messages remain readable. Activation
 persists a cutoff; calls ending before it are not backfilled. Restart preserves
 the cutoff and queued deliveries. Atomic enqueue and a unique call/target index
 prevent duplicate queue rows. Row locks with `SKIP LOCKED` prevent concurrent workers
-sending the same row; only outbox rows are locked during network IO. There is no
+sending the same part; only outbox rows are locked during network IO. There is no
 work on the media callbacks and no voice-service restart is required.
 
 Transport errors, server errors and rate limiting retry with exponential delay,
@@ -104,6 +117,9 @@ at startup. Verify the user manager survives logout (`loginctl show-user "$USER"
 -p Linger`); enabling linger is needed if it does not. Stop with
 `systemctl --user stop alojan-telegram`; queued rows remain durable. Revert the
 release symlink and restart this unit to roll back code without restarting voice.
+After version 2 payloads exist, only roll back to another version-2-capable release.
+For an older release, stop the notification worker and preserve the queue instead
+of letting the version-1-only worker reject the new payloads.
 
 Inspect `journalctl --user -u alojan-telegram` for fixed event names only.
 Do not add HTTP debug logging: Telegram authenticates via a token in the URL.
@@ -117,8 +133,9 @@ Run `tests/test_notifications.py`, `tests/test_database.py` and
 disposable schemas and never truncate live tables. Mock HTTP tests are not proof
 of Telegram delivery. Real acceptance needs the owner's paired bot, successful
 synthetic delivery, then a completed phone call with matching outbox receipt and
-owner confirmation. Verify one notification and no notification before hangup.
+owner confirmation. Verify one logical notification, all numbered parts with complete dialogue, and no
+notification before hangup.
 
 Official references: [bot creation](https://core.telegram.org/bots/tutorial),
 [Bot API](https://core.telegram.org/bots/api) (`getUpdates`, `getChat`, `sendMessage`,
-`ResponseParameters.retry_after`). Accessed 2026-10-24. No new SDK/dependency added.
+`ResponseParameters.retry_after`) and [per-chat pacing](https://core.telegram.org/bots/faq#my-bot-is-hitting-limits-how-do-i-avoid-this). Accessed 2026-10-24. No new SDK/dependency added.

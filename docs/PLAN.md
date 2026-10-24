@@ -980,3 +980,20 @@ Both the call title and setup-test message now use Alojan. The isolated release
 passed all 17 notification tests on Linux (1.61 seconds); Ruff and diff checks
 passed. The notification worker was restarted and verified active. No pending
 messages required a title update. Voice services and prompts were not modified.
+
+
+### Telegram dialogue content follow-up
+
+M5-01 / US-07, [ADR 0010](ADR/0010-telegram-dialogue.md): the owner requested calling
+number, time, summary and dialogue. Notifications now include stored start/end in
+Europe/Istanbul and all available final caller/sent-assistant records. Numbered
+parts preserve long Unicode transcripts and durable receipts resume after failure
+without replaying committed parts. Legacy payloads remain supported. No LLM, voice
+prompt or recording behavior changed; no new SQL migration was needed.
+
+Linux: 33 tests passed, zero failures/skips, 5.42 seconds, including 120 transcript
+rows, partial delivery/restart/429, unknown caller, failed summary, sent-audio
+filtering, malformed cursor rejection and legacy delivery. Ruff and formatting
+passed. Switched only the independent notification worker to the tested dialogue
+release; zero undelivered legacy rows needed conversion. Real new-format phone
+acceptance remains pending; see the [updated evidence](validation/telegram-2026-10-24.md).

@@ -140,7 +140,7 @@ The owner-approved greeting is “Merhaba, ben Kübra. Burhan Bey’in yapay zek
 
 ### 9.4 Post-call summary
 
-Validate and persist structured JSON: caller_name, caller_number, subject, summary, requested_action, urgency (low/medium/high), promised_action (none by default), confirmation_status, unresolved_questions, confidence, privacy_flags. Notify summary content only from this finalized object; do not delay caller disconnection for analysis. If finalization fails or exceeds two minutes, send a clearly labeled status-only notification without inventing a summary.
+Validate and persist structured JSON: caller_name, caller_number, subject, summary, requested_action, urgency (low/medium/high), promised_action (none by default), confirmation_status, unresolved_questions, confidence, privacy_flags. Notify summary content only from this finalized object; do not delay caller disconnection for analysis. If finalization fails or exceeds two minutes, label the summary as unavailable without inventing it. Under owner-approved ADR 0010, Telegram also includes the persisted calling number, stored call start/end in Türkiye time and all available final dialogue, with sent-audio accounting for assistant text. Long dialogue uses numbered, resumable messages; no silent transcript truncation.
 
 ## 10. Contracts
 

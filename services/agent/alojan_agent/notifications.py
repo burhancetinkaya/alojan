@@ -24,7 +24,7 @@ def clipped(value, limit):
 
 
 def notification_text(call):
-    """No new model request; use the validated finalized summary, never raw dialogue."""
+    """Render call metadata and the validated summary without another model request."""
     summary = None
     if call["job_status"] == "done" and call["json_schema_version"] == 1:
         try:
@@ -32,9 +32,11 @@ def notification_text(call):
         except ValueError:
             pass
     ended = call["ended_at"].astimezone(ZoneInfo("Europe/Istanbul"))
+    started = call["started_at"].astimezone(ZoneInfo("Europe/Istanbul"))
     lines = [
         "Alojan · Arama tamamlandı",
-        ended.strftime("%d.%m.%Y %H:%M (Türkiye)"),
+        "Arama zamanı: " + started.strftime("%d.%m.%Y %H:%M:%S (Türkiye)"),
+        "Bitiş: " + ended.strftime("%d.%m.%Y %H:%M:%S (Türkiye)"),
         "Arayan numara: " + clipped(call["from_number_e164"], 40),
     ]
     if summary:
@@ -54,6 +56,72 @@ def notification_text(call):
         lines += ["Görüşme özeti hazırlanamadı. Varsa konuşma kayıtları veritabanında korunuyor."]
     lines += ["Arama kimliği: " + str(call["id"])]
     return "\n".join(lines)
+
+
+def notification_messages(call, utterances):
+    """Keep the complete stored dialogue, respecting Telegram's UTF-16 limit."""
+    dialogue = []
+    for speaker, text, sent_start, sent_end in utterances:
+        if speaker == "assistant" and (
+            sent_start is None or sent_end is None or sent_end <= sent_start
+        ):
+            continue
+        if not text.strip():
+            if speaker == "assistant":
+                text = "[Söz kesildi; bu bölümün tam metni kaydedilmedi.]"
+            else:
+                continue
+        label = "Arayan" if speaker == "caller" else "Alojan"
+        dialogue.append(label + ": " + text.replace("\n", "\n    "))
+    text = notification_text(call) + "\n\nKonuşma diyaloğu:\n"
+    text += "\n\n".join(dialogue) if dialogue else "Kaydedilmiş diyalog bulunmuyor."
+    text += "\n\nDöküm otomatik tanımadan gelir; tanıma hataları içerebilir."
+    encoded = text.encode("utf-16-le")
+    if len(encoded) <= 4096 * 2:
+        return [text]
+    chunks = []
+    offset = 0
+    while offset < len(encoded):
+        # Reserve room for per-part correlation and never cut a surrogate pair.
+        chunk = encoded[offset : offset + 3800 * 2].decode("utf-16-le", errors="ignore")
+        boundary = chunk.rfind("\n")
+        if boundary > len(chunk) // 2:
+            chunk = chunk[: boundary + 1]
+        chunks.append(chunk)
+        offset += len(chunk.encode("utf-16-le"))
+    return [
+        f"Alojan · Arama kaydı ({index + 1}/{len(chunks)})\nArama kimliği: {call['id']}\n\n{chunk}"
+        for index, chunk in enumerate(chunks)
+    ]
+
+
+def delivery_part(payload):
+    """Read legacy single messages and resumable dialogue payloads without coercion."""
+    if not isinstance(payload, dict):
+        raise DeliveryError("notification_invalid_payload", permanent=True)
+    version = payload.get("version")
+    messages = [payload.get("text")] if version == 1 else payload.get("messages")
+    index = 0 if version == 1 else payload.get("next_part")
+    receipts = [] if version == 1 else payload.get("message_ids")
+    if (
+        type(version) is not int
+        or version not in (1, 2)
+        or not isinstance(messages, list)
+        or not messages
+        or type(index) is not int
+        or not 0 <= index < len(messages)
+        or not isinstance(receipts, list)
+        or len(receipts) != index
+        or any(type(receipt) is not int for receipt in receipts)
+        or any(
+            not isinstance(message, str)
+            or not message
+            or len(message.encode("utf-16-le")) // 2 > 4096
+            for message in messages
+        )
+    ):
+        raise DeliveryError("notification_invalid_payload", permanent=True)
+    return messages, index, receipts
 
 
 class Notifications:
@@ -83,7 +151,7 @@ class Notifications:
                 raise ValueError("activate the owner notification channel first")
             with conn.cursor(row_factory=dict_row) as cursor:
                 calls = cursor.execute(
-                    "SELECT c.id,c.ended_at,c.from_number_e164,j.status AS job_status,"
+                    "SELECT c.id,c.started_at,c.ended_at,c.from_number_e164,j.status AS job_status,"
                     "s.detail_jsonb,s.json_schema_version FROM calls c "
                     "LEFT JOIN summary_jobs j ON j.call_id=c.id "
                     "LEFT JOIN call_summaries s ON s.call_id=c.id "
@@ -94,6 +162,11 @@ class Notifications:
                     (channel[0], self.target),
                 ).fetchall()
             for call in calls:
+                utterances = conn.execute(
+                    "SELECT speaker,text,audio_sent_start_ms,audio_sent_end_ms FROM utterances "
+                    "WHERE call_id=%s AND is_final ORDER BY created_at,id",
+                    (call["id"],),
+                ).fetchall()
                 conn.execute(
                     "INSERT INTO notification_outbox(id,call_id,target,payload_jsonb) "
                     "VALUES(%s,%s,%s,%s) ON CONFLICT DO NOTHING",
@@ -101,7 +174,14 @@ class Notifications:
                         uuid.uuid5(call["id"], self.target),
                         call["id"],
                         self.target,
-                        Jsonb({"version": 1, "text": notification_text(call)}),
+                        Jsonb(
+                            {
+                                "version": 2,
+                                "messages": notification_messages(call, utterances),
+                                "next_part": 0,
+                                "message_ids": [],
+                            }
+                        ),
                     ),
                 )
             return len(calls)
@@ -121,15 +201,8 @@ class Notifications:
                 return "idle"
             identity, payload, retries = row
             try:
-                if (
-                    not isinstance(payload, dict)
-                    or payload.get("version") != 1
-                    or not isinstance(payload.get("text"), str)
-                    or not payload["text"]
-                    or len(payload["text"].encode("utf-16-le")) // 2 > 4096
-                ):
-                    raise DeliveryError("notification_invalid_payload", permanent=True)
-                message_id = self.telegram.send(self.chat_id, payload["text"])
+                messages, index, receipts = delivery_part(payload)
+                message_id = self.telegram.send(self.chat_id, messages[index])
             except DeliveryError as error:
                 failed = error.permanent or retries + 1 >= 12
                 delay = max(error.retry_after, min(3600, 5 * 2 ** min(retries, 10)))
@@ -140,12 +213,16 @@ class Notifications:
                     (error.code, delay, failed, identity),
                 )
                 return "failed" if failed else "retry"
+            finished = index + 1 == len(messages)
+            if payload["version"] == 2:
+                payload = dict(payload, next_part=index + 1, message_ids=[*receipts, message_id])
             conn.execute(
-                "UPDATE notification_outbox SET delivered_at=now(),provider_message_id=%s,"
-                "last_error=NULL WHERE id=%s",
-                (message_id, identity),
+                "UPDATE notification_outbox SET delivered_at=CASE WHEN %s THEN now() ELSE NULL END,"
+                "provider_message_id=%s,payload_jsonb=%s,last_error=NULL,"
+                "next_attempt_at=now()+interval '2 seconds' WHERE id=%s",
+                (finished, message_id, Jsonb(payload), identity),
             )
-            return "delivered"
+            return "delivered" if finished else "part_delivered"
 
         # Lock only the outbox row. A crash after Telegram accepts but before commit
         # may duplicate delivery: Telegram sendMessage has no idempotency key.

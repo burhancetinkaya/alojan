@@ -835,3 +835,10 @@ verify that no message is sent before the persisted call end.
 M5-01 display-name follow-up: Telegram call and setup-test titles now use Alojan,
 as requested by the owner. Linux notification tests: 17 passed in 1.61 seconds.
 Notification worker active after restart; no new handset acceptance is claimed.
+
+
+M5-01 dialogue follow-up (ADR 0010): 33 Linux tests passed (5.42 seconds, no skips).
+The live worker now includes number, stored call time, summary and final dialogue.
+Long recordings here mean text records, not audio: numbered text parts resume from
+the last stored receipt. Real phone acceptance must compare all recorded turns
+and speaker labels with the delivered parts; no new-format carrier pass is claimed.

@@ -13,7 +13,13 @@ from datetime import datetime, timezone
 import psycopg
 import pytest
 from alojan.migrate import migrate
-from alojan_agent.notifications import Notifications, notification_text, pair
+from alojan_agent.notifications import (
+    Notifications,
+    delivery_part,
+    notification_messages,
+    notification_text,
+    pair,
+)
 from alojan_agent.models import Summary
 from alojan_agent.store import Store, call_uuid
 from alojan_agent.telegram import DeliveryError, Telegram, paired_chat
@@ -253,6 +259,7 @@ def test_text_bounds_plain_text_and_no_fabricated_identity():
     summary["unresolved_questions"] = ["😀" * 1000] * 10
     call = dict(
         id=uuid.uuid4(),
+        started_at=datetime.now(timezone.utc),
         ended_at=datetime.now(timezone.utc),
         from_number_e164=None,
         job_status="done",
@@ -264,6 +271,144 @@ def test_text_bounds_plain_text_and_no_fabricated_identity():
     assert "Arayan numara: Belirtilmedi" in text
     assert "https://example.test" in text
     assert text.endswith(str(call["id"]))
+
+
+def test_call_time_and_recorded_dialogue_include_only_sent_assistant_text(database):
+    worker, telegram = setup(database)
+    cid = create_call(database)
+    rows = [
+        ("caller", "Ürün hakkında bilgi alabilir miyim?", None, None, True),
+        ("assistant", "Elbette, sorunuzu iletebilirim.", 0, 1000, True),
+        ("caller", "Geçici tanıma", None, None, False),
+        ("assistant", "Gönderilmeyen cümle", None, None, True),
+        ("assistant", "Sıfır ses", 0, 0, True),
+        ("assistant", "", 0, 200, True),
+        ("caller", "Yarın beni arayabilir.", None, None, True),
+    ]
+    with psycopg.connect(database) as conn:
+        conn.execute("UPDATE calls SET started_at='2026-10-24T12:01:02Z' WHERE id=%s", (cid,))
+        for index, (speaker, text, start, end, final) in enumerate(rows):
+            conn.execute(
+                "INSERT INTO utterances(id,call_id,speaker,text,is_final,audio_sent_start_ms,"
+                "audio_sent_end_ms,created_at) VALUES(%s,%s,%s,%s,%s,%s,%s,"
+                "now()+make_interval(secs=>%s))",
+                (uuid.uuid4(), cid, speaker, text, final, start, end, index),
+            )
+    assert worker.enqueue() == 1
+    assert worker.deliver_one() == "delivered"
+    text = telegram.sent[0][1]
+    assert "Arama zamanı: 24.10.2026 15:01:02 (Türkiye)" in text
+    assert "Arayan numara: Belirtilmedi" in text
+    assert "Özet: Ürün hakkında bilgi istedi." in text
+    assert "Arayan: Ürün hakkında bilgi alabilir miyim?" in text
+    assert "Alojan: Elbette, sorunuzu iletebilirim." in text
+    assert "Alojan: [Söz kesildi;" in text
+    assert text.index("Elbette") < text.index("Yarın beni arayabilir")
+    assert all(omitted not in text for omitted in ("Geçici tanıma", "Gönderilmeyen", "Sıfır ses"))
+
+
+def test_long_dialogue_is_lossless_unicode_safe_and_resumes_after_restart(database):
+    worker, telegram = setup(database)
+    cid = create_call(database)
+    with psycopg.connect(database) as conn:
+        # More than the summary reader's 100-row limit: notifications must not inherit it.
+        for index in range(120):
+            conn.execute(
+                "INSERT INTO utterances(id,call_id,speaker,text,is_final,created_at) "
+                "VALUES(%s,%s,'caller',%s,true,now()+make_interval(secs=>%s))",
+                (uuid.uuid4(), cid, f"Sıra {index:03}: " + "😀" * 35, index),
+            )
+    assert worker.enqueue() == 1
+    with psycopg.connect(database) as conn:
+        messages = conn.execute(
+            "SELECT payload_jsonb->'messages' FROM notification_outbox"
+        ).fetchone()[0]
+    assert len(messages) > 2
+    assert all(len(message.encode("utf-16-le")) // 2 <= 4096 for message in messages)
+    assert worker.deliver_one() == "part_delivered"
+    assert worker.deliver_one() == "idle"  # Persisted pacing, not just a process-local sleep.
+    telegram.failure = DeliveryError("telegram_rate_limited", retry_after=30)
+    due(database)
+    assert worker.deliver_one() == "retry"
+    with psycopg.connect(database) as conn:
+        payload, delivered = conn.execute(
+            "SELECT payload_jsonb,delivered_at FROM notification_outbox"
+        ).fetchone()
+        assert payload["next_part"] == 1 and payload["message_ids"] == [456]
+        assert delivered is None
+        # Later DB changes do not change frozen chunks while a delivery is retried.
+        conn.execute("UPDATE utterances SET text='Changed after enqueue' WHERE call_id=%s", (cid,))
+    telegram.failure = None
+    restarted = Notifications(database, telegram, 123)
+    for index in range(1, len(messages)):
+        due(database)
+        assert restarted.deliver_one() == (
+            "delivered" if index == len(messages) - 1 else "part_delivered"
+        )
+    assert [text for _, text in telegram.sent] == messages
+    text = "".join(message.split("\n\n", 1)[1] for message in messages)
+    assert text.count("😀") == 120 * 35
+    assert all(text.count(f"Sıra {index:03}:") == 1 for index in range(120))
+    assert "Changed after enqueue" not in text
+    assert restarted.enqueue() == 0
+    with psycopg.connect(database) as conn:
+        assert conn.execute(
+            "SELECT delivered_at IS NOT NULL,jsonb_array_length(payload_jsonb->'message_ids') "
+            "FROM notification_outbox"
+        ).fetchone() == (True, len(messages))
+
+
+def test_legacy_outbox_payload_remains_deliverable(database):
+    worker, telegram = setup(database)
+    cid = create_call(database)
+    with psycopg.connect(database) as conn:
+        conn.execute(
+            "INSERT INTO notification_outbox(id,call_id,target,payload_jsonb) VALUES(%s,%s,%s,%s)",
+            (
+                uuid.uuid4(),
+                cid,
+                worker.target,
+                psycopg.types.json.Jsonb({"version": 1, "text": "Legacy"}),
+            ),
+        )
+    assert worker.deliver_one() == "delivered"
+    assert telegram.sent == [(123, "Legacy")]
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"next_part": -1},
+        {"next_part": True},
+        {"next_part": 1},
+        {"message_ids": [123]},
+        {"messages": ["😀" * 4096]},
+        {"messages": []},
+        {"version": True},
+    ],
+)
+def test_malformed_multipart_state_is_quarantined(changes):
+    payload = dict(version=2, messages=["test"], next_part=0, message_ids=[])
+    payload.update(changes)
+    with pytest.raises(DeliveryError) as error:
+        delivery_part(payload)
+    assert error.value.permanent
+
+
+def test_failed_summary_still_includes_available_dialogue():
+    call = dict(
+        id=uuid.uuid4(),
+        started_at=datetime.now(timezone.utc),
+        ended_at=datetime.now(timezone.utc),
+        from_number_e164=None,
+        job_status="failed",
+        detail_jsonb=None,
+        json_schema_version=None,
+    )
+    messages = notification_messages(call, [("caller", "İlk satır\nİkinci satır", None, None)])
+    assert len(messages) == 1
+    assert "özet" in messages[0] and "hazırlanamadı" in messages[0]
+    assert "Arayan: İlk satır\n    İkinci satır" in messages[0]
 
 
 def pairing_update(**changes):
