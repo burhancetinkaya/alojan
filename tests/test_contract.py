@@ -68,6 +68,7 @@ def test_field_numbers_remain_wire_compatible():
         "format": 6,
         "audio": 7,
         "generation_id": 8,
+        "partial_hint": 9,
     }
     assert {f.name: f.number for f in pb.AudioFrame.DESCRIPTOR.fields} == expected
     assert [f.type for f in pb.AudioFrame.DESCRIPTOR.fields] == [
@@ -79,7 +80,11 @@ def test_field_numbers_remain_wire_compatible():
         Field.TYPE_STRING,
         Field.TYPE_BYTES,
         Field.TYPE_STRING,
+        Field.TYPE_BOOL,
     ]
+    # An omitted hint preserves the old wire payload and scheduling default.
+    assert not pb.AudioFrame.FromString(b"").partial_hint
+    assert pb.AudioFrame(partial_hint=False).SerializeToString() == b""
     services = pb.DESCRIPTOR.services_by_name
     recognition = services["Recognition"].methods[0]
     assert recognition.client_streaming and recognition.server_streaming
