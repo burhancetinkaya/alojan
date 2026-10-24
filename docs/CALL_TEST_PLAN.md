@@ -1,5 +1,12 @@
 # Call acceptance and external validation
 
+## 2026-10-24 — README evidence reconciliation
+
+The README now distinguishes recorded carrier/GPU checks from simulated tests and
+unaccepted quality, latency and capacity targets. This documentation-only update
+adds no carrier test, runtime rollout or gate closure. Existing validation reports
+remain the source of measured results; personal call content is not reproduced.
+
 ## Configurable call capacity planning — 2026-10-24
 
 The owner replaced the two-call proposal with [CAP-01–09](CALL_CAPACITY_PLAN.md):

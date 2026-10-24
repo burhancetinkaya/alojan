@@ -1,5 +1,18 @@
 # Implementation plan
 
+## 2026-10-24 — README implementation snapshot
+
+Documentation follow-up for M2-01/02, M3, M4 and M5-01/03; requirements
+DEC-01/03/06/08/11/13/15 and US-01–08. Replaced the early foundation-only README
+with an as-is account of the native Linux voice pipeline, current model selection,
+message storage, Telegram worker and their limits. Removed personal examples and
+installation identifiers from the README. Capacity, management UI, external-tool
+integration and production hardening remain explicitly pending. This is a
+documentation change, not a model, prompt, deployment or acceptance change.
+Validation: all 23 README links checked on Mac and in an isolated Linux
+documentation copy; whitespace/fence and README personal-data-pattern checks passed.
+No runtime tests or carrier calls were repeated for this prose-only change.
+
 ## 2026-10-24 — Configurable capacity: five per host, fifty total
 
 The owner superseded the two-call proposal with a 50-concurrent-call architecture
