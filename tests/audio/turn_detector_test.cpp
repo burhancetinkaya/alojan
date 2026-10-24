@@ -92,6 +92,56 @@ int main() {
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         require(long_turn.decide("Yarın arayın.", 300, QuestionContext::open) == complete,
                 "bounded history rollover failed");
+        TurnDetector quiet(models);
+        feed(quiet, false, 349);
+        require(!quiet.reminder_due(), "early silence reminder");
+        feed(quiet, false, 1);
+        require(quiet.reminder_due(), "seven-second reminder missing");
+        quiet.receive(weak_onset);
+        quiet.receive(weak_onset);
+        require(!quiet.reminder_due(), "reminder overlaps low-confidence onset");
+        feed(quiet, true, 10);
+        feed(quiet, false, 400);
+        require(!quiet.reminder_due(), "incomplete spoken turn mistaken for idle caller");
+        alojan::TurnSettings sensitive;
+        sensitive.vad_percent = 20;
+        TurnDetector configured(models, sensitive);
+        for (unsigned i = 0; i < 10; ++i)
+            configured.receive(weak_onset);
+        require(configured.has_speech(), "configured VAD threshold ignored");
+        TurnSettings hints;
+        hints.partial_hint = true;
+        TurnDetector cached(models, hints);
+        feed(cached, true, 10);
+        feed(cached, false, 15);
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        require(cached.decide("", 0, QuestionContext::open) == listen,
+                "score alone accepted a turn without transcript coverage");
+        const auto jobs = cached.jobs_started();
+        for (unsigned i = 0; i < 20; ++i) {
+            cached.receive(silence);
+            cached.decide("", 0, QuestionContext::open);
+        }
+        require(cached.jobs_started() == jobs, "fresh score redecoded while coverage was missing");
+        require(cached.decide("Yarın arayın.", 300, QuestionContext::open) == complete,
+                "fresh coverage did not release a cached valid decision");
+        cached.receive(weak_onset);
+        cached.receive(weak_onset);
+        require(cached.decide("Yarın arayın.", 300, QuestionContext::open) == listen &&
+                    cached.probability() < 0,
+                "candidate optimization lost resumption invalidation");
+        TurnDetector aging(models, hints);
+        feed(aging, true, 10);
+        feed(aging, false, 15);
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        aging.decide("", 0, QuestionContext::open);
+        const auto first_job = aging.jobs_started();
+        for (unsigned i = 0; i < 55; ++i) {
+            aging.receive(silence);
+            aging.decide("", 0, QuestionContext::open);
+        }
+        require(aging.jobs_started() > first_job && aging.score_age_ms() == -1,
+                "cached score survived its age bound while coverage remained missing");
         require(runs.load() >= 3, "background inference never ran");
         std::cout << "turn detector: reframing, isolation, stale score, failure and bounded "
                      "history passed\n";

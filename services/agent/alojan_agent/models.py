@@ -3,6 +3,7 @@
 from dataclasses import dataclass, field
 from typing import Literal
 import re
+import uuid
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -35,23 +36,92 @@ def normalize(text):
     return " ".join(re.sub(r"[^\w\s]", "", text.casefold()).split())
 
 
+def acknowledges_note(text):
+    # These observed Turkish forms identify storage acknowledgement, not caller confirmation.
+    normalized = normalize(text)
+    return any(
+        phrase in normalized
+        for phrase in (
+            "not aldım",
+            "not ettim",
+            "notunuza ekledim",
+            "güncelledim",
+            "kaydettim",
+            "kaydedildi",
+            "mesajınızı aldım",
+            "talebinizi aldım",
+            "ileteceğim",
+        )
+    )
+
+
+def offers_more_help(text):
+    # shortcut: recognize observed Turkish invitations; expand with dialogue evidence.
+    normalized = normalize(text)
+    return (
+        "?" in text
+        and "başka" in normalized
+        and any(
+            phrase in normalized
+            for phrase in ("yardımcı", "bir konu", "bir şey", "bir iste", "eklemek")
+        )
+    )
+
+
+def continues_after_goodbye(text):
+    # shortcut: observed turn-reopening markers; broader intent remains model-evaluated.
+    normalized = normalize(text)
+    positions = [
+        (match.start(), continuing)
+        for continuing, pattern in (
+            (True, r"\b(?:bir dakika|bir de|ayrıca)\b"),
+            (
+                False,
+                r"\b(?:iyi günler|hoşça kalın|hoşça kal|görüşürüz|başka bir şey yok|hepsi bu|kapat)\b",
+            ),
+        )
+        for match in re.finditer(pattern, normalized)
+    ]
+    return any(not continuing for _, continuing in positions) and bool(
+        positions and max(positions)[1]
+    )
+
+
 @dataclass
 class Call:
     messages: list[dict] = field(default_factory=list)
     note: Note | None = None
     version: int = 0
     note_id: str | None = None
+    acknowledged_note_version: int = 0
+    further_help_offered: bool = False
     offered_version: int = 0
     offered_turn: int = 0
     last_user: str = ""
+    silence_reminded: bool = False
     finish: bool = False
     active: bool = False
     ended: bool = False
     phrases: dict = field(default_factory=dict)
+    phrase_note_versions: dict = field(default_factory=dict)
+    response_ack_version: int | None = None
+    note_ack_groups: dict = field(default_factory=dict)
     receipts: dict = field(default_factory=dict)
     generation_turns: dict = field(default_factory=dict)
     turns: int = 0
     caller_number: str | None = None
+    routing_session: str = field(default_factory=lambda: uuid.uuid4().hex)
+    timing: object | None = field(default=None, repr=False)
+
+    def acknowledge_playback(self, generation):
+        group = self.note_ack_groups.get(generation)
+        if group is None:
+            return
+        version, count = group
+        if count and all(
+            self.receipts.get((generation, index), (0, False))[1] for index in range(count)
+        ):
+            self.acknowledged_note_version = max(self.acknowledged_note_version, version)
 
     def take_note(self, note):
         if note.confirmed:

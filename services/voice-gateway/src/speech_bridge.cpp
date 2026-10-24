@@ -2,7 +2,9 @@
 #include <algorithm>
 #include <google/protobuf/struct.pb.h>
 #include <google/protobuf/util/json_util.h>
+#include <iostream>
 #include <mutex>
+#include <syncstream>
 
 namespace alojan {
 using namespace std::chrono_literals;
@@ -25,14 +27,16 @@ static std::shared_ptr<grpc::Channel> channel(unsigned port) {
 SpeechBridge::SpeechBridge(std::string call, unsigned asr_port, unsigned tts_port,
                            unsigned capture_frames, std::string response, Deadline deadline,
                            std::shared_ptr<TurnModels> models, QuestionContext context,
-                           bool barge_in, unsigned agent_port, std::string caller_number)
+                           bool barge_in, unsigned agent_port, std::string caller_number,
+                           TurnSettings turn_settings)
     : call_(std::move(call)), caller_number_(std::move(caller_number)),
       response_(std::move(response)), barge_in_(barge_in), capture_frames_(capture_frames),
       deadline_(deadline), models_(std::move(models)), question_context_(context),
-      asr_(channel(asr_port)), tts_(channel(tts_port)),
+      turn_settings_(turn_settings), asr_(channel(asr_port)), tts_(channel(tts_port)),
       agent_(agent_port ? channel(agent_port) : nullptr) {
     if (barge_in_ && !models_)
         throw std::invalid_argument("barge-in requires native turn models");
+    turn_settings_.validate();
     reset_contexts();
 }
 
@@ -124,6 +128,8 @@ bool SpeechBridge::render(char *pcm) noexcept {
             last_sent_ms.store(now_ms());
             if (!phrase_first_playout_ms_.load())
                 phrase_first_playout_ms_.store(now_ms());
+            if (!phrase_waiting_.load() && !response_audio_ms_.load())
+                response_audio_ms_.store(now_ms());
             sent = true;
             break;
         }
@@ -156,19 +162,33 @@ bool SpeechBridge::playout_finished() const noexcept {
 }
 
 bool SpeechBridge::recognize() {
+    recognition_started_ms_ = now_ms();
+    endpoint_silence_ms_ = -1;
+    asr_finished_ms_ = response_tts_ms_ = response_pcm_ms_ = 0;
+    agent_request_ms_.store(0);
+    agent_phrase_ms_.store(0);
+    response_audio_ms_.store(0);
+    turn_reported_ = false;
     recognitions_started.fetch_add(1);
     final_text_.clear();
+    input_event_.clear();
     written.store(0);
     half_close_ms.store(0);
     accepting_input_.store(true);
     state_.store(State::recognizing);
     std::unique_ptr<TurnDetector> detector;
     if (models_)
-        detector = std::make_unique<TurnDetector>(models_);
+        detector = std::make_unique<TurnDetector>(models_, turn_settings_);
     bool turn_ended = false;
     std::mutex partial_mutex;
     std::string partial_text;
     unsigned partial_coverage = 0;
+    unsigned observed_voice = 0, observed_activity = 0, endpoint_coverage = 0, endpoint_stable = 0;
+    std::int64_t candidate = -1, first_score = -1, first_covered = -1, first_stable = -1;
+    std::int64_t blocked_coverage = -1, blocked_stability = -1, blocked_score = -1;
+    std::int64_t blocked_policy = -1, blocked_queue = -1;
+    unsigned max_queued_audio = 0;
+    TurnDecision endpoint_decision = TurnDecision::listen;
     std::int64_t text_changed_ms = now_ms();
     auto stub = contract::Recognition::NewStub(asr_);
     auto stream = stub->StreamRecognize(asr_context_.get());
@@ -238,6 +258,16 @@ bool SpeechBridge::recognize() {
             }
             frame.set_sequence(written.load());
             frame.set_audio(pcm.data(), pcm.size());
+            // A hint rides on validated PCM and expires with the next frame. An old
+            // decoder safely ignores it; turn acceptance still requires fresh coverage.
+            frame.set_partial_hint(false);
+            if (detector && turn_settings_.partial_hint) {
+                std::lock_guard lock(partial_mutex);
+                frame.set_partial_hint(detector->has_speech() && detector->probability() >= 0.75f &&
+                                       detector->silence_ms() >= turn_settings_.candidate_ms &&
+                                       detector->audio_ms() - detector->last_activity_ms() >= 200 &&
+                                       partial_coverage < detector->last_voice_ms());
+            }
             if (!stream->Write(frame))
                 break;
             written.fetch_add(1);
@@ -249,14 +279,66 @@ bool SpeechBridge::recognize() {
                     unsigned stable = 0;
                     {
                         std::lock_guard lock(partial_mutex);
+                        endpoint_coverage = partial_coverage;
                         if (partial_coverage >= detector->last_voice_ms() && partial_coverage > 0) {
                             text = partial_text;
                             stable = static_cast<unsigned>(now_ms() - text_changed_ms);
                         }
                     }
                     decision = detector->decide(text, stable, question_context_);
+                    endpoint_decision = decision;
+                    endpoint_stable = stable;
+                    if (observed_voice != detector->last_voice_ms() ||
+                        observed_activity != detector->last_activity_ms()) {
+                        observed_voice = detector->last_voice_ms();
+                        observed_activity = detector->last_activity_ms();
+                        candidate = first_score = first_covered = first_stable = -1;
+                        blocked_coverage = blocked_stability = blocked_score = -1;
+                        blocked_policy = blocked_queue = -1;
+                        max_queued_audio = 0;
+                    }
+                    if (detector->has_speech() &&
+                        detector->silence_ms() >= turn_settings_.candidate_ms) {
+                        const auto silence = detector->silence_ms();
+                        const auto queued =
+                            static_cast<unsigned>(input_.queued_frames() + replay_.size()) * 20;
+                        max_queued_audio = std::max(max_queued_audio, queued);
+                        if (candidate < 0)
+                            candidate = silence;
+                        const bool covered =
+                            endpoint_coverage >= detector->last_voice_ms() && endpoint_coverage > 0;
+                        if (!covered)
+                            blocked_coverage = silence;
+                        else if (first_covered < 0)
+                            first_covered = silence;
+                        if (!covered || stable < 200)
+                            blocked_stability = silence;
+                        else if (first_stable < 0)
+                            first_stable = silence;
+                        if (detector->probability() < 0)
+                            blocked_score = silence;
+                        else if (first_score < 0)
+                            first_score = silence;
+                        if (decision == TurnDecision::listen)
+                            blocked_policy = silence;
+                        if (queued)
+                            blocked_queue = silence;
+                    }
                 } catch (...) {
                     decision = TurnDecision::detector_failed;
+                }
+                if (agent_ && barge_in_ && decision != TurnDecision::detector_failed &&
+                    input_.empty() && replay_.empty()) {
+                    if (!reminder_sent_ && detector->reminder_due()) {
+                        reminder_sent_ = true;
+                        input_event_ = "silence_reminder";
+                        silence_reminders.fetch_add(1);
+                    } else if (decision == TurnDecision::incomplete_timeout) {
+                        input_event_ = "clarification";
+                        clarification_requests.fetch_add(1);
+                    }
+                    if (!input_event_.empty())
+                        break;
                 }
                 if (decision == TurnDecision::detector_failed ||
                     decision == TurnDecision::incomplete_timeout) {
@@ -266,6 +348,7 @@ bool SpeechBridge::recognize() {
                 }
                 // Consume already captured speech before accepting a background decision.
                 if (decision == TurnDecision::complete && input_.empty() && replay_.empty()) {
+                    endpoint_silence_ms_ = detector->silence_ms();
                     turn_silence_ms.store(detector->silence_ms());
                     turn_probability_milli.store(
                         static_cast<unsigned>(detector->probability() * 1000));
@@ -276,13 +359,45 @@ bool SpeechBridge::recognize() {
                 }
             }
         }
-        if (detector && !turn_ended && state() != State::failed && !stop_.load())
+        if (agent_ && barge_in_ && detector && !detector->has_speech() &&
+            written.load() == capture_frames_ && state() != State::failed)
+            input_event_ = "silence_timeout";
+        if (detector && !turn_ended && input_event_.empty() && state() != State::failed &&
+            !stop_.load())
             fail(Error::incomplete_turn);
-        if (stop_.load() || overflow_.load() || (!turn_ended && written.load() != capture_frames_))
+        if (!input_event_.empty() || stop_.load() || overflow_.load() ||
+            (!turn_ended && written.load() != capture_frames_))
             asr_context_->TryCancel();
-        accepting_input_.store(false);
+        // Recovery hands queued input directly to the echo monitor after ASR cancellation.
+        accepting_input_.store(!input_event_.empty());
         half_close_ms.store(now_ms());
         stream->WritesDone();
+        if (detector) {
+            std::osyncstream(std::cout)
+                << "event=endpoint_diagnostics call_trace=" << call_
+                << " generation=" << generation_
+                << " decision=" << static_cast<int>(endpoint_decision) << " accepted=" << turn_ended
+                << " audio_ms=" << detector->audio_ms()
+                << " last_voice_audio_ms=" << detector->last_voice_ms()
+                << " last_activity_audio_ms=" << detector->last_activity_ms()
+                << " candidate_silence_ms=" << candidate
+                << " first_score_silence_ms=" << first_score
+                << " first_covered_silence_ms=" << first_covered
+                << " first_stable_silence_ms=" << first_stable
+                << " last_coverage_block_silence_ms=" << blocked_coverage
+                << " last_stability_block_silence_ms=" << blocked_stability
+                << " last_score_block_silence_ms=" << blocked_score
+                << " last_policy_block_silence_ms=" << blocked_policy
+                << " last_queue_block_silence_ms=" << blocked_queue
+                << " max_queue_audio_ms=" << max_queued_audio
+                << " score_audio_age_ms=" << detector->score_age_ms()
+                << " partial_coverage_audio_ms=" << endpoint_coverage
+                << " partial_stable_wall_ms=" << endpoint_stable
+                << " decision_silence_ms=" << detector->silence_ms()
+                << " probability_milli=" << static_cast<int>(detector->probability() * 1000)
+                << " detector_jobs=" << detector->jobs_started()
+                << " elapsed_wall_ms=" << now_ms() - recognition_started_ms_ << std::endl;
+        }
     } catch (...) {
         asr_context_->TryCancel();
         throw;
@@ -292,6 +407,13 @@ bool SpeechBridge::recognize() {
     asr_finished_ms_ = now_ms();
     if (stop_.load())
         return false;
+    if (!input_event_.empty() && valid.load() && !overflow_.load() && state() != State::failed) {
+        // Silence/uncertain input is a control event, never a fabricated caller utterance.
+        final_text_.clear();
+        final_bytes.store(0);
+        invalidate(asr_, generation_);
+        return true;
+    }
     if (!status.ok() || !valid.load() || !final || !final_bytes.load() ||
         (!turn_ended && written.load() != capture_frames_) || overflow_.load() ||
         state() == State::failed) {
@@ -324,6 +446,8 @@ bool SpeechBridge::synthesize_phrase(const std::string &text, const std::string 
             first_pcm_ms.store(now_ms());
         if (phrase_generated == 0)
             phrase_first_pcm_ms_ = now_ms();
+        if (!phrase_waiting_.load() && !response_pcm_ms_)
+            response_pcm_ms_ = now_ms();
         std::array<char, 328> tagged{};
         std::memcpy(tagged.data(), &epoch, 8);
         std::memcpy(tagged.data() + 8, frame.audio().data(), 320);
@@ -371,7 +495,7 @@ void SpeechBridge::synthesize() {
     monitor_stop_.store(false);
     const auto epoch = static_cast<std::uint64_t>(interruptions.load()) + 1;
     output_epoch_.store(epoch);
-    waiting_music_start_ms_.store(agent_ ? now_ms() + 800 : 0);
+    waiting_music_start_ms_.store(agent_ && input_event_.empty() ? now_ms() + 800 : 0);
     state_.store(State::synthesizing);
     responses_started.fetch_add(1);
     std::jthread monitor_thread;
@@ -429,6 +553,9 @@ void SpeechBridge::synthesize() {
                     tts_context_->TryCancel();
             }
             const auto before = round_played_.load();
+            phrase_waiting_.store(waiting);
+            if (!waiting && !response_tts_ms_)
+                response_tts_ms_ = now_ms();
             const auto id = generation_ + (agent_ ? "-p" + std::to_string(index) : "");
             phrase_first_playout_ms_.store(0);
             phrase_first_pcm_ms_ = 0;
@@ -464,6 +591,7 @@ void SpeechBridge::synthesize() {
         monitor_stop_.store(true);
         asr_context_->TryCancel();
         monitor_thread.join();
+        // Pre-roll alone cannot veto a farewell; run() resumes on confirmed interruption.
         invalidate(asr_, generation_ + "-monitor");
         // Invalidation precedes this barrier; a callback already handing off PCM may finish.
         while (rendering_.load())
@@ -498,9 +626,12 @@ void SpeechBridge::run() noexcept {
     try {
         const unsigned max_turns = agent_ ? 16 : 8;
         for (unsigned turn = 1; turn <= max_turns && !stop_.load(); ++turn) {
-            if (!recognize())
+            const bool recognized = recognize();
+            if (recognized)
+                synthesize();
+            report_turn();
+            if (!recognized)
                 break;
-            synthesize();
             if (state() == State::failed || stop_.load() ||
                 (!interrupted_.load() && (!agent_ || finish_call_.load())))
                 break;
@@ -512,7 +643,7 @@ void SpeechBridge::run() noexcept {
             if (agent_)
                 invalidate(agent_, generation_);
             // Recognition owns the input again only after the monitor has joined.
-            if (!interrupted_.load()) {
+            if (!interrupted_.load() && replay_.empty()) {
                 std::array<char, 640> pending{};
                 while (input_.pop(pending.data())) {
                 }
@@ -527,6 +658,8 @@ void SpeechBridge::run() noexcept {
     } catch (...) {
         fail(Error::internal);
     }
+    if (!turn_reported_)
+        report_turn();
     if (stop_.load() || state() == State::failed) {
         invalidate(asr_, generation_);
         invalidate(tts_, generation_);
@@ -541,5 +674,34 @@ void SpeechBridge::run() noexcept {
             std::this_thread::sleep_for(5ms);
         end_agent();
     }
+}
+
+void SpeechBridge::report_turn() {
+    turn_reported_ = true;
+    const auto elapsed = [](std::int64_t end, std::int64_t begin) {
+        return begin > 0 && end >= begin ? end - begin : -1;
+    };
+    const auto audio = response_audio_ms_.load();
+    const auto endpoint_audio = elapsed(audio, half_close_ms.load());
+    const char *outcome = error() != Error::none ? "failed"
+                          : stop_.load()         ? "cancelled"
+                          : interrupted_.load()  ? "interrupted"
+                                                 : "completed";
+    // This is a gateway-generated opaque ID, never the carrier SIP ID or caller number.
+    // Worker-only logging also covers failed/disconnected turns; callbacks only set atomics.
+    std::osyncstream(std::cout)
+        << "event=turn_latency call_trace=" << call_ << " generation=" << generation_
+        << " status=" << outcome << " error=" << static_cast<int>(error())
+        << " kind=" << (input_event_.empty() ? "response" : input_event_)
+        << " elapsed_ms=" << now_ms() - recognition_started_ms_
+        << " endpoint_silence_audio_ms=" << endpoint_silence_ms_
+        << " asr_finalize_ms=" << elapsed(asr_finished_ms_, half_close_ms.load())
+        << " agent_first_phrase_ms=" << elapsed(agent_phrase_ms_.load(), agent_request_ms_.load())
+        << " tts_first_chunk_ms=" << elapsed(response_pcm_ms_, response_tts_ms_)
+        << " pcm_to_output_ms=" << elapsed(audio, response_pcm_ms_)
+        << " endpoint_to_audio_ms=" << endpoint_audio << " vad_end_to_audio_estimate_ms="
+        << (endpoint_silence_ms_ >= 0 && endpoint_audio >= 0 ? endpoint_silence_ms_ + endpoint_audio
+                                                             : -1)
+        << std::endl;
 }
 } // namespace alojan

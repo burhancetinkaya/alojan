@@ -108,3 +108,7 @@ add_executable(waiting-music-test tests/audio/waiting_music_test.cpp
   services/voice-gateway/src/waiting_music.cpp)
 target_include_directories(waiting-music-test PRIVATE services/voice-gateway/src)
 add_test(NAME waiting-music COMMAND waiting-music-test)
+
+add_executable(endpoint-replay-probe tests/grpc/endpoint_replay_probe.cpp)
+target_link_libraries(endpoint-replay-probe PRIVATE speech-bridge)
+target_compile_options(endpoint-replay-probe PRIVATE -Wall -Wextra -Wpedantic)

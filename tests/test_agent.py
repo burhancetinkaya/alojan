@@ -13,6 +13,12 @@ from alojan_agent.service import AgentService, create_server
 from alojan_agent.mcp_boundary import owner_read_adapter
 
 
+def speech_tool(text):
+    from agents.testing import function_call
+
+    return function_call("respond", {"text": text}, call_id="speech")
+
+
 class MemoryStore:
     def __init__(self):
         self.utterances = []
@@ -42,6 +48,9 @@ class Script:
     async def stream(self, call, save_note):
         self.contexts.append(list(call.messages))
         try:
+            if self.mode == "ack":
+                yield "Mesajınızı not aldım."
+                return
             if self.mode == "wait":
                 await asyncio.sleep(60)
             if self.mode == "slow":
@@ -296,7 +305,7 @@ def test_summary_rejects_promised_actions_and_extra_fields():
 @pytest.mark.parametrize("mode", ["saved", "save-failure", "false-confirmation"])
 def test_message_save_keeps_conversation_open_without_faking_confirmation(mode):
     from agents import UserError
-    from agents.testing import ScriptedModel, ModelStep, function_call, assistant_message
+    from agents.testing import ScriptedModel, ModelStep, function_call
     from openai import AsyncOpenAI
     from alojan_agent.backend import Backend
 
@@ -307,12 +316,10 @@ def test_message_save_keeps_conversation_open_without_faking_confirmation(mode):
         steps = [ModelStep(output=[function_call("take_note", draft.model_dump(), call_id="note")])]
         if mode == "saved":
             steps.append(
-                ModelStep(
-                    output=[assistant_message("Mesajınızı not aldım. Başka bir isteğiniz var mı?")]
-                )
+                ModelStep(output=[speech_tool("Mesajınızı not aldım. Başka bir isteğiniz var mı?")])
             )
         if mode == "false-confirmation":
-            steps.append(ModelStep(output=[assistant_message("Mesajınızı alabilirim.")]))
+            steps.append(ModelStep(output=[speech_tool("Mesajınızı alabilirim.")]))
         backend = Backend(
             client=AsyncOpenAI(api_key="synthetic-not-a-secret"), model=ScriptedModel(steps)
         )
@@ -384,15 +391,13 @@ def test_real_sdk_cancellation_closes_pending_model():
     "text", ["Kapat.", "Hoşça kalın!", "Aramayı bitir", "Kapatma, mesajım var."]
 )
 def test_exact_goodbye_bypasses_model_without_confirming_notes(text):
-    from agents.testing import ScriptedModel, ModelStep, assistant_message
+    from agents.testing import ScriptedModel, ModelStep
     from openai import AsyncOpenAI
     from alojan_agent.backend import Backend
 
     async def run():
         stop = text != "Kapatma, mesajım var."
-        model = ScriptedModel(
-            [] if stop else [ModelStep(output=[assistant_message("Sizi dinliyorum.")])]
-        )
+        model = ScriptedModel([] if stop else [ModelStep(output=[speech_tool("Sizi dinliyorum.")])])
         backend = Backend(client=AsyncOpenAI(api_key="synthetic-not-a-secret"), model=model)
         call = Call(last_user=text)
         call.take_note(Note(subject="Test", message="Henüz teyit edilmedi."))
@@ -412,10 +417,10 @@ def test_exact_goodbye_bypasses_model_without_confirming_notes(text):
 
 
 @pytest.mark.parametrize("closing_delivered", [True, False])
-def test_acknowledgement_receipt_neither_closes_nor_confirms_note(closing_delivered):
-    from agents.testing import ScriptedModel, ModelStep, function_call, assistant_message
+def test_note_ack_receipt_controls_repeated_closing_without_confirmation(closing_delivered):
+    from agents.testing import ScriptedModel, ModelStep, function_call
     from openai import AsyncOpenAI
-    from alojan_agent.backend import Backend
+    from alojan_agent.backend import Backend, FAREWELL, FURTHER_HELP
 
     async def run():
         draft = Note(subject="Arama", message="Yarın arayın.")
@@ -426,7 +431,20 @@ def test_acknowledgement_receipt_neither_closes_nor_confirms_note(closing_delive
                     ModelStep(
                         output=[function_call("take_note", draft.model_dump(), call_id="note")]
                     ),
-                    ModelStep(output=[assistant_message("Mesajınızı not aldım.")]),
+                    ModelStep(output=[speech_tool("Mesajınızı not aldım.")]),
+                    ModelStep(
+                        output=[
+                            function_call(
+                                "finish_call",
+                                {
+                                    "reason": "caller_finished",
+                                    "confirmed_message": None,
+                                    "closing_text": "Talebinizi not aldım, iyi günler dilerim.",
+                                },
+                                call_id="close",
+                            )
+                        ]
+                    ),
                 ]
             ),
         )
@@ -439,7 +457,7 @@ def test_acknowledgement_receipt_neither_closes_nor_confirms_note(closing_delive
             async with grpc.aio.insecure_channel(f"127.0.0.1:{port}") as channel:
                 stub = rpc.AgentStub(channel)
                 events = await collect(stub, request(text="Yarın arayın."))
-                assert [e.text for e in events[:-1]] == ["Mesajınızı not aldım."]
+                assert [e.text for e in events[:-1]] == ["Mesajınızı not aldım.", FURTHER_HELP]
                 assert not json.loads(events[-1].detail_json)["finish_call"]
                 await stub.ReportPlayback(
                     pb.PlaybackReport(
@@ -453,12 +471,71 @@ def test_acknowledgement_receipt_neither_closes_nor_confirms_note(closing_delive
                 )
                 assert not store.notes[("one", 1)].confirmed
                 assert not service.calls["one"].offered_version
+                # Semantic acknowledgements require the complete response, including its question.
+                assert service.calls["one"].acknowledged_note_version == 0
+                assert not service.calls["one"].further_help_offered
+                await stub.ReportPlayback(
+                    pb.PlaybackReport(
+                        call_id="one",
+                        generation_id="turn-1",
+                        phrase_index=1,
+                        sent_audio_ms=500,
+                        completed=closing_delivered,
+                    ),
+                    timeout=2,
+                )
+                assert service.calls["one"].further_help_offered == closing_delivered
+                assert service.calls["one"].acknowledged_note_version == int(closing_delivered)
+                assert len(store.notes) == 1
+                closing = await collect(stub, request(gen="turn-2", text="Tamam, teşekkür ederim."))
+                assert " ".join(e.text for e in closing[:-1]) == (
+                    FAREWELL if closing_delivered else FURTHER_HELP
+                )
+                assert json.loads(closing[-1].detail_json)["finish_call"] == closing_delivered
                 assert len(store.notes) == 1
         finally:
             await server.stop(0)
             await backend.close()
 
     asyncio.run(run())
+
+
+def test_late_acknowledgement_receipt_does_not_acknowledge_a_newer_note():
+    async def check(stub, control, service):
+        call = service.calls["one"] = Call()
+        service.calls["other"] = Call()
+        call.take_note(Note(subject="Arama", message="Pazartesi arayın."))
+        call.note_id = "durable-1"
+        await collect(stub, request())
+        assert call.phrase_note_versions[("turn-1", 0)] == 1
+        call.take_note(Note(subject="Arama", message="Salı arayın."))
+        call.note_id = "durable-2"
+        old = pb.PlaybackReport(
+            call_id="one",
+            generation_id="turn-1",
+            phrase_index=0,
+            sent_audio_ms=500,
+            completed=True,
+        )
+        await stub.ReportPlayback(old, timeout=2)
+        assert call.acknowledged_note_version == 1 and call.version == 2
+        await collect(stub, request(gen="turn-2"))
+        await stub.ReportPlayback(
+            pb.PlaybackReport(
+                call_id="one",
+                generation_id="turn-2",
+                phrase_index=0,
+                sent_audio_ms=500,
+                completed=True,
+            ),
+            timeout=2,
+        )
+        await stub.ReportPlayback(old, timeout=2)
+        assert call.acknowledged_note_version == 2
+        assert service.calls["other"].acknowledged_note_version == 0
+        assert not call.note.confirmed
+
+    asyncio.run(scenario(check, "ack"))
 
 
 def test_readback_cannot_confirm_an_unrelated_later_turn_or_late_receipt():
@@ -533,11 +610,13 @@ def test_sdk_commentary_is_not_spoken_twice_or_before_tool_readback(mode):
                 )
             )
             expected = "Adınızı alabilir miyim?"
+        if mode not in {"tool", "refusal"}:
+            output.append(speech_tool(expected))
         steps = [ModelStep(output=output)]
         if mode == "tool":
-            steps.append(ModelStep(output=[assistant_message(expected)]))
+            steps.append(ModelStep(output=[speech_tool(expected)]))
         if mode == "refusal":
-            steps.append(ModelStep(output=[final]))
+            steps.append(ModelStep(output=[final, speech_tool(expected)]))
         backend = Backend(
             client=AsyncOpenAI(api_key="synthetic-not-a-secret"), model=ScriptedModel(steps)
         )
@@ -576,14 +655,18 @@ def test_sdk_commentary_is_not_spoken_twice_or_before_tool_readback(mode):
     asyncio.run(run())
 
 
-@pytest.mark.parametrize("phase", ["commentary", "final_answer"])
-def test_sdk_final_speech_streams_early_but_cancelled_commentary_never_leaks(phase):
+@pytest.mark.parametrize("phase", ["commentary", "final_answer", "speech_tool"])
+def test_cancelled_unvalidated_speech_never_leaks(phase):
     from agents.testing import ScriptedModel, ModelStep, assistant_message
     from openai import AsyncOpenAI
     from alojan_agent.backend import Backend
 
     async def run():
-        message = assistant_message("Adınızı alabilir miyim?").model_copy(update={"phase": phase})
+        message = (
+            speech_tool("Adınızı alabilir miyim?")
+            if phase == "speech_tool"
+            else assistant_message("Adınızı alabilir miyim?").model_copy(update={"phase": phase})
+        )
         model = ScriptedModel([ModelStep(output=[message])])
         original = model.stream_response
         blocked = asyncio.Event()
@@ -609,13 +692,10 @@ def test_sdk_final_speech_streams_early_but_cancelled_commentary_never_leaks(pha
         pending = asyncio.create_task(anext(stream))
         try:
             await asyncio.wait_for(blocked.wait(), 1)
-            if phase == "final_answer":
-                assert await asyncio.wait_for(pending, 1) == "Adınızı alabilir miyim?"
-            else:
-                assert not pending.done()
-                pending.cancel()
-                with pytest.raises(asyncio.CancelledError):
-                    await pending
+            assert not pending.done()
+            pending.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await pending
             await stream.aclose()
             await asyncio.wait_for(closed.wait(), 1)
         finally:
@@ -649,10 +729,8 @@ def test_no_message_farewell_requests_hangup_without_inventing_a_note(mode):
                     call_id="exit",
                 )
             ]
-        elif mode == "question":
-            output.append(question)
-        elif mode == "draft":
-            output.append(question)
+        elif mode in {"question", "draft"}:
+            output.extend([question, speech_tool("Başka bir mesajınız var mı?")])
         backend = Backend(
             client=AsyncOpenAI(api_key="synthetic-not-a-secret"),
             model=ScriptedModel([ModelStep(output=output)]),
@@ -664,20 +742,27 @@ def test_no_message_farewell_requests_hangup_without_inventing_a_note(mode):
         await server.start()
         try:
             async with grpc.aio.insecure_channel(f"127.0.0.1:{port}") as channel:
-                events = await collect(
-                    rpc.AgentStub(channel),
-                    request(text="Ben daha sonra tekrar ararım, teşekkürler."),
+                stream = rpc.AgentStub(channel).RunTurn(
+                    request(text="Ben daha sonra tekrar ararım, teşekkürler."), timeout=2
                 )
-                should_finish = mode in {"tool", "final", "commentary"}
-                assert json.loads(events[-1].detail_json)["finish_call"] == should_finish
-                assert not store.notes and service.calls["one"].note is None
-                speech = " ".join(e.text for e in events[:-1])
+                events = []
+                if mode in {"final", "commentary"}:
+                    with pytest.raises(grpc.aio.AioRpcError):
+                        async for event in stream:
+                            events.append(event)
+                else:
+                    events = [event async for event in stream]
+                should_finish = mode == "tool"
+                call = service.calls["one"]
+                assert call.finish == should_finish
+                assert not store.notes and call.note is None
+                speech = " ".join(e.text for e in events if e.type == "text_delta")
                 if should_finish:
                     assert speech == FAREWELL
-                elif mode == "draft":
+                elif mode in {"question", "draft"}:
                     assert speech == "Başka bir mesajınız var mı?"
                 else:
-                    assert speech.endswith("Başka bir mesajınız var mı?")
+                    assert not speech and not events
         finally:
             await server.stop(0)
             await backend.close()
@@ -718,7 +803,7 @@ def test_failed_farewell_stream_cannot_request_hangup():
 
 
 def test_note_addition_and_contextual_farewell_are_separate_from_storage():
-    from agents.testing import ScriptedModel, ModelStep, function_call, assistant_message
+    from agents.testing import ScriptedModel, ModelStep, function_call
     from openai import AsyncOpenAI
     from alojan_agent.backend import Backend
 
@@ -730,9 +815,9 @@ def test_note_addition_and_contextual_farewell_are_separate_from_storage():
         farewell = "Aradığınız için teşekkür ederim. Size iyi günler dilerim."
         steps = [
             ModelStep(output=[function_call("take_note", initial.model_dump(), call_id="save1")]),
-            ModelStep(output=[assistant_message("Mesajınızı aldım. Başka bir isteğiniz var mı?")]),
+            ModelStep(output=[speech_tool("Mesajınızı aldım. Başka bir isteğiniz var mı?")]),
             ModelStep(output=[function_call("take_note", revised.model_dump(), call_id="save2")]),
-            ModelStep(output=[assistant_message("Bunu da notunuza ekledim.")]),
+            ModelStep(output=[speech_tool("Bunu da notunuza ekledim.")]),
             ModelStep(
                 output=[
                     function_call(
@@ -797,7 +882,7 @@ def test_note_addition_and_contextual_farewell_are_separate_from_storage():
     ],
 )
 def test_finish_refuses_storage_only_reason_or_non_farewell_text(reason, closing):
-    from agents.testing import ScriptedModel, ModelStep, function_call, assistant_message
+    from agents.testing import ScriptedModel, ModelStep, function_call
     from openai import AsyncOpenAI
     from alojan_agent.backend import Backend
 
@@ -815,7 +900,7 @@ def test_finish_refuses_storage_only_reason_or_non_farewell_text(reason, closing
                     )
                 ]
             ),
-            ModelStep(output=[assistant_message("Sizi dinliyorum.")]),
+            ModelStep(output=[speech_tool("Sizi dinliyorum.")]),
         ]
         backend = Backend(
             client=AsyncOpenAI(api_key="synthetic-not-a-secret"), model=ScriptedModel(steps)
@@ -832,3 +917,178 @@ def test_finish_refuses_storage_only_reason_or_non_farewell_text(reason, closing
             await backend.close()
 
     asyncio.run(run())
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "İzlediğiniz için teşekkür ederim.",
+        "izlediğiniz için teşekkür ederim!",
+        "İzlediğiniz için teşekkürler.",
+        "Altyazı M.K.",
+    ],
+)
+def test_unreliable_turn_clarifies_without_model_tools_or_hangup(text):
+    from agents.testing import ScriptedModel
+    from openai import AsyncOpenAI
+    from alojan_agent.backend import Backend, CLARIFICATION
+
+    async def run():
+        backend = Backend(
+            client=AsyncOpenAI(api_key="synthetic-not-a-secret"), model=ScriptedModel([])
+        )
+        store = MemoryStore()
+        service = AgentService(backend, store)
+        question = "Hangi konuda görüşmek istemiştiniz?"
+        call = Call()
+        call.add_message("assistant", question)
+        note = Note(subject="Test", message="Önceki not korunmalı.")
+        call.take_note(note)
+        service.calls["one"] = call
+        server = create_server(service)
+        port = server.add_insecure_port("127.0.0.1:0")
+        await server.start()
+        try:
+            async with grpc.aio.insecure_channel(f"127.0.0.1:{port}") as channel:
+                events = await collect(rpc.AgentStub(channel), request(text=text))
+                assert " ".join(e.text for e in events[:-1]) == CLARIFICATION
+                assert json.loads(events[-1].detail_json) == {"finish_call": False}
+                assert call.note == note and call.version == 1 and not call.ended
+                assert not store.notes
+        finally:
+            await server.stop(0)
+            await backend.close()
+
+    asyncio.run(run())
+
+
+def test_clarification_allows_retry_and_keeps_suspect_text_out_of_model_context():
+    from agents.testing import ScriptedModel, ModelStep
+    from openai import AsyncOpenAI
+    from alojan_agent.backend import Backend, CLARIFICATION
+
+    async def run():
+        model = ScriptedModel(
+            [ModelStep(output=[speech_tool("Sorunuzu iletebilirim, sizi dinliyorum.")])]
+        )
+        original = model.stream_response
+        observed = []
+
+        async def inspect(*args, **kwargs):
+            observed.append(args[1])
+            async for event in original(*args, **kwargs):
+                yield event
+
+        model.stream_response = inspect
+        backend = Backend(client=AsyncOpenAI(api_key="synthetic-not-a-secret"), model=model)
+        text = "İzlediğiniz için teşekkür ederim."
+        call = Call(last_user=text)
+        call.add_message("assistant", "Hangi konuda arıyorsunuz?")
+        call.add_message("user", text)
+
+        async def save(*args):
+            raise AssertionError("no note requested")
+
+        try:
+            assert "".join([p async for p in backend.stream(call, save)]) == CLARIFICATION
+            assert not observed and not call.finish
+            call.add_message("assistant", CLARIFICATION)
+            call.last_user = "Orion Accredit ile ilgili soru sormak istiyorum."
+            call.add_message("user", call.last_user)
+            assert "dinliyorum" in "".join([p async for p in backend.stream(call, save)])
+            assert len(observed) == 1 and not call.finish
+            assert any(m["content"] == text for m in call.messages)
+            assert not any(m.get("content") == text for m in observed[0])
+            assert any(m.get("content") == call.last_user for m in observed[0])
+            call.last_user = "Kapat."
+            assert "".join([p async for p in backend.stream(call, save)]) == "Hoşça kalın."
+            assert call.finish and len(observed) == 1
+        finally:
+            await backend.close()
+
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["Teşekkürler, bir sorum daha var.", "Videoda izlediğiniz için teşekkür ederim deniyor."],
+)
+def test_legitimate_message_containing_suspect_words_is_not_discarded(text):
+    from agents.testing import ScriptedModel, ModelStep
+    from openai import AsyncOpenAI
+    from alojan_agent.backend import Backend
+
+    async def run():
+        backend = Backend(
+            client=AsyncOpenAI(api_key="synthetic-not-a-secret"),
+            model=ScriptedModel([ModelStep(output=[speech_tool("Sizi dinliyorum.")])]),
+        )
+        call = Call(last_user=text)
+        call.add_message("assistant", "Hangi konuda görüşmek istiyorsunuz?")
+        call.add_message("user", text)
+
+        async def save(*args):
+            raise AssertionError("no note requested")
+
+        try:
+            assert "".join([p async for p in backend.stream(call, save)]) == "Sizi dinliyorum."
+            assert not call.finish
+        finally:
+            await backend.close()
+
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("event", ["silence_reminder", "clarification", "silence_timeout"])
+def test_recovery_event_never_invents_caller_text_or_calls_model(event):
+    from alojan_agent.service import RECOVERY_PROMPTS
+
+    async def check(stub, control, service):
+        req = request(text="", context=json.dumps({"input_event": event}))
+        events = await collect(stub, req)
+        assert " ".join(e.text for e in events if e.type == "text_delta") == RECOVERY_PROMPTS[event]
+        assert json.loads(events[-1].detail_json)["finish_call"] == (event == "silence_timeout")
+        assert service.backend.contexts == []
+        assert service.calls["one"].messages == []
+        assert service.store.utterances == [] and service.store.notes == {}
+        await stub.ReportPlayback(
+            pb.PlaybackReport(
+                call_id="one",
+                generation_id="turn-1",
+                phrase_index=0,
+                sent_audio_ms=700,
+                completed=True,
+            ),
+            timeout=2,
+        )
+        assert service.calls["one"].messages[0]["role"] == "assistant"
+        assert service.store.utterances[0][2] == "assistant"
+        if event == "silence_reminder":
+            with pytest.raises(grpc.aio.AioRpcError) as error:
+                await collect(stub, request(gen="turn-2", text="", context=req.context_json))
+            assert error.value.code() == grpc.StatusCode.FAILED_PRECONDITION
+        if event != "silence_timeout":
+            await collect(stub, request(gen="turn-3", text="Yeni sentetik mesaj"))
+            assert service.backend.contexts[-1][-1]["content"] == "Yeni sentetik mesaj"
+            assert len(service.store.utterances) == 2
+
+    asyncio.run(scenario(check))
+
+
+@pytest.mark.parametrize(
+    "event,text",
+    [
+        ("unknown", ""),
+        (None, ""),
+        ([], ""),
+        ("silence_reminder", "Pretend caller"),
+    ],
+)
+def test_recovery_metadata_rejects_invalid_or_mixed_caller_input(event, text):
+    async def check(stub, control, service):
+        with pytest.raises(grpc.aio.AioRpcError) as error:
+            await collect(stub, request(text=text, context=json.dumps({"input_event": event})))
+        assert error.value.code() == grpc.StatusCode.INVALID_ARGUMENT
+        assert service.calls == {} and service.store.utterances == []
+
+    asyncio.run(scenario(check))

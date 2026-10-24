@@ -43,6 +43,7 @@ void SpeechBridge::monitor() noexcept {
             std::array<float, 256> vad_state{};
             unsigned pending = 0, samples = 0, voiced_ms = 0, last_voice = 0;
             bool acknowledged = false;
+            unsigned last_activity = 0;
             std::deque<std::array<char, 640>> pre_roll;
             contract::AudioFrame frame;
             frame.set_call_id(call_);
@@ -79,6 +80,8 @@ void SpeechBridge::monitor() noexcept {
                     if (pending != 512)
                         continue;
                     const auto probability = models_->vad(vad, vad_state);
+                    if (probability >= 0.10f)
+                        last_activity = samples;
                     if (probability >= 0.5f) {
                         if ((samples - last_voice) / 16 > 800) {
                             voiced_ms = 0;
@@ -127,6 +130,11 @@ void SpeechBridge::monitor() noexcept {
                     break;
                 }
             }
+            // Preserve speech that starts near the end of a recovery prompt, even before
+            // it meets the interruption threshold. Echo-filtered pre-roll stays bounded.
+            if (!input_event_.empty() && !interrupted_.load() && last_activity &&
+                (samples - last_activity) / 16 < 800 && !stop_.load() && state() != State::failed)
+                replay_ = std::move(pre_roll);
         } catch (...) {
             fail(Error::turn_detection);
         }

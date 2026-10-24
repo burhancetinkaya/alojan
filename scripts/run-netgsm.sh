@@ -15,6 +15,7 @@ case "${ALOJAN_VOICE_PROFILE:-greeting}" in
     agent)
         set -- --max-call-seconds 120 --turn-model-dir "$root/.local/turn-models" \
             --barge-in 1 --asr-port "${ALOJAN_ASR_PORT:-15171}" \
+            --turn-partial-hint "${ALOJAN_TURN_PARTIAL_HINT:-0}" \
             --agent-port "${ALOJAN_AGENT_PORT:-15073}"
         ;;
     *) echo "Unknown ALOJAN_VOICE_PROFILE" >&2; exit 2 ;;

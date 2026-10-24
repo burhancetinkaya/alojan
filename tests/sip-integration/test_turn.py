@@ -64,6 +64,25 @@ def run_case(tmp_path, speech_services, source, codec=8, expected="complete"):
                 assert 500 <= metrics["turn_silence_ms"] < 2000
                 assert metrics["turn_probability_milli"] >= 500
                 assert metrics["tts_frames"] == 100
+                latency = next(
+                    x for x in contents.splitlines() if x.startswith("event=turn_latency")
+                )
+                timings = {k: int(v) for k, v in re.findall(r"(\w+)=(-?\d+)", latency)}
+                assert timings["endpoint_silence_audio_ms"] == metrics["turn_silence_ms"]
+                assert timings["vad_end_to_audio_estimate_ms"] == (
+                    timings["endpoint_silence_audio_ms"] + timings["endpoint_to_audio_ms"]
+                )
+                audit = next(
+                    x for x in contents.splitlines() if x.startswith("event=endpoint_diagnostics")
+                )
+                gates = {k: int(v) for k, v in re.findall(r"(\w+)=(-?\d+)", audit)}
+                assert gates["accepted"] == 1
+                assert gates["partial_coverage_audio_ms"] >= gates["last_voice_audio_ms"]
+                assert gates["partial_stable_wall_ms"] >= 200
+                assert gates["decision_silence_ms"] == metrics["turn_silence_ms"]
+                assert gates["last_coverage_block_silence_ms"] < gates["decision_silence_ms"]
+                assert gates["last_policy_block_silence_ms"] < gates["decision_silence_ms"]
+                assert gates["detector_jobs"] > 0
                 return metrics
             assert "event=speech_fallback" in contents, contents
             assert "event=speech_test_complete" not in contents
@@ -133,6 +152,12 @@ def test_adaptive_hangup_cancels_and_allows_clean_next_call(tmp_path, speech_ser
     "options",
     [
         ["--turn-context", "unknown"],
+        ["--turn-vad-percent", "50"],
+        ["--turn-model-dir", str(MODELS), "--turn-vad-percent", "91"],
+        ["--turn-model-dir", str(MODELS), "--turn-vad-percent", "nan"],
+        ["--turn-model-dir", str(MODELS), "--turn-open-ms", "300"],
+        ["--turn-model-dir", str(MODELS), "--turn-open-ms", "1500"],
+        ["--turn-model-dir", str(MODELS), "--turn-incomplete-ms", "2000"],
         ["--turn-context", "yes-no"],
         ["--turn-model-dir", "missing-models"],
         ["--turn-model-dir", str(MODELS), "--speech-test-ms", "1000"],
@@ -147,3 +172,17 @@ def test_adaptive_profile_rejects_invalid_configuration(options):
         timeout=10,
     )
     assert result.returncode != 0 and "event=ready" not in result.stdout
+
+
+def test_runtime_open_wait_reaches_detector(tmp_path, speech_services):
+    config = profile(speech_services)
+    config["speech_options"] += ["--turn-open-ms", "900"]
+    with contextmanager(run_gateway)(tmp_path, config) as (port, log, _):
+        peer = Peer(port)
+        try:
+            _, _, ended = drive(peer, connect(peer), log, duration=29, source=phone())
+            assert ended and "event=speech_fallback" not in log.read_text()
+            silence = int(re.search(r"turn_silence_ms=(\d+)", log.read_text())[1])
+            assert 900 <= silence < 2000
+        finally:
+            peer.close()

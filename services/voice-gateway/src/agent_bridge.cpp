@@ -14,12 +14,15 @@ void SpeechBridge::read_agent() noexcept {
         request.set_generation_id(generation_);
         request.set_final_user_text(final_text_);
         google::protobuf::Struct metadata;
+        if (!input_event_.empty())
+            (*metadata.mutable_fields())["input_event"].set_string_value(input_event_);
         if (!caller_number_.empty())
             (*metadata.mutable_fields())["caller_number"].set_string_value(caller_number_);
         if (!google::protobuf::util::MessageToJsonString(metadata, request.mutable_context_json())
                  .ok())
             throw std::runtime_error("agent context serialization failed");
         auto stub = contract::Agent::NewStub(agent_);
+        agent_request_ms_.store(now_ms());
         auto stream = stub->RunTurn(agent_context_.get(), request);
         contract::AgentEvent event;
         bool ended = false;
@@ -63,6 +66,8 @@ void SpeechBridge::read_agent() noexcept {
                 fail(Error::agent);
                 break;
             }
+            if (!waiting && !agent_phrase_ms_.load())
+                agent_phrase_ms_.store(now_ms());
             while (!stop_.load() && !interrupted_.load() && state() != State::failed) {
                 {
                     std::lock_guard lock(phrases_mutex_);

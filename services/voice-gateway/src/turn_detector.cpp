@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
+#include <stdexcept>
 
 namespace alojan {
 namespace {
@@ -27,14 +28,24 @@ std::string normalized(std::string_view text) {
 }
 } // namespace
 
+void TurnSettings::validate() const {
+    if (vad_percent < 20 || vad_percent > 90 || candidate_ms < 100 || candidate_ms > 500 ||
+        yes_no_ms < 350 || yes_no_ms > 1000 || open_ms < 500 || open_ms > 1500 ||
+        uncertain_ms < 1200 || uncertain_ms > 2000 || incomplete_ms < 2200 ||
+        incomplete_ms > 5000 || candidate_ms > yes_no_ms || yes_no_ms > open_ms ||
+        open_ms > uncertain_ms || uncertain_ms >= incomplete_ms)
+        throw std::invalid_argument("invalid adaptive turn thresholds");
+}
+
 TurnDecision turn_policy(unsigned silence_ms, float probability, std::string_view text,
-                         unsigned stable_ms, QuestionContext context, bool detector_failed) {
+                         unsigned stable_ms, QuestionContext context, bool detector_failed,
+                         const TurnSettings &settings) {
     if (detector_failed)
         return TurnDecision::detector_failed;
-    if (silence_ms < 350)
+    if (silence_ms < settings.yes_no_ms)
         return TurnDecision::listen;
-    // Preserve the 200 ms endpoint pad beyond the 2 s incomplete-phrase wait.
-    const bool expired = silence_ms >= 2200;
+    // Default preserves the 200 ms endpoint pad beyond the 2 s incomplete-phrase wait.
+    const bool expired = silence_ms >= settings.incomplete_ms;
     if (stable_ms < 200)
         return expired ? TurnDecision::incomplete_timeout : TurnDecision::listen;
     const auto value = normalized(text);
@@ -47,13 +58,16 @@ TurnDecision turn_policy(unsigned silence_ms, float probability, std::string_vie
         probability > 1.0f)
         return expired ? TurnDecision::incomplete_timeout : TurnDecision::listen;
     const bool short_answer = value == "evet" || value == "hayır" || value == "tamam";
-    const unsigned wait = context == QuestionContext::yes_no && short_answer ? 350
-                          : probability >= 0.75f                             ? 500
-                                                                             : 1200;
+    const unsigned wait = context == QuestionContext::yes_no && short_answer ? settings.yes_no_ms
+                          : probability >= 0.75f                             ? settings.open_ms
+                                                 : settings.uncertain_ms;
     return silence_ms >= wait ? TurnDecision::complete : TurnDecision::listen;
 }
 
-TurnDetector::TurnDetector(std::shared_ptr<TurnModels> models) : models_(std::move(models)) {}
+TurnDetector::TurnDetector(std::shared_ptr<TurnModels> models, TurnSettings settings)
+    : settings_(settings), models_(std::move(models)) {
+    settings_.validate();
+}
 
 void TurnDetector::receive(std::span<const char, 640> pcm) {
     for (unsigned i = 0; i < 320; ++i) {
@@ -72,7 +86,7 @@ void TurnDetector::receive(std::span<const char, 640> pcm) {
             ++epoch_;
             score_ = -1;
         }
-        if (speech >= 0.5f) {
+        if (speech >= settings_.vad_percent / 100.0f) {
             voiced_ += 512;
             last_voice_ = samples_;
         }
@@ -105,18 +119,23 @@ TurnDecision TurnDetector::decide(std::string_view text, unsigned stable_ms,
     if (failed_)
         return TurnDecision::detector_failed;
     // At least 96 ms of speech; retain 8 s in memory, including leading silence/pre-roll.
-    if (voiced_ < 1536 || silence_ms() < 250 || samples_ - last_activity_ < 3200)
+    if (!has_speech() || silence_ms() < settings_.candidate_ms || samples_ - last_activity_ < 3200)
         return TurnDecision::listen;
     if (samples_ - score_sample_ > 16000)
         score_ = -1;
-    const auto decision = turn_policy(silence_ms(), score_, text, stable_ms, context, false);
+    const auto decision =
+        turn_policy(silence_ms(), score_, text, stable_ms, context, false, settings_);
     if (decision != TurnDecision::listen)
         return decision;
-    if (!job_.valid() && (job_epoch_ != epoch_ || samples_ - job_sample_ >= 5120)) {
+    // Fresh positive evidence remains useful while waiting for transcript coverage.
+    // Resumption invalidates it above; the existing one-second age bound still applies.
+    const bool reuse = settings_.partial_hint && text.empty() && score_ >= 0.75f;
+    if (!reuse && !job_.valid() && (job_epoch_ != epoch_ || samples_ - job_sample_ >= 5120)) {
         const auto count = std::min<std::size_t>(samples_, history_.size());
         std::vector<float> audio(count);
         for (std::size_t i = 0; i < count; ++i)
             audio[i] = history_[(samples_ - count + i) % history_.size()];
+        ++jobs_started_;
         job_epoch_ = epoch_;
         job_sample_ = samples_;
         job_started_ = std::chrono::steady_clock::now();

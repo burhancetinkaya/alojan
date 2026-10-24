@@ -13,8 +13,22 @@ from voice.v1 import voice_pb2_grpc as rpc
 from alojan_contracts.audio import generation_key
 from alojan_contracts.generation import GenerationControl
 
-from .models import Call, normalize
+from .models import Call, acknowledges_note, normalize, offers_more_help
 from .phrases import phrase_end
+from .timing import TurnTiming
+
+
+RECOVERY_PROMPTS = {
+    "silence_reminder": "Buradayım, sizi dinliyorum.",
+    "clarification": "Son söylediğinizi net anlayamadım, tekrar eder misiniz?",
+    "silence_timeout": (
+        "Sesinizi alamıyorum. Dilerseniz daha sonra tekrar arayabilirsiniz. Hoşça kalın."
+    ),
+}
+
+
+async def recovery_stream(event):
+    yield RECOVERY_PROMPTS[event]
 
 
 class AgentService(GenerationControl, rpc.AgentServicer):
@@ -30,12 +44,18 @@ class AgentService(GenerationControl, rpc.AgentServicer):
         state = await self.state(request, context)
         text = request.final_user_text.strip()
         try:
-            if not text or len(text.encode()) > 4096 or len(request.context_json) > 1024:
+            if len(text.encode()) > 4096 or len(request.context_json) > 1024:
                 raise ValueError()
             if any(unicodedata.category(c).startswith("C") and c not in "\n\t" for c in text):
                 raise ValueError()
             metadata = json.loads(request.context_json or "{}")
-            if not isinstance(metadata, dict) or set(metadata) - {"caller_number"}:
+            if not isinstance(metadata, dict) or set(metadata) - {"caller_number", "input_event"}:
+                raise ValueError()
+            event = metadata.get("input_event")
+            if "input_event" in metadata:
+                if not isinstance(event, str) or event not in RECOVERY_PROMPTS or text:
+                    raise ValueError()
+            elif not text:
                 raise ValueError()
             number = metadata.get("caller_number")
             if number is not None and not re.fullmatch(r"\+[1-9][0-9]{7,14}", number):
@@ -53,29 +73,38 @@ class AgentService(GenerationControl, rpc.AgentServicer):
             call = self.calls[request.call_id] = Call(caller_number=number)
         if call.ended or call.active or call.turns >= 16 or self.active >= 2:
             await context.abort(grpc.StatusCode.RESOURCE_EXHAUSTED, "call unavailable")
+        if event == "silence_reminder" and call.silence_reminded:
+            await context.abort(grpc.StatusCode.FAILED_PRECONDITION, "reminder already used")
+        if event == "silence_reminder":
+            call.silence_reminded = True
         state.started = call.active = True
         call.turns += 1
         call.generation_turns[request.generation_id] = call.turns
         self.active += 1
-        call.finish = False
-        call.last_user = text
-        call.add_message("user", text)
+        call.finish = event == "silence_timeout"
+        call.response_ack_version = 0 if event else None
+        if not event:
+            call.last_user = text
+            call.add_message("user", text)
         stream = None
         pending_delta = None
         started = time.monotonic()
+        call.timing = timing = TurnTiming()
         first_phrase_ms = -1
         first_content_ms = -1
         outcome = "failed"
         try:
             await self.store.start(request.call_id, call.caller_number)
-            await self.store.utterance(request.call_id, request.generation_id, "caller", text)
+            if not event:
+                await self.store.utterance(request.call_id, request.generation_id, "caller", text)
+            timing.db_ready_ms = timing.elapsed()
 
             async def save_note(note, version):
                 if state.cancelled.is_set() or call.ended:
                     raise asyncio.CancelledError()
                 return await self.store.note(request.call_id, note, version)
 
-            stream = self.backend.stream(call, save_note)
+            stream = recovery_stream(event) if event else self.backend.stream(call, save_note)
             buffer = ""
             total = 0
             index = 0
@@ -132,8 +161,18 @@ class AgentService(GenerationControl, rpc.AgentServicer):
                     context,
                     2,
                 )
+                if call.response_ack_version:
+                    # Bind semantic intent to the complete emitted response and durable version.
+                    call.note_ack_groups[request.generation_id] = (
+                        call.response_ack_version,
+                        index,
+                    )
+                    call.acknowledge_playback(request.generation_id)
                 outcome = "completed"
-        except (asyncio.TimeoutError, ValueError):
+        except asyncio.TimeoutError:
+            outcome = "timed_out"
+            await context.abort(grpc.StatusCode.DEADLINE_EXCEEDED, "agent turn failed")
+        except ValueError:
             await context.abort(grpc.StatusCode.DEADLINE_EXCEEDED, "agent turn failed")
         except grpc.RpcError:
             raise
@@ -151,6 +190,8 @@ class AgentService(GenerationControl, rpc.AgentServicer):
                 if stream is not None:
                     await stream.aclose()
             finally:
+                if outcome == "failed" and state.cancelled.is_set():
+                    outcome = "cancelled"
                 state.cancelled.set()
                 call.active = False
                 self.active -= 1
@@ -164,11 +205,31 @@ class AgentService(GenerationControl, rpc.AgentServicer):
                     f"finish={int(call.finish)}",
                     flush=True,
                 )
+                print(
+                    "event=agent_latency data="
+                    + json.dumps(
+                        {
+                            "call_key": hashlib.sha256(request.call_id.encode()).hexdigest()[:12],
+                            "generation": request.generation_id,
+                            "status": outcome,
+                            "kind": event or "response",
+                            "routing": getattr(self.backend, "routing", "test"),
+                            "first_phrase_ms": first_content_ms,
+                            "elapsed_ms": round((time.monotonic() - started) * 1000),
+                            **timing.snapshot(),
+                        },
+                        separators=(",", ":"),
+                    ),
+                    flush=True,
+                )
 
     async def emit(self, request, call, state, context, index, phrase, kind="response"):
         if index >= 16 or len(phrase.encode()) > 1024:
             raise ValueError("phrase limit")
         call.phrases[(request.generation_id, index)] = phrase
+        call.phrase_note_versions[(request.generation_id, index)] = (
+            call.version if call.note_id and call.response_ack_version is None else 0
+        )
         await self.wait(
             context.write(
                 pb.AgentEvent(
@@ -209,8 +270,16 @@ class AgentService(GenerationControl, rpc.AgentServicer):
             request.sent_audio_ms,
         )
         call.receipts[key] = receipt
+        call.acknowledge_playback(request.generation_id)
         if phrase:
             call.add_message("assistant", phrase)
+            if offers_more_help(phrase):
+                call.further_help_offered = True
+            if acknowledges_note(phrase):
+                # A late receipt acknowledges its emitted version, never a newer correction.
+                call.acknowledged_note_version = max(
+                    call.acknowledged_note_version, call.phrase_note_versions.get(key, 0)
+                )
             delivered = " ".join(
                 p
                 for k, p in call.phrases.items()

@@ -34,7 +34,8 @@ struct Options {
     unsigned test_max_calls = 1;
     unsigned speech_test_ms = 0, asr_port = 15071, tts_port = 15072, agent_port = 0;
     std::string turn_model_dir;
-    bool barge_in = false;
+    bool barge_in = false, custom_turn_settings = false;
+    alojan::TurnSettings turn_settings;
     alojan::QuestionContext turn_context = alojan::QuestionContext::open;
     std::shared_ptr<alojan::TurnModels> turn_models;
     std::string wav;
@@ -94,7 +95,28 @@ Options options(int argc, char **argv) {
             result.barge_in = number(value, 0, 1) != 0;
         else if (key == "--turn-model-dir")
             result.turn_model_dir = value;
-        else if (key == "--turn-context") {
+        else if (key == "--turn-partial-hint") {
+            result.custom_turn_settings = true;
+            result.turn_settings.partial_hint = number(value, 0, 1) != 0;
+        } else if (key == "--turn-vad-percent" || key == "--turn-candidate-ms" ||
+                   key == "--turn-yes-no-ms" || key == "--turn-open-ms" ||
+                   key == "--turn-uncertain-ms" || key == "--turn-incomplete-ms") {
+            result.custom_turn_settings = true;
+            auto &settings = result.turn_settings;
+            const auto parsed = number(value, 1, 5000);
+            if (key == "--turn-vad-percent")
+                settings.vad_percent = parsed;
+            else if (key == "--turn-candidate-ms")
+                settings.candidate_ms = parsed;
+            else if (key == "--turn-yes-no-ms")
+                settings.yes_no_ms = parsed;
+            else if (key == "--turn-open-ms")
+                settings.open_ms = parsed;
+            else if (key == "--turn-uncertain-ms")
+                settings.uncertain_ms = parsed;
+            else
+                settings.incomplete_ms = parsed;
+        } else if (key == "--turn-context") {
             if (value != "open" && value != "yes-no")
                 throw std::invalid_argument("turn context must be open or yes-no");
             result.turn_context =
@@ -124,6 +146,9 @@ Options options(int argc, char **argv) {
         } else
             throw std::invalid_argument("unknown option");
     }
+    result.turn_settings.validate();
+    if (result.custom_turn_settings && result.turn_model_dir.empty())
+        throw std::invalid_argument("turn thresholds require turn models");
     if (result.speech_test_ms && (result.speech_test_ms % 20 || result.custom_wav))
         throw std::invalid_argument("speech test requires 20 ms alignment and standard prompts");
     if (!result.turn_model_dir.empty() && (result.speech_test_ms || result.custom_wav))
@@ -235,6 +260,7 @@ class Session : public pj::Call {
     SpeechOutput output;
     bool speech_started = false, speech_fallback = false, speech_reported = false;
     std::string speech_id;
+    unsigned reported_reminders = 0, reported_clarifications = 0;
     unsigned reported_responses = 0, reported_interruptions = 0, reported_recognitions = 0;
 
     Session(pj::Account &account, int id, unsigned serial_id)
@@ -281,7 +307,7 @@ class Session : public pj::Call {
                     std::chrono::system_clock::now() +
                         std::chrono::duration_cast<std::chrono::system_clock::duration>(remaining),
                     config.turn_models, config.turn_context, config.barge_in, config.agent_port,
-                    identity.trusted_source ? identity.caller.e164 : "");
+                    identity.trusted_source ? identity.caller.e164 : "", config.turn_settings);
                 input.bridge = speech.get();
                 output.create(*speech);
             }
@@ -313,6 +339,14 @@ class Session : public pj::Call {
                 reported_responses = speech->responses_started.load();
                 std::cout << "event=speech_speaking call=" << serial << " generation=turn-"
                           << reported_responses << std::endl;
+            }
+            if (speech->silence_reminders.load() != reported_reminders) {
+                reported_reminders = speech->silence_reminders.load();
+                std::cout << "event=silence_reminder call=" << serial << std::endl;
+            }
+            if (speech->clarification_requests.load() != reported_clarifications) {
+                reported_clarifications = speech->clarification_requests.load();
+                std::cout << "event=clarification_requested call=" << serial << std::endl;
             }
             if (speech->interruptions.load() != reported_interruptions) {
                 reported_interruptions = speech->interruptions.load();

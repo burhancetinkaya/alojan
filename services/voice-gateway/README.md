@@ -145,8 +145,8 @@ After accepting a turn, input delivery stops, ASR half-closes, and the existing
 fixed EMA closing plays after a valid final. This tests adaptive timing; it does
 not implement a conversation, barge-in, a clarification response or the once-at-seven-
 seconds silent-caller reminder. Those remain explicitly open in the plan. Initial
-thresholds are a compiled calibration profile; runtime threshold configuration
-also remains open. The default carrier process was not restarted into this profile.
+thresholds retain the original calibration defaults; validated runtime options
+are now available in the M3-01 follow-up below. The default carrier process was not restarted into this profile.
 
 Numeric completion logs include VAD-relative silence, model probability and
 observed background inference time. Half-close-to-output is a separate metric;
@@ -221,3 +221,90 @@ later phrase gaps. Existing epoch, state and stop guards cancel music along with
 speech. Outbound echo reference includes music, while speech frame counters,
 receipts and aligned text exclude it. `waiting_music_ms` records its separate
 output duration at completion/interruption. The old agent waiting sentence is off.
+
+
+## M3-01 silence recovery and runtime calibration
+
+The adaptive **agent** profile (`--turn-model-dir`, `--barge-in 1`, `--agent-port`)
+now emits one silent-caller reminder per call after seven seconds of quiet input:
+“Buradayım, sizi dinliyorum.” A low-confidence speech onset postpones the reminder;
+a confirmed spoken turn uses endpoint/clarification logic instead. The timer starts
+when recognition starts after the opening or a response, not while greeting,
+thinking, speaking or playing waiting music. The seven-second threshold marks the
+request; actual audibility also includes bounded service/TTS startup time.
+
+After the reminder, a fresh bounded recognition stream continues listening. If
+that stream contains no confirmed speech for its existing 20-second capture
+budget, a polite no-audio farewell precedes the normal three-second hangup drain.
+The reminder does not repeat. If acoustic/partial evidence stays incomplete at
+the endpoint threshold, the agent profile instead asks the caller to repeat and
+continues listening. Detector, malformed transport and dependency failures retain
+the existing controlled fallback. Overall call/turn budgets are unchanged.
+
+Recovery uses typed gateway metadata, not invented caller text or an LLM request.
+Only delivered assistant phrases enter stored history. The existing echo monitor,
+interruption cancellation and output epochs apply during recovery speech. Up to
+two seconds of echo-filtered pre-roll preserves speech beginning near the prompt's
+end before it reaches the interruption threshold. No raw recording is added.
+Waiting music is disabled for these immediate control responses. The standalone
+adaptive test without an agent retains its previous failure behavior.
+
+The following validated CLI options retain the existing defaults. These tune turn
+endpoint decisions, not the separate interruption classifier. Invalid bounds or
+ordering fail before SIP readiness; custom values require turn models.
+
+| Option | Default | Allowed range |
+|---|---:|---:|
+| `--turn-vad-percent` | 50 | 20–90 |
+| `--turn-candidate-ms` | 250 | 100–500 |
+| `--turn-yes-no-ms` | 350 | 350–1000 |
+| `--turn-open-ms` | 500 | 500–1500 |
+| `--turn-uncertain-ms` | 1200 | 1200–2000 |
+| `--turn-incomplete-ms` | 2200 | 2200–5000 |
+
+Require candidate ≤ yes/no ≤ open ≤ uncertain < incomplete. Incomplete includes
+the endpoint pad. The 200 ms partial stability/onset hold, model score thresholds,
+96 ms minimum voice and bounded model watchdog remain fixed. Runtime options
+permit calibration without rebuilding; they are not proof of human/noisy-speech
+accuracy. The current carrier profile keeps the default values.
+
+Run `tests/sip-integration/test_silence.py` alongside the existing turn,
+interruption and agent-dialogue tests. They use real SIP and CPU turn models but
+explicitly synthetic ASR/TTS and an in-memory agent store. Real CUDA/DB and handset
+results must be reported separately.
+## Per-turn latency diagnostics
+
+M5-03 emits one `event=turn_latency` record from the worker after each attempted
+turn, including interrupted, cancelled and failed turns. `call_trace` is the
+gateway-generated speech identity, not the carrier SIP Call-ID; SHA-256 of this
+value truncated to 12 hex characters matches the agent's `call_key`. No transcript
+or caller number is included. Audio callbacks only update fixed-size atomics.
+
+The record distinguishes endpoint-to-ASR-finalization, agent-request-to-first
+phrase, first TTS request-to-PCM and PCM-to-output-port delays. Waiting music is
+excluded. `endpoint_silence_audio_ms` is the detector's PCM-domain silence at its
+accepted decision. Adding that to endpoint-to-audio produces
+`vad_end_to_audio_estimate_ms`: a server estimate, not measured caller-stop-to-ear
+latency. Replay/queue age, VAD error and carrier/handset transport are not measured.
+Fixed-capture and recovery turns have no accepted VAD endpoint; missing values
+remain `-1`. Recovery kind is explicit so reminders are not counted as fast LLM
+responses. Existing `sent_speech` receipts and cancellation behavior are unchanged.
+
+
+## Endpoint diagnostics and opt-in scheduling experiment
+
+`event=endpoint_diagnostics` summarizes the final quiet epoch without transcript
+or raw audio. Candidate/score/coverage/stability and last-blocked offsets use
+PCM-domain silence; named wall-clock fields use monotonic time. Unknown values
+are -1. Queue audio duration is backlog, not wall-clock frame age. The worker
+emits the record at recognition teardown; media callbacks remain unchanged.
+
+`--turn-partial-hint 0|1` requires turn models and defaults to **0**. When enabled,
+a current positive acoustic score and stale ASR coverage can request a bounded
+early partial over the existing audio stream. Fresh positive scores are reused
+while only transcript coverage is missing, preserving resumption invalidation
+and the one-second score age bound. It does not lower endpoint, stability or
+onset thresholds. A legacy ASR worker ignores the added protobuf field.
+
+**Do not enable this as the live default:** the experimental paired pause-quality
+gate failed. [Evidence and limitations](../../docs/validation/endpoint-calibration-2026-10-24.md).

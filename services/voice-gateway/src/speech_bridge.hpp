@@ -39,6 +39,11 @@ template <std::size_t Bytes, std::size_t Capacity> class PcmQueue {
         read_.store(read + 1, std::memory_order_release);
         return true;
     }
+    // Consumer-only diagnostic: frames of audio waiting, not wall-clock queue age.
+    std::uint64_t queued_frames() const noexcept {
+        const auto read = read_.load(std::memory_order_relaxed);
+        return write_.load(std::memory_order_acquire) - read;
+    }
     bool empty() const noexcept {
         return read_.load(std::memory_order_acquire) == write_.load(std::memory_order_acquire);
     }
@@ -63,7 +68,8 @@ class SpeechBridge {
     SpeechBridge(std::string call, unsigned asr_port, unsigned tts_port, unsigned capture_frames,
                  std::string response, Deadline deadline, std::shared_ptr<TurnModels> models = {},
                  QuestionContext context = QuestionContext::open, bool barge_in = false,
-                 unsigned agent_port = 0, std::string caller_number = "");
+                 unsigned agent_port = 0, std::string caller_number = "",
+                 TurnSettings turn_settings = {});
     ~SpeechBridge();
     SpeechBridge(const SpeechBridge &) = delete;
     SpeechBridge &operator=(const SpeechBridge &) = delete;
@@ -85,6 +91,7 @@ class SpeechBridge {
     };
     // Read only after finished(); partial utterances have no fabricated word alignment.
     const std::vector<SentSpeech> &sent_history() const { return history_; }
+    std::atomic<unsigned> silence_reminders{0}, clarification_requests{0};
     std::atomic<unsigned> responses_started{0}, recognitions_started{0};
     std::atomic<unsigned> interruptions{0}, echo_frames{0}, backchannels{0};
     std::atomic<std::int64_t> interrupt_ms{0}, last_sent_ms{0};
@@ -104,6 +111,9 @@ class SpeechBridge {
     const Deadline deadline_;
     const std::shared_ptr<TurnModels> models_;
     const QuestionContext question_context_;
+    const TurnSettings turn_settings_;
+    std::string input_event_;
+    bool reminder_sent_ = false;
     std::shared_ptr<grpc::Channel> asr_, tts_, agent_;
     std::unique_ptr<grpc::ClientContext> asr_context_, tts_context_, agent_context_;
     std::mutex contexts_mutex_;
@@ -145,6 +155,12 @@ class SpeechBridge {
     std::deque<Phrase> phrases_;
     std::atomic<std::int64_t> phrase_first_playout_ms_{0};
     std::int64_t asr_finished_ms_ = 0, phrase_first_pcm_ms_ = 0;
+    std::int64_t recognition_started_ms_ = 0, endpoint_silence_ms_ = -1;
+    std::int64_t response_tts_ms_ = 0, response_pcm_ms_ = 0;
+    std::atomic<std::int64_t> agent_request_ms_{0}, agent_phrase_ms_{0}, response_audio_ms_{0};
+    std::atomic<bool> phrase_waiting_{false};
+    bool turn_reported_ = true;
+    void report_turn();
     static std::int64_t now_ms() noexcept;
     std::atomic<bool> agent_done_{false}, finish_call_{false};
     bool synthesize_phrase(const std::string &text, const std::string &id, std::uint64_t epoch);
