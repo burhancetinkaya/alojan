@@ -275,3 +275,12 @@ a repeat exception does not bypass durable-save or playback accounting. The merg
 prompt retains the same model/provider/settings. It is not identical to the current
 live agent: [publication evidence](../../docs/validation/main-publication-2026-10-24.md)
 records the remaining quality failures. Publishing source does not activate it.
+
+
+## Post-call Telegram notifications (M5-01)
+
+An independent `python -m alojan_agent.notifications` process now consumes ended
+calls through the PostgreSQL outbox. It exposes no conversational tool and does
+not change the agent prompt or voice lifecycle. Pair the owner's private chat and
+activate the channel explicitly using [Telegram setup](../../docs/TELEGRAM.md).
+Bot credentials and recipient files stay under ignored `.local/` with mode 0600.

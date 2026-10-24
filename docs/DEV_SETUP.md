@@ -628,3 +628,10 @@ The owner-directed 2026-10-24 deployment sets it to `1` on the Linux host. This
 requires the compatible gateway and ASR scheduling implementation; it does not
 change the LLM or silence thresholds. See
 [deployment, rollback and the remaining quality gate](validation/endpoint-calibration-2026-10-24.md).
+
+
+## Telegram post-call worker
+
+M5-01 setup, private bot pairing, isolated release deployment, retries and rollback
+are documented in [TELEGRAM.md](TELEGRAM.md). The additive migration and standalone
+worker do not require a gateway, ASR, TTS or live agent restart.

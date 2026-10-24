@@ -40,7 +40,7 @@ Keep the production admission limit at one call unless capacity is deliberately 
 | EXT-05 | Ubuntu CUDA/PyTorch/ASR/EMA compatibility and measured VRAM | U0-01; M2-02 | CUDA smoke and persistent ASR/EMA warm-up, concurrent synthetic streams and cancellation/recovery passed within 16 GB; broader quality, soak and deployment remain pending |
 | EXT-06 | Account access to requested model, streaming/settings and quota | M4-01 | Selected OpenRouter Pro streaming/tool requests verified; broader quota/capacity/latency acceptance pending (ADR 0005) |
 | EXT-07 | Owner license/distribution decision; exact dependency review | Release | Proposal only |
-| EXT-08 | Owner notification endpoint/credentials | M5-01 | Not provided |
+| EXT-08 | Owner Telegram bot token and verified private chat | M5-01 | Selected 2026-10-24; credential entry and pairing pending |
 
 SSH access and the `~/ai/alojan` workspace were supplied/authorized on 2026-10-23. ADR 0003 makes this the primary build/test environment. Connection details remain in ignored local configuration; carrier prerequisites are still pending. Public security and conduct reporting channels remain release/community prerequisites.
 
@@ -818,3 +818,13 @@ was completed. The subsequent main-publication request consolidates source only.
 Linux loopback checks and the merged agent's synthetic API results are recorded
 in [the publication report](validation/main-publication-2026-10-24.md); they do
 not replace handset acceptance. Live services were not restarted for publication.
+
+
+## M5-01 Telegram preparation — 2026-10-24
+
+[Isolated Linux evidence](validation/telegram-2026-10-24.md): 22 tests passed with
+synthetic Telegram transport and real PostgreSQL in disposable schemas. No live
+voice process was restarted. G5 is still pending: pair the owner's private chat,
+verify a labeled bot test, complete a phone call and correlate its UUID with one
+delivered outbox receipt and the owner's received notification. Include a failed
+summary case; verify that no message is sent before the persisted call end.

@@ -145,13 +145,13 @@ These retain required capability and acceptance boundaries. Refine implementatio
 | M4-01 | Integrate SDK streaming/context with an explicit test client; verify requested model/API when account available. | M3-02 local checks; EXT-06 for real API acceptance | DEC-11; §9 | macOS + API; later Ubuntu | Stream isolation/timeout/cancel locally; real account/model acceptance separate; full G3 deferred |
 | M4-02 | Implement take_note/finish_call, tool authorization/idempotency and a minimal Streamable HTTP MCP adapter boundary | M4-01 | US-02,08; §9.2–3 | macOS; later Ubuntu | Duplicate notes prevented; closing audio completes; injection/unauthorized actions rejected; adapter contract tested without live MCP integrations |
 | M4-03 | Persist utterances and schema-validated post-call summary | M4-02 | US-07; §9.4,11 | macOS; later Ubuntu | Confirmed versus unconfirmed facts preserved; summary failure recoverable; caller not held for analysis |
-| M5-01 | Durable webhook outbox with local test receiver; owner endpoint configured later. | M4-03 local checks; EXT-08 for actual delivery | US-07; §10,11 | macOS; later Ubuntu + endpoint | Retry/restart/deduplication locally; actual notification pending G5; no exactly-once claim |
+| M5-01 | Durable private Telegram outbox; owner-selected 2026-10-24. Bot pairing and real delivery acceptance required. | M4-03 local checks; EXT-08 for actual delivery | US-07; §10,11 | macOS; later Ubuntu + endpoint | Retry/restart/deduplication locally; actual notification pending G5; no exactly-once claim |
 | M5-02 | Private REST endpoints and HTTP-only Cloudflare Access guide | M4-03 | §10,12; P0 API | macOS; later Ubuntu | Auth/owner-only retry enforced; live/ready distinct; no dashboard required |
 | M5-03 | Observability, retention/backup restore, failure injection and soak | M5-01,02 | §3,12,14,15; G4,5,7 | Ubuntu GPU/phone | 30+ labeled scenarios, 50+ timed turns, two-call isolation and 30-minute soak; report targets versus measured values |
 | M6-01 | Compare direct, forwarded and withheld caller identity | M1-07; EXT-03 | US-03; §13; G6 | Phone + carrier | Sanitized header comparison; no caller identity guarantee |
 | M6-02 | Test manual/assisted iOS Focus forwarding and document limitations | M6-01; EXT-04 | US-09; §13; P1 | Owner iPhone | Owner-authorized enable/status/disable tests; no assumed unattended USSD support |
 
-Default notification is a generic webhook to minimize new provider-specific dependencies; endpoint credentials stay private. P1 dashboard, contacts and live MCP integrations remain deferred. M6 is a separate carrier/device feasibility report and must not conceal an otherwise functional P0 as either proven or broken without evidence.
+The owner selected private Telegram notifications on 2026-10-24, replacing the generic-webhook default. Bot credentials and paired recipient stay private; see [setup and delivery policy](TELEGRAM.md). P1 dashboard, contacts and live MCP integrations remain deferred. M6 is a separate carrier/device feasibility report and must not conceal an otherwise functional P0 as either proven or broken without evidence.
 
 ## Coverage and decision gates
 
@@ -946,3 +946,23 @@ cover semantic acknowledgements together with explicit repetition. ASR/denoise
 experiments and the capacity design retain their documented acceptance limits.
 See [publication checks and unresolved quality gates](validation/main-publication-2026-10-24.md).
 The owner requested main publication; this action does not restart live services.
+
+
+## 2026-10-24 — Private Telegram notifications (M5-01)
+
+The owner requested automatic post-call messages to their own Telegram bot,
+superseding the historical notification deferral. US-07/08 and §9.4/11/12: an
+independent worker uses finalized summaries, queues one frozen payload per call
+and configured target, and preserves retries across process restarts. Failed or
+stalled summaries produce a status-only message. Activation excludes historical
+calls; recipient pairing requires a fresh challenge in a private chat. No voice
+prompt, model, media code or running voice process is changed.
+
+Isolated Linux validation passed: 22 tests, zero failures/skips, 4.56 seconds;
+Ruff lint/format checks and the systemd user-unit verifier passed. Coverage includes
+the real Store end/summary lifecycle with synthetic Telegram transport, restart,
+concurrent enqueue/delivery, 429 backoff, exhausted/permanent errors, summary
+failure, message bounds and private-chat pairing. Actual bot pairing, Telegram
+delivery and real post-call G5 acceptance remain pending owner bot setup.
+See [Telegram setup](TELEGRAM.md) and [validation](validation/telegram-2026-10-24.md);
+no publication or production delivery is claimed.
