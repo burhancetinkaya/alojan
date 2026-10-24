@@ -186,3 +186,44 @@ complete the pending project/transitive license review.
   release preparation. Preserve upstream notices; no project license is adopted.
 - OpenRouter endpoint and exact model choice are in ADR 0005. API service terms
   and data policies are separate from SDK redistribution licenses.
+
+## Optional Nemotron ASR evaluation/runtime (ADR 0008)
+
+`services/asr-nemotron/uv.lock` isolates the candidate from the Whisper/EMA
+workers. Direct pins include Transformers 5.13.0 (Apache 2.0), PyTorch
+2.6.0+cu124 (BSD-style with separately licensed bundled components), librosa
+0.11.0 (ISC), SoundFile 0.13.1 (BSD-style; bundled libsndfile terms apply), and
+the existing pinned gRPC/protobuf interface. CUDA component redistribution terms
+remain separate; this record is not a blanket license approval.
+
+[NVIDIA Nemotron 3.5 ASR](https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b)
+revision `ea30d66debe3740a08b573244286791d423d6b3e` uses OpenMDW 1.1. Runtime verifies
+all six required files against `services/asr/nemotron.json`. No remote repository
+code execution or NIM/API service is used. Weights remain local and uncommitted.
+
+The evaluation-only FLEURS corpus is CC BY 4.0; exact conversion revision, artifact
+hash and attribution are in `tools/asr-compare/README.md`. PyArrow 19.0.1 (Apache
+2.0) is used only to prepare this local corpus, not by the recognition worker.
+
+
+## Optional offline denoising evaluation (2026-10-24)
+
+These are evaluation-only dependencies, not linked into the shipping gateway.
+[The build recipe](../tools/denoise-compare/build.sh) pins source/package SHA-256
+values; [the comparison README](../tools/denoise-compare/README.md) records sources
+and reproduction. Retain upstream notices for any later distribution; review
+remains separate from this experiment and no project license is introduced.
+
+| Dependency | Pin | Declared terms / use |
+|---|---|---|
+| WebRTC AudioProcessing | 2.1 source archive | BSD-style LICENSE and PATENTS; CPU C++ suppression |
+| Abseil | 20240722.0, upstream wrap patch revision 3 | Apache-2.0; hashes checked by Meson wrap |
+| RNNoise | v0.2, model 0b50c45 | BSD-3-Clause; CPU C library called by the C++ probe |
+| SpeexDSP | 1.2.1-1ubuntu3 amd64 dev/runtime packages | BSD-style notices; privately extracted, noise suppression and resampling |
+| Meson / Ninja | 1.7.0 / 1.11.1.3 | Apache-2.0; isolated build environment |
+| DTLN original ONNX models | breizhn/DTLN `1de1f15a8b5b7e1c44905618ff2ef70ca8277fbc` | Upstream MIT; both hashes checked in `tools/denoise-compare/dtln.py`; evaluation only |
+
+DTLN reuses ONNX Runtime 1.31.0 (MIT), CPU provider, and existing NumPy 2.5.4.
+No LiveKit package or new live dependency is introduced. The upstream notice is
+retained in `tools/denoise-compare/DTLN-NOTICE.txt`; review model redistribution
+separately before publishing a bundle.

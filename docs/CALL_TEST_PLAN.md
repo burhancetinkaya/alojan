@@ -1,5 +1,15 @@
 # Call acceptance and external validation
 
+## Configurable call capacity planning — 2026-10-24
+
+The owner replaced the two-call proposal with [CAP-01–09](CALL_CAPACITY_PLAN.md):
+50 calls across servers, a five-call target on the current Linux host, configurable
+host quotas and SIP 486 when capacity is full. Verify local sixth-call and cluster
+51st-call rejection, overlapping real inference, cross-call isolation, lifecycle
+churn, per-call latency, multi-node failure and carrier channels. Existing two-call
+SIP evidence remains valid only for its original scope. ADR 0009 records the target;
+no new capacity test, carrier call or deployment occurred in this planning update.
+
 Status as of 2026-10-23: **Native Linux G1 development scenario set complete; full G0/product M1 partial; live Netgsm INVITE observed, G2 incomplete**. See [Mac foundation evidence](validation/macos-foundation-2026-10-09.md), [Linux development evidence](validation/linux-development-2026-10-23.md), [Linux SIP isolation evidence](validation/linux-sip-isolation-2026-10-23.md), [Linux caller identity evidence](validation/linux-caller-identity-2026-10-23.md), [Linux spoken fallback evidence](validation/linux-spoken-fallback-2026-10-23.md), [Linux audio conversion evidence](validation/linux-audio-conversion-2026-10-23.md), and [Linux EMA prompt evidence](validation/linux-ema-prompts-2026-10-23.md). Individual passing scenarios do not complete a gate.
 
 ## Gate register
@@ -322,3 +332,489 @@ Publication regression (2026-10-23): the accumulated snapshot passed all 255
 Linux loopback/unit/database tests (815.44 s, no skips), plus nine CTests. This adds
 no human carrier acceptance; privacy checks and exact results are recorded in
 [publication evidence](validation/main-publication-2026-10-23.md).
+
+## ASR quality follow-up — 2026-10-23
+
+M2-01 / M5-03: [ASR spelling/CPU evidence](validation/asr-quality-2026-10-23.md)
+records paired synthetic noise/quiet evaluation, seven real CUDA service fixtures
+and successful PCMA/PCMU native fixed-response loopbacks. Numeric entities passed;
+no extra inference or noise filter is enabled. The development line now uses the
+bounded exact spelling vocabulary and one-thread BLAS launcher on ASR port 15173.
+Targeted name misses decreased on the exploratory synthetic set; nonspeech
+hallucinations remain. G3 and general noise-quality acceptance remain open.
+
+Pending owner handset check: say the confirmed product name in a natural request,
+then a synthetic callback number and a short yes/no answer. Check understanding,
+response delay and that the short answer is not replaced by a product/person name.
+Use only consented evidence; do not commit private transcripts or recordings.
+
+## Uncertain-answer closing regression — 2026-10-23
+
+The owner reported a product inquiry; stored recognition instead contained a stock
+outro, after which the agent closed without saving a note. The owner requested a
+repeat question whenever an answer is unclear or does not address the question.
+The new natural-v3-clarification policy passed 59 focused tests and a three-turn
+real CUDA/API/isolated-DB PCMA loopback: clarify, accept another answer, close only
+on explicit exit. [Evidence](validation/clarification-recovery-2026-10-23.md).
+
+Human acceptance remains pending: repeat the inquiry, confirm that an unclear
+answer prompts another question and the call stays open, then explicitly end it.
+No raw caller recording has been enabled. Full silence/incomplete-turn timeout
+handling remains separate from this recognized-text recovery.
+
+## Prompt decision review — 2026-10-23
+
+Natural-v4-prompt-review passed 16 synthetic behavior cases and 59 focused Linux
+tests. Callback requests remain open after saving; only topic announcements prompt
+for the actual question; additions avoid repeated invitations; explicit exits
+close naturally. Fourteen cases used the real API and two exercised local guards.
+See [review evidence](validation/prompt-review-2026-10-23.md). No new handset or
+CUDA/audio run is claimed; pending carrier checks from the clarification follow-up
+still apply to the revised prompt.
+
+
+## M3-01 silence recovery follow-up — 2026-10-23
+
+The adaptive agent now distinguishes silent input, incomplete speech evidence and
+actual dependency/contract failure. One reminder follows seven quiet seconds;
+listening resumes, and continuing silence uses the bounded timeout farewell.
+Incomplete evidence requests repetition. Runtime endpoint thresholds retain their
+previous defaults. See [Linux evidence](validation/silence-recovery-2026-10-23.md).
+
+Handset acceptance remains pending: after the approved opening, stay silent for
+about seven seconds, hear one reminder, then speak during it or near its end.
+Check that Kübra hears the request, continues appropriately and never repeats the
+idle reminder. Separately verify that 0.5–2 second pauses inside an unfinished
+sentence do not trigger a farewell. Broad noise/human calibration, G3 latency and
+G4 interruption acceptance are not closed by this implementation.
+
+Activation evidence: final Linux build, 9 CTests and 95 focused pytest cases passed;
+5 functional real-CUDA/DB synthetic cases passed. One stricter short-reminder
+cutoff attempt failed and is retained in the report; it is not handset acceptance.
+`natural-v5-silence-recovery` is active after an idle restart, preserving previous
+runtime arguments. Worker health passed; ASR/EMA were not restarted. Owner handset
+confirmation is pending.
+
+Owner follow-up: reminder and farewell were heard, but automatic hangup failed.
+Logs show the agent requested finish and the gateway restarted listening without
+a confirmed interruption. The pre-roll cancellation bug is corrected in the
+gateway; see the recovery report for checks. Retest continuing silence through
+the farewell and verify hangup about three seconds after it ends. A genuine
+interruption during the farewell must still resume listening. This handset
+failure supersedes the earlier pending-only status; carrier revalidation remains
+required after the fix.
+
+The fix is active as `natural-v5.1-silence-close`. Nine Linux CTests, all eight
+recovery SIP cases and one new resident-CUDA/isolated-DB silent call passed.
+The late-backchannel regression failed on the previous binary and passed on the
+fixed binary; confirmed interruption of the farewell still resumes recognition.
+Only the idle gateway restarted, retaining the existing three-second closing
+delay. These checks do not replace the requested handset revalidation.
+
+## Selectable ASR evaluation — 2026-10-23
+
+M2-01 / M5-03, US-02/04/06, ADR 0008. Offline paired real-CUDA evaluation completed
+480 decodes: 24 public human recordings and 16 synthetic utterances, four audio
+conditions, Whisper plus Nemotron 320/1120 ms. Both Nemotron profiles had higher
+human WER; keep Whisper on the carrier development line.
+
+The optional config-selected Nemotron worker and the updated Whisper launcher
+were tested sequentially on loopback port 15174. All seven PCM/partial/final/
+silence cases and cancellation/recovery passed for each. Nemotron's existing exact
+entity validator failed name spacing and spoken-number formatting; Whisper passed.
+Do not count those failures as proven wrong digits or claim full quality acceptance.
+Both temporary workers were stopped. No carrier calls, caller recordings or live
+configuration changes were made. Distinct-speaker coverage, persistent incremental
+partial caching and human handset comparison remain pending. See
+[the detailed report](validation/nemotron-asr-2026-10-23.md).
+
+## Turkish-adapted Whisper offline evaluation — 2026-10-24
+
+M2-01 / M5-03, US-02/04/06. TurkMedSTT general Turkish large-v3 and the current
+Turbo completed 320 real-CUDA decodes on identical human/synthetic fixtures.
+Human PCMA WER tied at 11.40%; noisy and quiet speech improved, while clean WER,
+product spelling and latency regressed. Three evaluation checks passed; eight
+additional silence/noise diagnostics showed both models can emit text on noise.
+No carrier call, recording, service replacement or model-default change occurred.
+This is offline evidence, not handset or streaming-service acceptance. See
+[results and limits](validation/turkmed-asr-2026-10-24.md).
+
+## Per-stage latency and routing comparison — 2026-10-24
+
+New `agent_latency` and `turn_latency` records expose first response timing and
+failures without caller text. `tools/report-latency.py` reports distributions,
+missing measurements and unsuccessful statuses; recovery/music are excluded.
+The VAD-end-to-output metric is an estimate using PCM-domain silence, not a
+handset or network measurement. See [measurement contract and results](validation/latency-routing-2026-10-24.md).
+
+72 synthetic real-API turns compared four routing profiles. Default is retained:
+no candidate met speed/behavior criteria. All observed requests already used
+prompt cache. The two-turn real CUDA/DB/PCMA check completed storage, farewell,
+hangup and summary, but its 7238/5059 ms endpoint-to-output timings do not pass G3.
+Native failures, cancellation and missing-audio telemetry have regression coverage.
+
+`natural-v5.2-latency-observability` is active after an idle gateway/agent restart.
+Handset timing checks remain pending. Do not count the 72 text/receipt-only turns
+as the required 50+ timed real-audio turns or mark M5-03 complete. No new recording
+or carrier call was performed by the validation tools.
+
+### DeepSeek selection: live validation pending (2026-10-24)
+
+M4-01 / M5-03, DEC-11, §9.1: the owner-selected
+`deepseek/deepseek-v4.1-flash` is prepared locally with reasoning disabled and
+Responses streaming retained. Mac simulated-agent checks passed (74 tests).
+The Linux host was unreachable over SSH, so no DeepSeek API, CUDA, carrier or
+handset test was performed and the live agent was not restarted. Validate note
+creation/correction, topic clarification, natural closure and structured summary
+before an idle activation; then measure actual response latency separately.
+
+### GPT-OSS 120B candidate: not yet tested on the line (2026-10-24)
+
+M4-01 / M5-03, DEC-11, §9.1–3: owner now requests `openai/gpt-oss-120b` on Cerebras
+with an optimized prompt, superseding the undeployed DeepSeek candidate. 77 Mac
+simulated tests passed, including typed reasoning-event isolation and wire-request
+settings. Subsequent owner-authorized Mac real API tests found faster first text
+but failed closing-tool, repeated-question and speech-content checks. Revised
+prompt runs passed 14–15/18 automatic scenarios and 6/8 novel paraphrases; the
+same baseline suite passed 18/18 with Luna. These are synthetic tool conversations,
+not actual calls. Linux remains unavailable; no CUDA or carrier call ran and no
+process was restarted. Conditional deployment is already
+authorized after speed/behavior gates pass. See the [evaluation record](validation/gpt-oss-120b-2026-10-24.md)
+for the failed behavior gate and paired phrase-latency, database/summary and
+native call checks still required. Do not activate this candidate yet.
+
+### 120B reasoning/tool-channel follow-up (2026-10-24)
+
+The owner reaffirmed 120B and restored Linux connectivity. The current medium
+reasoning/4096-token candidate uses required speech tools and excludes raw model
+text from TTS. 87 Linux regression tests and real DB/summary checks passed. A
+synthetic adaptive PCMA call with resident Whisper/EMA passed, with first audio
+1459/639 ms after endpointing and correct message/closing/summary behavior.
+These are loopback measurements, not a carrier call or human acceptance.
+
+37/38 final synthetic dialogue checks passed; one adversarial request caused an
+unnecessary closing and remains open. Do not mark full dialogue/security or G3
+acceptance passed. The owner's selected development model and actual rollout
+status are tracked in the [follow-up report](validation/gpt-oss-reasoning-2026-10-24.md).
+The 120B agent is now active on the development line after an idle agent-only
+restart. Agent/ASR/TTS health checks passed; actual owner/handset validation of this
+model remains pending. The prior live model is retained for rollback.
+
+## 2026-10-24 executive-assistant follow-up — carrier listening pending
+
+Latest carrier transcript review found a concrete product question dismissed
+without note storage and repeated anything-else invitations. This is a failed
+conversation-quality observation, not a new acceptance pass. The refined agent
+is active on the idle development line; model remains GPT-OSS 120B / Cerebras.
+
+Linux evidence: 101 focused tests; synthetic native PCMA + real CUDA ASR/EMA +
+OpenRouter + isolated PostgreSQL completed note storage, natural close and summary.
+First endpoint-to-audio was 1,939 / 720 ms. Test pending on the actual phone:
+state a concrete product problem, add a detail, then thank the assistant; verify
+ownership, no readback/repeated invitation, and farewell followed by hangup.
+Also check a vague topic remains a question rather than an invented message.
+Unknown product follow-up and general paraphrase handling remain quality gaps.
+See [sanitized evidence](validation/executive-assistant-2026-10-24.md).
+
+## 2026-10-24 — Duplicate acknowledgement follow-up
+
+Owner's latest call demonstrated one note write but two spoken storage
+acknowledgements. New receipt/version-aware suppression and the researched
+conduct prompt passed 108 Linux tests, a 13-turn synthetic real-model replay and
+real CUDA ASR/EMA/API/DB loopback (first audio 1659 / 1540 ms). Carrier listening
+remains pending: leave a concrete request, wait for acknowledgement, then thank
+the assistant; expect only a social farewell and the existing delayed hangup.
+Separately request a repetition or correct a detail; those must remain possible.
+See [evidence and limits](validation/natural-closing-2026-10-24.md).
+
+## 2026-10-24 — Once-per-call invitation follow-up
+
+Latest carrier logs confirmed a social farewell and local disconnect, but an
+intermediate reply repeated acknowledgement and dismissed the request for further
+help. The owner now requires one invitation per call, superseding the earlier
+no-invitation expectation. Updated agent has 110 Linux regression passes and seven
+real-model simulated conversations with one invitation each. Carrier test pending:
+leave a concrete request, hear the invitation, add another request, then decline
+more help; expect no repeated invitation and a farewell before delayed hangup.
+Separately verify an explicit goodbye does not force another question.
+See [evidence and remaining quality limits](validation/once-offer-2026-10-24.md).
+
+## 2026-10-24 — Researched service practices
+
+Added source-mapped positive conduct and clarified essential-question priority.
+Real 120B replay covered 14 synthetic turns: final note/finish states passed, with
+first phrase mean 935 ms / max 1917 ms. Product elicitation and vague speaking
+requests improved in this sample; empathy and repeated delivery intentions remain
+language-quality limitations. This is not carrier acceptance. Phone test pending:
+state an unnamed product problem with frustration, provide the product when asked,
+then add/correct a detail and decline further help. Verify focused questions,
+one further-help invitation and a contextual farewell before delayed hangup.
+See [research and evaluation](validation/service-conduct-2026-10-24.md).
+
+## 2026-10-24 — Adversarial dialogue follow-up
+
+The reviewed development agent is active. Synthetic real-model evaluation passed
+57/58 current turn checks across 34 conversations; 126 Linux regressions passed.
+No new carrier call was placed. Phone listening remains pending: ask whether
+Kübra is human, state a concrete request, add a separate request after saying
+“İyi günler, bir dakika...”, and finally decline more help. Expect both requests
+retained, one further-help invitation, no premature disconnect and a short final
+farewell. Separately test a same-turn correction such as “Yarın, yok cuma”; the
+selected text evaluation still retained the discarded day in the stored message.
+Do not mark this case accepted until the correction is normalized correctly.
+[Evidence and language limitations](validation/dialogue-review-2026-10-24.md).
+
+
+## 2026-10-24 — Offline noise-suppression evaluation
+
+WebRTC low/moderate, RNNoise and Speex were compared with bypass on public and
+synthetic Turkish speech. All profiles were fast on CPU, but no candidate
+preserved recognition quality across conditions. No carrier profile was changed
+and no new listening acceptance is claimed. Noise/hum-only hallucinations remain
+possible even after filtering. Any later promotion must first improve offline
+entity/clean/quiet accuracy, then validate streaming cancellation, barge-in and
+real carrier listening. See [evidence](validation/denoise-2026-10-24.md).
+
+## 2026-10-24 — DTLN offline follow-up
+
+Original DTLN and an exploratory half-strength blend completed 812 paired real
+Whisper decodes across public/synthetic speech and nonspeech controls. Both failed
+the recognition-preservation gate; noise-only hallucinations also remained.
+21 Linux boundary/alignment checks passed. The live carrier path was unchanged;
+no new call, listening, latency, barge-in or cancellation acceptance is claimed.
+See [DTLN evidence](validation/dtln-2026-10-24.md).
+
+## 2026-10-24 — Reviewed M4 dialogue-quality candidate
+
+The approved candidate was built/tested in isolated Linux source snapshots. New
+regressions cover semantically tagged acknowledgements, complete versus partial
+playback groups, early/late receipts, cancellation and failed note updates.
+Real-model text comparisons and isolated PostgreSQL summary tests did not pass
+the meaning/naturalness release gates. The running listener was not replaced;
+there is no new carrier acceptance or reason to treat current phone behavior as
+the candidate. Preserve existing human-listening evidence separately.
+
+Before any future promotion, resolve correction/independent-request loss and
+premature closing on a new unseen set, preserve secret exclusion, and repeat the
+paired timing and synthetic speech checks. Inspect final stored notes after
+farewell-only turns, not just spoken replies or intermediate drafts.
+[Evidence, exact checks and limitations](validation/dialogue-quality-2026-10-24.md).
+
+
+## 2026-10-24 — Owner-placed M3/M4 phone test
+
+The existing Netgsm listener completed one actual six-turn agent conversation.
+Four interruption/cancellation events, sent-audio accounting, a corrected final
+note and eventual system-initiated hangup were observed. The owner subsequently
+confirmed disconnection and accepted the overall experience as comfortable.
+Retain the technical caveats: a recognized explicit farewell was followed by another
+further-help question, and the summary introduced uncertainty absent from the
+final note. The owner deferred summary improvement and will use the readable
+conversation and final note. Exact interruption/closing delay was not measured;
+this does not establish all M3/M4 gates. No raw recording or candidate rollout.
+[Evidence and outstanding checks](validation/carrier-m3m4-2026-10-24.md).
+
+
+## 2026-10-24 — M4-01 / M5-03 response-latency baseline
+
+The measurement subtask is complete on the accepted Linux baseline: 25 sequential
+synthetic PCMA calls, five message scenarios repeated five times, 50 completed
+response turns using real resident CUDA Whisper/EMA, OpenRouter gpt-oss-120b and
+isolated PostgreSQL. All 25 call validations passed; no response timing samples
+were discarded, failed or missing. No live runtime/prompt/model change occurred.
+
+Estimated VAD-end to first server output: P50 **1929 ms**, P95 **3464 ms**, maximum
+**5120 ms**; 4/50 turns exceeded three seconds. Message-taking P50/P95 is
+**2504/3601 ms**, closing **1643/1796 ms**. Endpoint-to-output alone is
+**1259/2740 ms**. Endpoint silence (median 824 ms) and two model requests on
+message turns dominate; local ASR finalization and first TTS PCM medians are
+120 ms and 9 ms. The slowest turn spent 4071 ms in two model requests.
+
+The warm repeated synthetic sample reaches the 50-turn count but fails the
+latency target and does not close human/carrier G3 or full M5-03 acceptance.
+Existing report regression passed (1 test); final services were SERVING, test
+schemas removed, and live source/binary hashes unchanged. Summary quality stays
+deferred as requested. [Method, distributions and limits](validation/response-latency-2026-10-24.md).
+
+## 2026-10-24 — Offline Qwen ASR comparison
+
+M2-01 / M5-03, §8.1, US-02/04/06: 320 real CUDA decodes plus eight controls
+completed on the primary Linux host. Human telephone-band WER regressed from
+11.40% (Whisper) to 17.11% (Qwen3-ASR-1.7B), with slower measured inference and
+additional synthetic entity/short-phrase errors. Candidate rejected for promotion;
+Whisper and the carrier listener remain unchanged. Four evaluator tests passed.
+This adds no handset, Qwen streaming/cancellation, multi-call or carrier acceptance.
+[Evidence and runtime limitations](validation/qwen-asr-2026-10-24.md).
+
+## 2026-10-24 — Standard large-v3 offline comparison
+
+M2-01 / M5-03, §8.1, US-02/04/06: standard large-v3 improved human PCMA WER
+from 11.40% to 9.65% and quiet PCMA from 21.93% to 11.40%, but increased PCMA
+human median inference from about 142 to 360 ms and regressed one product name.
+The paired CUDA evaluation adds no carrier, streaming-partial, cancellation or
+concurrency acceptance. Current live/default Turbo remains unchanged; three
+evaluator checks passed. [Evidence and shared-host limits](validation/whisper-large-v3-2026-10-24.md).
+
+
+## 2026-10-24 — Endpoint scheduling implementation and quality gate
+
+Owner approved the endpoint plan while excluding LLM optimization. Implemented
+content-free gate diagnostics and a default-off, bounded early-partial scheduling
+candidate in `codex/endpoint-latency`; all Linux work used an isolated snapshot.
+The 500 ms endpoint floor and existing stability/resumption safeguards remain.
+
+The frozen replay planned 100 continuing and 50 completed fixtures per profile.
+It stopped after 46 runs / 23 pairs because the absolute cutoff gate was already
+unachievable: both profiles cut the same 9 of 16 observed continuing cases; no
+candidate-only cutoff was observed in that subset. Seven completed-turn pairs
+had endpoint medians 984 ms baseline and 696 ms candidate. All 23 pairs had equal
+final ASR text and equal decode counts (113 each), which does not validate omitted
+continuations or establish general quality/resource acceptance.
+
+47 ASR tests, 38 SIP cases and 9 CTests passed on Linux; formatting and task diff
+checks passed. **No live rollout:** the candidate remains default-off, and the
+full quality/timing sample, lower-threshold trials and owner phone validation
+were not advanced after rejection. LLM/prompt/model settings and live hashes
+remain unchanged. General pause/incomplete-turn handling is the next prerequisite.
+[Implementation, evidence and limitations](validation/endpoint-calibration-2026-10-24.md).
+
+## 2026-10-24 — Large-v3 acceleration screening
+
+M2-01 / M5-03, §3/8.1, US-02/04/06: seven decoder profiles, stage timing and
+nine targeted repeats completed 1,169 real CUDA decodes. Up to 19.8% lower median
+PCMA inference came with recognition loss; no tested profile preserved quality
+across every condition. INT8/beam-three added a spurious subtitle phrase in a
+quiet closing on all three repeat attempts. FlashAttention failed at startup.
+Three evaluator tests passed. Live Turbo remains unchanged; no Qwen/large-v3
+carrier, streaming-partial, multi-call or cancellation acceptance was added.
+[Research, measured tradeoffs and untested follow-ups](validation/whisper-large-v3-speed-2026-10-24.md).
+
+## 2026-10-24 — Owner-directed live endpoint activation
+
+M3-01 / M4-01 / M5-03; requirements §3, §7.1–4, US-04/05/06. After the quality
+result was reported, the owner explicitly requested deployment of the new version.
+The tested Linux gateway, ASR scheduling service and compatible protobuf bindings
+were installed during an idle period. `ALOJAN_TURN_PARTIAL_HINT=1` enables the hint
+in the private carrier configuration; the launcher defaults to zero elsewhere.
+LLM/agent source, provider, prompt, reasoning, Whisper model/decoder configuration,
+EMA, admission limit and the three-second answer delay were preserved.
+
+The live gateway is listening on the carrier UDP port with the flag enabled. ASR,
+EMA and agent health checks all returned SERVING. A two-turn synthetic PCMA
+loopback using the deployed ASR worker, matching native binary, real CUDA speech
+models and the existing OpenRouter configuration passed response, summary and
+hangup checks. Endpoint silence was 500/504 ms; estimated VAD-end-to-first-output
+was 3141/1463 ms. This is one functional smoke check, not a latency distribution
+or handset measurement. The prior 47 ASR, 9 CTest and 38 SIP regression passes
+remain the implementation evidence; no full regression rerun is claimed here.
+Launcher shell syntax checks passed on Mac and Linux.
+
+The earlier absolute pause-quality gate still failed: 9 of 16 tested continuation
+pairs cut early in both versions, with no additional candidate-only failure in
+that subset. Owner-directed activation is not a passing quality gate. Full replay,
+soak/resource acceptance and a real carrier call on this release remain pending.
+No external notification, recording, Git push or merge was performed.
+
+Private rollback: `.local/before-endpoint-live-20261024-145055/` contains the previous
+binary, selected source/bindings, launcher/configuration and process definitions.
+It contains private configuration and must remain ignored and access-restricted.
+Rollback requires an idle gateway, restoring those files and restarting only the
+carrier gateway and ASR worker on port 15173. Disabling the hint alone does not
+restore the previous detector implementation. Private validation evidence:
+`.local/endpoint-latency-20261024/evidence/live-deploy-01/` and
+`live-deployment-health.json` alongside it.
+
+## 2026-10-24 — Carrier connectivity follow-up after activation
+
+The owner initially reported a call not connecting. At inspection the gateway was
+running but had no new incoming-call event. Local and Mac-to-Linux SIP OPTIONS
+probes both returned 200 OK; the advertised public IP matched observed egress,
+and all previous carrier network arguments were preserved. No configuration change
+or rollback was made. A subsequent owner call arrived and reached CONFIRMED after
+3053 ms (200 answer at 3008 ms). Its first three completed response turns had no
+reported pipeline error, endpoint silence 696/684/708 ms and estimated
+VAD-end-to-first-output 1834/1383/1386 ms. These are server measurements, not handset
+latency or subjective quality acceptance. The first failed attempt's cause is
+unresolved; absence of an application call event does not prove where it failed.
+The new release has now received a real carrier call; the pause-quality gate and
+broader acceptance remain open. Personal transcripts were not copied into docs.
+
+## 2026-10-24 — Owner-reported carrier dialogue quality failure
+
+After the connectivity follow-up, the owner reported an initially inaudible attempt
+and an audible subsequent conversation containing incorrect information. Read-only
+inspection of the latest persisted caller utterances, aligned sent-response text
+and the accepted live prompt confirms a dialogue-quality failure despite successful
+transport/pipeline events: the assistant supplied an unsupported product catalog,
+then offered a correct catalog immediately after admitting it lacked the facts.
+It also reused a generic privacy refusal for an ordinary company-information
+question and repeated its earlier refusal instead of explaining it.
+
+A fictional product name from the prompt's behavioral examples appears in the
+unsupported response. Example-to-fact contamination is a strong hypothesis, not
+a proven model-internal cause. The current prompt lacks an explicit distinction
+between illustrative entities and verified business facts. Recognition also
+contains unclear short phrases, but the product-list request was intelligible
+in the stored transcript; ASR does not account for the unsupported catalog.
+
+No raw call recording was enabled, so no claim of listening to the audio or
+verifying handset audibility is made. Sent-audio accounting does not prove the
+caller heard it. The initial silence remains unresolved. No LLM, prompt, model,
+endpoint or live configuration was changed during this inspection. A future
+prompt repair must use Skill Creator, general evidence/knowledge and recovery
+rules, and cross-scenario evaluation, not a product-name blacklist. Technical
+call success must not be reported as conversational quality acceptance.
+
+
+### 2026-10-24 — Grounded dialogue candidate: release withheld
+
+M4-01/02, US-02/06/08: Linux access restored. Prepared and tested general grounding
+and delivered-response repetition changes in an isolated workspace. Linux unit
+checks pass (131 passed, 1 skipped), but real OpenRouter conversation review still
+fails the quality/latency gate. Shorter-prompt and policy-transport experiments
+introduced regressions and were rejected. No deployment or new carrier acceptance;
+task remains open. See [investigation and evidence](validation/grounded-dialogue-2026-10-24.md).
+
+
+### 2026-10-24 — Owner-authorized grounded-dialogue phone trial
+
+The owner explicitly requested deployment despite the known conversation-quality
+and latency failures. Installed only the retained agent backend after checking
+that calls were idle and taking a private rollback backup. Agent/EMA/ASR report
+SERVING; the existing gateway remains running. M4-01/02 acceptance stays open;
+owner's real phone test is pending. See the
+[live trial and rollback record](validation/grounded-dialogue-2026-10-24.md#owner-authorized-live-trial).
+
+
+### 2026-10-24 — Owner reports no ringing/audio after trial deployment
+
+M1-06/M4-01, US-01: agent, EMA and ASR returned SERVING. The existing gateway
+process remained alive with UDP 5060 bound to the configured LAN interface.
+Synthetic OPTIONS requests from both the Linux host and the owner's Mac received
+SIP 200 OK. Configured public address matched observed egress (addresses private).
+No new call-state event appeared; the gateway log's last modification was 14:58:08
+server local time before this investigation. The deployed trial backend hash was
+unchanged. No process, firewall or routing configuration was changed.
+
+During the owner's reported retry, bounded metadata-only interface observation
+printed only the diagnostic OPTIONS request/reply. It ended with two packets
+captured, three received by the kernel filter, zero dropped; the extra filter
+count is not evidence of a decoded carrier INVITE. No raw packet/audio file was
+created. This proves local SIP responsiveness, not external carrier reachability.
+The owner subsequently confirmed dialing the Netgsm 0850 number directly; mobile
+forwarding is therefore excluded for this attempt. A Netgsm portal tab was found,
+but browser access timed out while the computer-control tool reported a locked
+Mac. Portal inspection awaits owner unlock. Inspect the trunk/NAT routing path
+and repeat correlated carrier observation before diagnosing a specific upstream
+device or declaring phone service restored. Owner hearing/answer acceptance is failed/pending.
+
+
+## 2026-10-24 — Reported recovery and source consolidation
+
+The owner subsequently reported the direct carrier line working again and
+suspected a provider incident. This is owner-reported recovery; the upstream
+cause was not independently established and no new scripted carrier acceptance
+was completed. The subsequent main-publication request consolidates source only.
+Linux loopback checks and the merged agent's synthetic API results are recorded
+in [the publication report](validation/main-publication-2026-10-24.md); they do
+not replace handset acceptance. Live services were not restarted for publication.

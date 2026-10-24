@@ -1,6 +1,17 @@
 # Implementation plan
 
-Updated: 2026-10-23. Status: **Linux GPU server development/build/test authorized and in progress**.
+## 2026-10-24 — Configurable capacity: five per host, fifty total
+
+The owner superseded the two-call proposal with a 50-concurrent-call architecture
+and per-server limits; the current Linux target is `max_calls = 5`, with excess
+calls rejected busy. [CAP-01–09](CALL_CAPACITY_PLAN.md) replaces C2-01–08 and maps
+implementation, infrastructure sizing, load tests and rollout to M0–M6 / US-01–08.
+[ADR 0009](ADR/0009-call-capacity.md) records the accepted target and proposed
+Kamailio/RTPengine plus complete-call-server topology. Primary-source research and
+planning are complete. Five/50-call GPU/API/carrier acceptance, implementation and
+activation remain pending; current live configuration is unchanged.
+
+Updated: 2026-10-24. Status: **Linux GPU server development/build/test authorized and in progress**.
 
 The owner authorized primary development/build/test on the supplied Linux GPU server in `~/ai/alojan` (ADR 0003), and subsequently authorized the live Netgsm answer test. Continue on `codex/agent-dialogue`, preserving the uncommitted M0/M1/M2 foundation. Publication and the license choice remain separate. Ponytail `full` guides the breakdown: use existing protocol primitives, introduce only required services, and prove the smallest end-to-end slice first.
 
@@ -65,7 +76,7 @@ Evidence: [macOS foundation report](validation/macos-foundation-2026-10-09.md), 
 | M2-01 | Native development implementation complete; limited real CUDA checks passed | Persistent pinned large-v3-turbo float16 service, partial/final text, cancellation, isolation, capacity/error handling and synthetic Turkish evaluation. [ASR evidence](validation/linux-asr-2026-10-23.md); broader real/noisy speech quality, long-turn/lifecycle hardening and production supervision remain open |
 | M2-02 | Native development implementation complete; limited real CUDA coexistence passed | Persistent bounded EMA streaming, cancellation/recovery, 8/16/24/48 kHz calibration and concurrent ASR on the 16 GB GPU. [TTS evidence](validation/linux-tts-2026-10-23.md); broader pronunciation/number quality, production supervision and soak remain open |
 | M2-03 | Complete for native development; scripted CUDA path passed | Real local PCMA/PCMU → ASR → EMA → RTP, bounded queues, cancellation and fallback; 20 new pytest cases and queue CTest. [Gateway evidence](validation/linux-speech-gateway-2026-10-23.md). Fixed capture/response only; M3/M4, broader speech quality and full G3 remain separate |
-| M3-01 | Native adaptive single-turn core implemented; full acceptance partial | Pinned Silero/Smart Turn CPU inference, fresh ASR coverage, contextual timing and bounded background decisions. [Turn evidence](validation/linux-turn-detection-2026-10-23.md). Synthetic 0.5–2 s pause/failure checks and real CUDA local calls are separate from human/carrier quality. Silent-caller reminder, runtime threshold configuration and broader human/noisy calibration remain open; M3-02 now has a separately validated native interruption core; M4 dialogue is now implemented separately; carrier latency acceptance remains open |
+| M3-01 | Native adaptive single-turn core implemented; full acceptance partial | Pinned Silero/Smart Turn CPU inference, fresh ASR coverage, contextual timing and bounded background decisions. [Turn evidence](validation/linux-turn-detection-2026-10-23.md). Synthetic 0.5–2 s pause/failure checks and real CUDA local calls are separate from human/carrier quality. Silent-caller reminder and runtime threshold configuration are implemented in the M3-01 follow-up below; broader human/noisy calibration remains open; M3-02 now has a separately validated native interruption core; M4 dialogue is now implemented separately; carrier latency acceptance remains open |
 | M3-02 | Native interruption core implemented; full acceptance partial | Echo/backchannel policy, immediate generation revocation, TTS cancellation, bounded pre-roll handoff and conservative sent-history accounting. [Interruption evidence](validation/linux-interruption-2026-10-23.md). Real CPU/CUDA local calls and one owner-confirmed PCMA carrier interruption/new-response path passed. [Live follow-up](validation/netgsm-interruption-2026-10-23.md). 250 ms onset target, broader human/carrier calibration, broader phrase alignment remain open; M4 LLM cancellation now has separate native tests |
 | M1-06 | Native carrier profile running; full network review partial | Private LAN/public mapping, UDP 5060, RTP/RTCP within 10000–10100 and exact incoming signaling-source check configured; two real PCMA calls worked under the existing router policy. Complete provider failover/media ranges and broader network review remain open. [Live evidence](validation/netgsm-answer-2026-10-23.md) |
 | M1-07 | Immediate answer/greeting accepted; full G2 partial | Two real calls answered, ACK confirmed, incoming nonzero PCM received, remote hangup/local closing released sessions. Owner accepted intelligible greeting. Reverse speech intelligibility, live identity and full carrier acceptance remain open |
@@ -171,7 +182,10 @@ Both real CUDA local calls delivered 350 ASR input frames and the complete
 output-port PCM was 159 ms for each codec; sampled host GPU peak was 3,008 MiB.
 These two observations are not P95 or end-to-end conversational latency.
 
-## M3-01 continuation boundaries
+## M3-01 continuation boundaries (historical)
+
+The silence recovery follow-up below supersedes the reminder/configuration backlog
+in this historical single-turn implementation record.
 
 The native adaptive core is an explicitly selected local test profile, with a
 fixed closing response. It can unblock M3-02 echo/interruption work, while the
@@ -392,3 +406,543 @@ Publication validation: all 255 Linux pytest cases and nine CTests passed;
 source formatting, lint and generated-binding reproducibility passed. Private
 source and metadata checks completed; only a consolidated noreply commit is
 published. Hosted CI remains absent, and handset acceptance remains separate.
+
+## ASR spelling and CPU optimization (2026-10-23)
+
+M2-01 / M5-03, §8.1 and US-02/04/06: preserve the pinned decoder and reduce ASR
+OpenBLAS CPU work to one thread. Add a bounded private exact-phrase spelling
+map for the owner-confirmed product. No denoiser or extra inference pass.
+Text-only decoding and contextual hotwords were rejected after a phone-number
+regression; noise filtering did not improve measured quality.
+
+The final synthetic paired run kept median latency near 112 ms, reduced targeted
+name misses from 24 to 12 across 240 speech decodes, and changed no numeric tokens.
+CPU time for the same workload decreased approximately 92% versus the former
+launcher. All seven real-CUDA service cases and both native PCMA/PCMU fixed-reply
+loopbacks passed. The idle development line now uses ASR 15173; the replaced live
+worker was stopped and GPU memory returned to its previous level. See
+[evidence and limitations](validation/asr-quality-2026-10-23.md).
+Human noisy-handset acceptance, broad WER and full conversational latency remain
+open; no notification or recording feature was added.
+
+Final focused validation: 44 Linux pytest cases passed in 3.11 s; Ruff lint and
+format checks passed for six affected Python files; launcher syntax and diff
+whitespace checks passed. The prior consolidated baseline had 255 passing tests;
+that full suite was not rerun for this ASR-only change. Source synchronization
+and final worker/gateway health were checked separately from human acceptance.
+
+## Uncertain recognition clarification (2026-10-23)
+
+M4-01/02 / M5-03, US-02/06: an owner-reported product inquiry was transcribed as a
+stock outro and incorrectly ended the call. Add a local clarification guard for
+known suspect ASR outputs and bare thanks after a pending question. Other unclear
+or unrelated answers now require clarification in the agent role; remove the
+instruction to close after two failed clarifications. Preserve actual exits,
+existing notes, original stored recognition and bounded call resources.
+
+Linux: 59 agent/phrase tests passed; six backend scenarios, six real CUDA speech
+cases and a three-turn native CUDA/API/isolated-DB recovery call passed. Exact
+product spelling still failed in one very quiet synthetic case; acoustic accuracy
+is not declared solved. The development agent now uses natural-v3-clarification;
+carrier retry remains pending. [Evidence](validation/clarification-recovery-2026-10-23.md).
+
+## Skill Creator prompt review (2026-10-23)
+
+M4-01/02, US-02/06: reorganize receptionist instructions around caller intent,
+clarification, message saving and explicit completion. Distinguish a topic from
+an actual message, callback requests from exits, and first-save invitations from
+redundant follow-ups. Reinforce finish_call's description without changing its
+contract. Align the stale two-retry requirement with the approved clarification
+policy. Existing ASR guards and speech services are unchanged.
+
+After rejecting failed draft behaviors, the final 16 synthetic scenarios passed
+(14 real API, two local guards), along with 59 Linux agent/phrase tests. The idle
+development agent now runs natural-v4-prompt-review. Human acceptance and model
+behavior on unseen speech remain open. [Evidence](validation/prompt-review-2026-10-23.md).
+
+
+## M3-01 silence recovery follow-up (2026-10-23)
+
+Owner requested completion of M3-01 after reviewing the remaining-task list.
+Maps to US-04/US-06 and requirements §7.2; no DEC or P0/P1 change.
+The adaptive agent profile now reminds a silent caller once after seven seconds,
+continues listening, and uses a polite silence-timeout farewell after the next
+bounded 20-second capture has no confirmed speech. Incomplete endpoint evidence
+requests repetition rather than the dependency-unavailable fallback. Actual
+model/transport failures retain the controlled failure path. Call/turn limits,
+three-second closing drain, recording policy and deferred notifications remain.
+
+Recovery uses validated internal metadata, bypasses model/tools and never invents
+caller utterances. Assistant delivery remains receipt-based. The existing monitor
+handles echo/interruption; bounded pre-roll preserves speech beginning near the
+end of the recovery prompt. Six validated runtime threshold flags retain the old
+defaults and expose endpoint calibration without rebuilding.
+
+Implementation and validation are recorded in
+[the M3-01 recovery report](validation/silence-recovery-2026-10-23.md).
+Full M3-01/G4 acceptance remains partial until real human/noisy pause calibration
+and handset recovery acceptance are complete; synthetic model/transport checks
+must not be presented as those gates. M3-02's 250 ms interruption target remains
+separate. M5-01 notifications and M5-02 owner API remain owner-deferred.
+
+M3-01 follow-up validation: final Linux build, nine CTests and 95 focused pytest
+cases passed, with no skips; the separate prior 26-case turn/recovery run passed.
+Five functional real-CUDA/DB synthetic calls passed. One stricter mid-prompt cutoff
+attempt failed and remains documented; M3-02 timing acceptance stays open.
+The idle carrier gateway and agent were updated to `natural-v5-silence-recovery`
+with matching runtime arguments and healthy ASR/EMA/agent services. Handset
+validation was requested and is pending. No push, PR, new recording or notification.
+
+M3-01 handset follow-up: the owner heard the reminder and timeout farewell but
+the line stayed open. Logs confirm `finish=1` followed by another recognition
+turn without a confirmed interruption. This is a failed carrier closing check,
+not a passed recovery gate. The gateway correction removes the unconfirmed
+pre-roll override of the finish decision; confirmed interruption still resumes.
+See the recovery report's handset failure section for regression and deployment
+evidence. Broad M3/G4 calibration and carrier retest remain open.
+
+Correction checks: Linux build, 9 CTests and all 8 recovery SIP tests passed;
+the late-backchannel regression failed before and passed after the fix. A new
+resident CUDA/isolated-DB silent PCMA call completed farewell and hangup without
+fabricated caller text. `natural-v5.1-silence-close` is active after an idle
+gateway-only restart with identical runtime arguments and healthy workers.
+No push or raw recording. Human closing retest is pending.
+
+## Owner-requested selectable ASR comparison (2026-10-23)
+
+M2-01 / M5-03, §8.1 and US-02/04/06; [ADR 0008](ADR/0008-selectable-asr.md).
+Implemented `ALOJAN_ASR_BACKEND=whisper|nemotron` with isolated frozen runtimes,
+pinned/checksummed Nemotron weights, shared gRPC isolation/cancellation and
+explicit offline evaluation tools. Whisper remains the active/default backend.
+
+On the RTX 4080, 24 public human recordings plus 16 synthetic utterances across
+four conditions produced 480 decodes in three profiles. Human PCMA WER was
+11.40% for Whisper, 23.03% for Nemotron 320 ms and 23.46% for Nemotron 1120 ms.
+Neither candidate justified promotion. Speaker identities are unavailable;
+this is not balanced-speaker or handset acceptance.
+
+Linux: 45 ASR tests and three evaluation checks passed. Both temporary real CUDA
+workers passed seven transport/silence cases and cancellation/reuse. Nemotron
+failed the existing name-spacing and spoken-number format checks; do not label
+its quality validator a pass or infer incorrect numeric digits from that failure.
+Whisper passed the entity checks. Temporary workers were stopped; live carrier
+configuration was preserved. [Full evidence](validation/nemotron-asr-2026-10-23.md).
+Persistent per-generation Nemotron caching, broader human speech, long-turn and
+carrier acceptance remain open. No M5 notification work or publication occurred.
+
+## Turkish-adapted Whisper evaluation (2026-10-24)
+
+M2-01 / M5-03, §8.1 and US-02/04/06. Owner-requested TurkMedSTT general Turkish
+large-v3 evaluation completed on Linux/RTX 4080: 320 paired decodes across the
+same 24 human and 16 synthetic fixtures, plus eight silence/noise diagnostics.
+Human PCMA WER tied Turbo at 11.40%; noisy/quiet PCMA improved to 22.15%/12.28%
+from 24.56%/21.93%. Clean WER regressed to 7.89% from 7.24%; product-name misses
+increased and human PCMA inference P50 rose from 142 to 368 ms. Synthetic literal
+WER is confounded by written-number formatting. Three evaluation checks passed.
+Keep the existing live/default model. No production source/configuration change
+or carrier call occurred. [Evidence and reproduction](validation/turkmed-asr-2026-10-24.md).
+
+## Response latency measurement and routing comparison (2026-10-24)
+
+M4-01 / M5-03, requirements §3/7.4/9.1/10/12/15; US-02/05/06. Owner approved
+plan items 1 and 4 only. Agent and native per-turn measurements now separate DB,
+provider text, speakable phrase, model/tool steps, endpointing, ASR, TTS and output.
+Failed/interrupted/disconnected turns and missing measurements remain visible;
+waiting music and recovery prompts are excluded from successful response metrics.
+
+All 72 synthetic API turns completed. Default/latency/sticky/combined median
+first phrase times were 2904.5/2871.5/2907/2996.5 ms. All 96 model requests reported
+cache hits. Candidate arms had 1/1/2 premature-close behavior failures; baseline
+had none in this small sample. Retain default routing: no candidate met the
+predeclared speed and behavior gates. No causal claim about routing and model
+behavior is made. Optional routing profiles and a repeatable comparison/report
+command are available. [Evidence](validation/latency-routing-2026-10-24.md).
+
+Linux build, 9 CTests and 87 focused tests passed (86 plus one reporting test);
+final affected Python recheck: 74 passed. A two-turn real CUDA/API/isolated-DB
+loopback passed functional checks but measured 7238/5059 ms endpoint-to-output,
+so G3 latency remains failed/open. The idle gateway and agent were updated to
+`natural-v5.2-latency-observability`, retaining runtime arguments/default routing
+and healthy ASR/EMA/agent workers. No ASR/EMA restart, raw recording or publication.
+Full M5-03 hardening/soak and human/carrier timing acceptance remain open.
+
+### DeepSeek model selection prepared (2026-10-24)
+
+M4-01 / M5-03, DEC-11 and §9.1: the owner selected
+`deepseek/deepseek-v4.1-flash`; see the accepted selection amendment in
+[ADR 0005](ADR/0005-openrouter-agent.md). The local backend now selects that exact
+model, preserves Responses streaming and reasoning `none`, and omits the
+unadvertised verbosity parameter. Prompt, tools, routing and speech services are
+unchanged. Mac checks: 74 agent/phrase/timing/report tests passed in 4.79 s;
+Ruff lint/format and diff whitespace checks passed. These use simulated models.
+
+Primary Linux SSH timed out repeatedly. Deployment, Linux tests, real OpenRouter
+access/behavior/latency, structured summary and GPU call validation remain
+pending. No live restart, new carrier acceptance or speed improvement is claimed.
+The last verified live model is still the earlier Pro model; current service
+health is unknown until connectivity returns. No push or publication performed.
+
+### GPT-OSS 120B prompt evaluated; activation held (2026-10-24)
+
+M4-01 / M5-03, DEC-11, §9.1–3, US-02/05/06: the owner superseded the undeployed
+DeepSeek choice with `openai/gpt-oss-120b`, requested model-specific prompt research
+and authorized activation if faster. Local source now pins Cerebras, uses supported
+low reasoning and applies the provider pin to both conversation and summary.
+The Hermes-informed prompt adds explicit decision rules, tool sequencing and
+eight Turkish examples. Owner-authorized real Mac API evaluation measured mean
+first text at 0.926–0.981 s for the revised candidate versus 4.399 s for Luna.
+However, it passed only 14–15/18 automatic scenario checks versus Luna's 18/18;
+novel paraphrases passed 6/8. Missing closing tools, repeated questions and some
+reasoning/tool text leakage block activation. These are small configuration
+comparisons, not handset or first-speakable-phrase latency measurements.
+See [research, evidence and pending gates](validation/gpt-oss-120b-2026-10-24.md)
+and ADR 0005. 77 Mac regression tests passed in 4.56 s. Linux remains unavailable;
+Linux/DB/summary/GPU/carrier validation and deployment remain pending. No push.
+
+### 120B reasoning and validated speech tools (2026-10-24)
+
+M4-01 / M5-03, DEC-11, §7.4/9.1–3, US-02/05/06/08. The owner reaffirmed 120B,
+allowed more reasoning below three seconds and restored Linux access. Medium
+reasoning, temperature 0.2 and a 4096-token step bound are selected. Required
+`respond`/`finish_call` speech tools prevent raw model reasoning or tool-shaped
+text from reaching TTS. Existing-note state is explicit; identical durable notes
+avoid repeated IO. Model-chosen natural closing and unconfirmed notes remain.
+
+87 Linux regression tests passed. Real isolated DB/summary and CUDA/EMA/Whisper
+PCMA loopback passed; first audio after endpointing was 1459/639 ms. Final
+synthetic dialogue checks passed 37/38, with one adversarial early-close failure
+still open; first usable phrase maximum was 2304 ms. The owner's development
+model rollout does not close the zero-critical-failure, carrier, G3 or soak gates.
+See [full evidence and rollout status](validation/gpt-oss-reasoning-2026-10-24.md).
+The development-line agent now runs 120B with these settings on port 15073.
+Only the idle agent was restarted; ASR/EMA/gateway were preserved and their health
+checks passed. Prior live Luna source/logs remain available for rollback. Human
+carrier acceptance and the recorded adversarial closing issue remain open.
+
+## 2026-10-24 — Executive-assistant conversation repair (M4-01 / M5-03)
+
+The owner rejected the latest carrier conversation's support dismissal and
+repeated closing questions. Reviewed stored recognition/delivered speech and
+sanitized timing, then refined ADR 0007 to a senior executive-assistant role.
+Concrete problems now enter the note flow; contextual thanks can close a handled
+request. Narrow intake recovery and bounded repair of observed generic invitations
+and unsupported callback claims protect the speech boundary without extra repair
+roundtrips after a durable save. Model/provider/reasoning remain 120B/Cerebras/medium.
+
+Linux: 101 focused tests passed in 7.63 s; Ruff and diff whitespace checks passed.
+Release replay: 33/33 note/completion states, not a full language-quality pass;
+missing follow-up details and an overly generic answer remain documented. Real
+CUDA ASR/EMA + OpenRouter + PostgreSQL native loopback passed, first audio 1,939 /
+720 ms. The agent was reloaded on the idle development line; ASR/TTS/gateway kept
+running. New carrier listening, general semantic validation, G3 and soak remain
+open. See [evidence and limitations](validation/executive-assistant-2026-10-24.md).
+
+## 2026-10-24 — Natural closing and researched conduct (M4-01 / M5-03)
+
+Owner reported another storage acknowledgement after thanks. Latest carrier
+records confirm one stored note but duplicate spoken acknowledgement. Added the
+[researched conduct list](AGENT_CONDUCT.md) to the prompt and note-version-aware
+completed-speech accounting to prevent that closing/repair repetition without
+suppressing unheard or updated acknowledgements. No additional API roundtrip.
+
+Linux: 108 focused tests passed in 7.71 s; Ruff/format/diff checks passed. Real-model
+gRPC replay: 13/13 state checks, four eligible closings without repeated storage,
+mean first phrase 1066 ms / max 1930 ms. Native real ASR/EMA/API/DB loopback passed,
+first audio 1659 / 1540 ms. These do not close carrier listening or general
+language-quality gates; see [evidence](validation/natural-closing-2026-10-24.md).
+The natural-closing update is active on the development line after an idle-agent
+reload. Agent/ASR/TTS health passed; the native gateway remained running. Previous
+agent source/logs were retained for rollback. Owner listening remains pending.
+
+## 2026-10-24 — One further-help question (M4-01 / M5-03)
+
+The owner superseded the blanket invitation ban: ask once after the request is
+handled, then never repeat after additions/corrections. Prompt/tool state and
+completed-playback accounting implement this without another normal-path model
+request. Explicit exits remain valid. Linux: 110 tests in 8.05 s; Ruff/whitespace
+passed. Real-model replay: 19/19 state checks, seven conversations with one
+invitation each, first phrase mean 998 ms / max 2442 ms. Missing-product elicitation
+and occasional readback remain quality limitations. Development agent activated;
+new carrier listening remains pending. See [evidence](validation/once-offer-2026-10-24.md).
+
+## 2026-10-24 — Researched service practices (M4-01 / M5-03)
+
+Owner requested international service guidance using the earlier research method.
+Added six positive practices, primary-source mapping and consistent question
+priority in prompt/tool descriptions; no runtime logic or media changes. Reviewed
+ISO's public framework plus ICMI, Google and Retell guidance, without claiming
+normative conformity. Final Linux checks: 110 passed in 7.59 s; Ruff/format and
+whitespace passed. Real 120B replay: 14/14 note/finish states, mean first phrase
+935 ms / maximum 1917 ms; a small sample, not a latency guarantee. Explicit empathy
+and nonrepeating intention wording still need improvement. Agent activated after
+idle checks; agent/ASR/TTS healthy and gateway unchanged. Private rollback snapshot:
+`.local/rollbacks/service-conduct-20261024`. Carrier listening and general language
+quality remain pending. See [evidence](validation/service-conduct-2026-10-24.md).
+
+## 2026-10-24 — Adversarial dialogue review (M4-01 / M5-03)
+
+Owner requested unusual questions, a findings-based improvement plan and reviewed
+implementation. Added a reproducible real-model evaluator and 34 synthetic
+conversations / 58 steps. Retained the existing prompt structure after rejecting
+a broader compaction; clarified identity, complete-note updates, legitimate mixed
+requests, credentials in generated notes and latest-intent closing. Narrow tool
+checks prevent observed false storage acknowledgements, content-free note rewrites
+and premature closing; malformed provider output recovers with clarification.
+
+Linux: 126 focused tests passed in 8.03 s; Ruff/format/whitespace passed. Selected
+real-120B evaluation: 45/46 main and 12/12 additional checks. Real-model steps
+averaged 979 ms to first phrase, maximum 3208 ms; not phone first-audio latency or
+a three-second guarantee. Same-turn day correction still preserves a discarded
+word; mechanical acknowledgements and cold diversions remain language gaps.
+The development agent was activated after idle checks; agent/ASR/TTS healthy,
+gateway unchanged. Previous source/logs are in the private rollback directory
+`.local/rollbacks/dialogue-review-20261024`. No new native/GPU/carrier acceptance;
+M4/M5 quality gates remain open. See [review and evidence](validation/dialogue-review-2026-10-24.md).
+
+## 2026-10-24 — Native denoising comparison (M2-01 / M5-03)
+
+Owner authorized research of established open-source C++ options and a Linux
+trial before enabling denoising. Built WebRTC AudioProcessing 2.1 (low/moderate),
+RNNoise v0.2 and SpeexDSP 1.2.1 in an isolated private directory. Added a C++ probe,
+pinned build recipe and paired evaluator using 24 public Turkish recordings and
+16 EMA synthetic fixtures. Five speech conditions plus controls produced 1015
+initial decodes; 92 additional decodes repeated the observed WebRTC-low regressions.
+
+WebRTC low reduced white-noise human WER from 32.68% to 29.61%, but regressed fan
+and quiet conditions. It worsened 23/120 human pairs; all 46 repeated comparisons
+of those pairs reproduced the regression. RNNoise/Speex also failed the quality
+preservation gate. Native CPU means were 0.0071/0.0070/0.1034/0.0093 ms per 10 ms
+frame (WebRTC low/moderate, RNNoise, Speex); costs exclude initialization/I/O and
+are not hard deadlines. Filter delay is separate. Noise-only hallucinations remain.
+
+Decision: keep the live gateway/Whisper path unchanged. Reproducible isolated
+Linux build succeeded; 14 evaluator/native-boundary checks passed in 0.11 s.
+One existing Python 3.12 audioop deprecation warning remains; migrate the fixture
+conversion before adopting Python 3.13. Ruff/format/clang-format/whitespace checks
+passed. Agent/ASR/TTS health passed; no service restart or carrier test. Research,
+limits, source pins and results are in [the report](validation/denoise-2026-10-24.md).
+
+## 2026-10-24 — DTLN follow-up (M2-01 / M5-03)
+
+Owner authorized DTLN after voice-agent source research. Added a pinned, verified
+CPU ONNX probe and compared original full suppression, then an exploratory
+time-aligned half-strength mix, against bypass on the same public/synthetic
+corpus: 812 CUDA Whisper decodes. Full DTLN regressed all human conditions;
+half improved white-noise WER 32.68% → 29.39% but worsened PCMA 11.84% → 12.28%,
+fan/click conditions and a curated product name. Neither passes §8.1 / US-02/06.
+
+Mean processing cost was ~0.127 ms per 8 ms hop (~1.59% of one CPU core), separate
+from 24 ms overlap-add delay. This includes Python/NumPy and native ONNX inference,
+not a standalone C++ gateway measurement. Original-reference parity was within
+1.27e-7; 21 Linux checks passed in 0.23 s. Ruff/format/whitespace passed; existing
+audioop deprecation remains. No live restart/default change, C++ port, recording
+or carrier acceptance. [Evidence and limits](validation/dtln-2026-10-24.md).
+
+## 2026-10-24 — M4-01/02 reviewed dialogue-quality candidate
+
+The owner approved the independently reviewed plan, including limited M4-03
+summary consistency. Skill Creator guided generalized prompt/tool revisions and
+the natural executive-assistant tone; no case-specific correction recognizers
+were added. Private speech-tool acknowledgement intent is now bound to durable
+note versions and complete response playback, with partial/cancelled/late receipt
+and failed-save regressions. Public contracts, storage schemas and normal-path
+model request counts are unchanged.
+
+**Release acceptance remains open; candidate not deployed.** Isolated Linux
+regressions pass, but repeated real-model and independent language review expose
+wrong corrected values, lost requests, closing mistakes and a synthetic credential
+retention regression. Summary tests also fail semantic acceptance. The combined
+candidate must not replace the live listener on this evidence. Current agent
+source/runtime remains intact; no carrier acceptance or new notification is claimed.
+
+See [complete method, results and limitations](validation/dialogue-quality-2026-10-24.md).
+Further work must address general fact/correction handling with a fresh unseen
+set, or evaluate the receipt repair separately. Do not mark M4 dialogue quality
+complete based on deterministic tests or latency alone.
+
+
+## 2026-10-24 — Real M3/M4 carrier validation
+
+One owner-placed Netgsm call exercised pause, interruption, message correction
+and closing on the existing live version. Four cancellation events and a correct
+final note were observed; the system eventually initiated termination. Explicit
+farewell handling failed (an optional question followed the recognized exit),
+and the completed summary incorrectly marked the clear corrected date uncertain.
+The owner subsequently confirmed disconnection and accepted the phone experience
+as very good and comfortable. Summary improvement is deferred at the owner's
+request; stored conversation text and the final message remain the review records.
+The observed farewell deviation and ASR concerns remain documented. Broad M4
+quality and quantitative M3 timing acceptance remain open. No candidate
+deployment, restart, recording or notification occurred.
+[Sanitized results and timing limits](validation/carrier-m3m4-2026-10-24.md).
+
+
+## 2026-10-24 — M4-01 / M5-03 response-latency baseline
+
+The measurement subtask is complete on the accepted Linux baseline: 25 sequential
+synthetic PCMA calls, five message scenarios repeated five times, 50 completed
+response turns using real resident CUDA Whisper/EMA, OpenRouter gpt-oss-120b and
+isolated PostgreSQL. All 25 call validations passed; no response timing samples
+were discarded, failed or missing. No live runtime/prompt/model change occurred.
+
+Estimated VAD-end to first server output: P50 **1929 ms**, P95 **3464 ms**, maximum
+**5120 ms**; 4/50 turns exceeded three seconds. Message-taking P50/P95 is
+**2504/3601 ms**, closing **1643/1796 ms**. Endpoint-to-output alone is
+**1259/2740 ms**. Endpoint silence (median 824 ms) and two model requests on
+message turns dominate; local ASR finalization and first TTS PCM medians are
+120 ms and 9 ms. The slowest turn spent 4071 ms in two model requests.
+
+The warm repeated synthetic sample reaches the 50-turn count but fails the
+latency target and does not close human/carrier G3 or full M5-03 acceptance.
+Existing report regression passed (1 test); final services were SERVING, test
+schemas removed, and live source/binary hashes unchanged. Summary quality stays
+deferred as requested. [Method, distributions and limits](validation/response-latency-2026-10-24.md).
+
+
+## 2026-10-24 — Proposed endpoint-latency calibration
+
+Owner requests a plan for reducing end-of-turn waiting and excludes LLM
+optimization. A separate future Splash Engine Qwen 3.6 35B comparison is noted,
+not verified or activated. The proposed M3-01 / M4-01 / M5-03 work first attributes
+partial freshness, stability, detector and queue delays; then evaluates bounded
+scheduling changes and, only if needed, a high-confidence faster endpoint path.
+Preserve pause/recognition quality and resource cost. No implementation or live
+configuration change is authorized by this planning step.
+[Proposed sequence and acceptance gates](ENDPOINT_LATENCY_PLAN.md).
+
+## 2026-10-24 — Qwen3-ASR-1.7B evaluation (M2-01 / M5-03)
+
+Owner-requested conditional replacement evaluated under ADR 0008, §8.1 and
+US-02/04/06. Real Ubuntu/RTX 4080 paired evaluation completed 320 decodes on
+24 human and 16 synthetic fixtures across four conditions, plus eight controls.
+Human PCMA WER regressed from Whisper's 11.40% to Qwen's 17.11%; clean/noisy
+WER and product-name recognition also regressed. Quiet pooled WER improved,
+but 15/24 quiet recordings worsened. PCMA human P50 was 142 versus 439 ms in
+the tested Transformers runtime. Keep Whisper live/default; no promotion.
+
+Four Linux evaluator/adapter tests, Ruff and whitespace checks passed. The
+isolated Qwen evaluator reuses existing fixtures and scoring; no production
+adapter, native build, carrier test or restart was needed. Qwen streaming,
+lifecycle and concurrency gates remain untested; vLLM was not benchmarked.
+[Full provenance, reproduction, results and limitations](validation/qwen-asr-2026-10-24.md).
+
+## 2026-10-24 — Standard Whisper large-v3 evaluation (M2-01 / M5-03)
+
+Owner-requested standard large-v3 test under §8.1 and US-02/04/06 completed on
+Ubuntu/RTX 4080 using the existing paired evaluator and identical settings.
+Human clean/PCMA/noisy/quiet WER improved to 6.14%/9.65%/24.12%/11.40% from
+Turbo's 7.24%/11.40%/24.56%/21.93%. PCMA human P50 increased from about 142 to
+360 ms; curated product-name misses rose from one to two. No automatic promotion:
+keep the current live/default Turbo profile, with the accuracy/latency tradeoff
+and broader human/service gates visible.
+
+Three evaluator checks passed. No production source change, native build,
+service restart or carrier call. Independent endpoint-latency work on the shared
+host was preserved; the final report distinguishes its additional resident worker
+from this evaluation's GPU allocations and timing limitations.
+[Results, exact provenance and reproduction](validation/whisper-large-v3-2026-10-24.md).
+
+
+## 2026-10-24 — Endpoint scheduling implementation and quality gate
+
+Owner approved the endpoint plan while excluding LLM optimization. Implemented
+content-free gate diagnostics and a default-off, bounded early-partial scheduling
+candidate in `codex/endpoint-latency`; all Linux work used an isolated snapshot.
+The 500 ms endpoint floor and existing stability/resumption safeguards remain.
+
+The frozen replay planned 100 continuing and 50 completed fixtures per profile.
+It stopped after 46 runs / 23 pairs because the absolute cutoff gate was already
+unachievable: both profiles cut the same 9 of 16 observed continuing cases; no
+candidate-only cutoff was observed in that subset. Seven completed-turn pairs
+had endpoint medians 984 ms baseline and 696 ms candidate. All 23 pairs had equal
+final ASR text and equal decode counts (113 each), which does not validate omitted
+continuations or establish general quality/resource acceptance.
+
+47 ASR tests, 38 SIP cases and 9 CTests passed on Linux; formatting and task diff
+checks passed. **No live rollout:** the candidate remains default-off, and the
+full quality/timing sample, lower-threshold trials and owner phone validation
+were not advanced after rejection. LLM/prompt/model settings and live hashes
+remain unchanged. General pause/incomplete-turn handling is the next prerequisite.
+[Implementation, evidence and limitations](validation/endpoint-calibration-2026-10-24.md).
+
+## 2026-10-24 — Standard large-v3 speed study (M2-01 / M5-03)
+
+Owner requested acceleration research under §3/8.1 and US-02/04/06. Seven real
+CUDA decoder profiles, component timing and a targeted regression repeat produced
+1,169 measured decodes. INT8/greedy reduced human PCMA P50 from 359 to 288 ms but
+lost quality; plain INT8 retained PCMA/quiet pooled WER at 334 ms but regressed
+clean WER. INT8/beam-three reached 320 ms but fabricated a subtitle-like phrase
+in a quiet synthetic closing, reproduced three times. No profile passes all
+quality-preservation conditions. FlashAttention failed as unsupported.
+
+Three evaluator checks passed and the reference wrapper reproduced all 160 prior
+transcripts. About 79% of human inference wall time was decoder generation.
+Prioritize an isolated TensorRT-LLM engine experiment, followed by measured partial
+coalescing and bounded cross-call batching; these are untested follow-up paths,
+not delivered performance or capacity. No production source/runtime changes,
+restart or carrier acceptance. [Measurements and plan](validation/whisper-large-v3-speed-2026-10-24.md).
+
+## 2026-10-24 — Owner-directed live endpoint activation
+
+M3-01 / M4-01 / M5-03; requirements §3, §7.1–4, US-04/05/06. After the quality
+result was reported, the owner explicitly requested deployment of the new version.
+The tested Linux gateway, ASR scheduling service and compatible protobuf bindings
+were installed during an idle period. `ALOJAN_TURN_PARTIAL_HINT=1` enables the hint
+in the private carrier configuration; the launcher defaults to zero elsewhere.
+LLM/agent source, provider, prompt, reasoning, Whisper model/decoder configuration,
+EMA, admission limit and the three-second answer delay were preserved.
+
+The live gateway is listening on the carrier UDP port with the flag enabled. ASR,
+EMA and agent health checks all returned SERVING. A two-turn synthetic PCMA
+loopback using the deployed ASR worker, matching native binary, real CUDA speech
+models and the existing OpenRouter configuration passed response, summary and
+hangup checks. Endpoint silence was 500/504 ms; estimated VAD-end-to-first-output
+was 3141/1463 ms. This is one functional smoke check, not a latency distribution
+or handset measurement. The prior 47 ASR, 9 CTest and 38 SIP regression passes
+remain the implementation evidence; no full regression rerun is claimed here.
+Launcher shell syntax checks passed on Mac and Linux.
+
+The earlier absolute pause-quality gate still failed: 9 of 16 tested continuation
+pairs cut early in both versions, with no additional candidate-only failure in
+that subset. Owner-directed activation is not a passing quality gate. Full replay,
+soak/resource acceptance and a real carrier call on this release remain pending.
+No external notification, recording, Git push or merge was performed.
+
+Private rollback: `.local/before-endpoint-live-20261024-145055/` contains the previous
+binary, selected source/bindings, launcher/configuration and process definitions.
+It contains private configuration and must remain ignored and access-restricted.
+Rollback requires an idle gateway, restoring those files and restarting only the
+carrier gateway and ASR worker on port 15173. Disabling the hint alone does not
+restore the previous detector implementation. Private validation evidence:
+`.local/endpoint-latency-20261024/evidence/live-deploy-01/` and
+`live-deployment-health.json` alongside it.
+
+
+### 2026-10-24 — Grounded dialogue candidate: release withheld
+
+M4-01/02, US-02/06/08: Linux access restored. Prepared and tested general grounding
+and delivered-response repetition changes in an isolated workspace. Linux unit
+checks pass (131 passed, 1 skipped), but real OpenRouter conversation review still
+fails the quality/latency gate. Shorter-prompt and policy-transport experiments
+introduced regressions and were rejected. No deployment or new carrier acceptance;
+task remains open. See [investigation and evidence](validation/grounded-dialogue-2026-10-24.md).
+
+
+### 2026-10-24 — Owner-authorized grounded-dialogue phone trial
+
+The owner explicitly requested deployment despite the known conversation-quality
+and latency failures. Installed only the retained agent backend after checking
+that calls were idle and taking a private rollback backup. Agent/EMA/ASR report
+SERVING; the existing gateway remains running. M4-01/02 acceptance stays open;
+owner's real phone test is pending. See the
+[live trial and rollback record](validation/grounded-dialogue-2026-10-24.md#owner-authorized-live-trial).
+
+
+## 2026-10-24 — Owner-authorized main consolidation
+
+M2-01, M3-01, M4-01/02 and M5-03 accumulated source/evidence from the three working
+checkouts is consolidated on a separate publication branch. Merge regressions
+cover semantic acknowledgements together with explicit repetition. ASR/denoise
+experiments and the capacity design retain their documented acceptance limits.
+See [publication checks and unresolved quality gates](validation/main-publication-2026-10-24.md).
+The owner requested main publication; this action does not restart live services.

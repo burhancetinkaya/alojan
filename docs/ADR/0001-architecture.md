@@ -11,7 +11,7 @@ Alojan starts as one personal Turkish phone assistant. The broader README vision
 
 Use Ubuntu, Docker Compose, C++20/PJSIP for SIP/RTP and conversation control, Python services for faster-whisper, EMA Lightning, and OpenAI Agents SDK, streaming gRPC internally, and PostgreSQL for durable records. Smart Turn and Silero run CPU inference. Cloudflare is for private HTTP management only. No hosted voice orchestration, multi-tenancy, voice cloning, or live transfer in v1.
 
-Develop locally on Mac under ADR 0002; production builds and GPU/carrier acceptance run on Ubuntu. The initial target is one active call; two calls validate isolation, not promised capacity.
+Develop locally on Mac under ADR 0002; production builds and GPU/carrier acceptance run on Ubuntu. The historical target was one active call; two-call tests validated isolation only. ADR 0009 supersedes the capacity target with configurable per-server limits and a 50-call deployment architecture; runtime acceptance remains separate.
 
 Reuse PJSIP/PJMEDIA's low-level SIP, RTP, codec, and jitter capabilities where appropriate. Application-owned orchestration does not require reimplementing protocol primitives. Media callbacks must not block on database, inference, or API operations.
 

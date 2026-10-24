@@ -305,6 +305,11 @@ weights are offline and checksummed. Model health is serving only after real
 CUDA warm-up. The M2-03 scripted gateway profile now connects this service.
 
 Use `scripts/run-asr.sh` from the project root after the documented preparation.
+The launcher limits its own OpenBLAS work to one thread. Optional exact spelling
+aliases are loaded from ignored `.local/asr.env` as `ALOJAN_ASR_REPLACEMENTS` JSON;
+see the ASR README for bounds and examples. Keep owner vocabulary private and
+validate phone/date/short-answer cases before activation. No audio denoiser or
+additional inference pass is installed. [Evidence](validation/asr-quality-2026-10-23.md).
 The current development worker stays loaded across requests, but no reboot
 supervisor is installed. `tests/test_asr.py` runs in the ordinary root environment
 with a fake decoder; `tools/validate-asr.py` uses the actual running CUDA worker
@@ -452,10 +457,11 @@ this active test mode with full conversational readiness.
 The owner subsequently authorized M4 and selected OpenRouter Pro (ADR 0005).
 See [agent setup](../services/agent/README.md) for migrations, private environment
 files and the resident loopback agent on port 15073. Current carrier development
-uses `ALOJAN_VOICE_PROFILE=agent ALOJAN_ASR_PORT=15172 ALOJAN_AGENT_PORT=15073
+uses `ALOJAN_VOICE_PROFILE=agent ALOJAN_ASR_PORT=15173 ALOJAN_AGENT_PORT=15073
 scripts/run-netgsm.sh`; EMA remains the single resident worker on 15072.
-Port 15172 has the bounded ASR cancellation handoff update. The old ASR workers
-remain available for rollback and should be retired after acceptance.
+Port 15173 includes bounded cancellation handoff, exact spelling aliases and the
+one-thread BLAS launcher. The replaced live worker on 15172 was stopped after
+validation; older rollback workers remain and should be retired after acceptance.
 
 Run focused checks with the frozen root environment and `.local/dev.env`:
 
@@ -500,8 +506,10 @@ its prompt profile; resident inference workers do not need restarting.
 Carrier ringing uses `--answer-delay-ms 3000` in `scripts/run-netgsm.sh`.
 The interval starts after 180 Ringing; caller CANCEL must prevent a later 200.
 Keep the greeting PCM lead-in separate from this pre-answer interval.
-Agent response selection buffers commentary until it can choose final speech,
-tool readback, or one commentary-only fallback; only sent phrases enter history.
+The 120B agent requires `respond`/`finish_call` speech tools and waits for their
+complete validated arguments. Raw model text/commentary is never spoken; only
+sent phrases enter history. See ADR 0005 and the 120B reasoning validation report
+for the active medium-reasoning profile and its remaining boundary-test failure.
 
 The active carrier opening is now `assets/prompts/tr-v5-kubra` (ADR 0006),
 with the owner-approved Kübra/Burhan Bey text and unchanged 400 ms lead-in.
@@ -511,3 +519,112 @@ No readback question is used.
 Agent closing waits three seconds plus 150 ms media drain before BYE.
 Availability wording is owner-configured and applies only without a supplied
 message. Notification delivery remains deferred. See the Kübra validation report.
+
+
+## M3-01 silence recovery follow-up
+
+Build the native gateway on Linux and upgrade the agent service before restarting
+the idle carrier listener. Do not replace an active call. Preserve the previous
+binary and agent `service.py`/`models.py` for rollback; ASR and EMA need no restart.
+Runtime endpoint CLI flags and their bounds are documented in the
+[gateway guide](../services/voice-gateway/README.md#m3-01-silence-recovery-and-runtime-calibration).
+The current launcher retains the calibrated defaults; custom flags are for
+explicit native calibration profiles until human acceptance.
+
+Run the native CTests, agent/phrase/database tests and these SIP suites:
+`test_silence.py`, `test_turn.py`, `test_interruption.py`, `test_agent_dialogue.py`.
+Keep CPU/synthetic-service evidence separate from resident CUDA and real handset
+checks. No caller recording or new inference model is needed.
+
+## Optional Nemotron comparison (M2-01 / M5-03)
+
+[ADR 0008](ADR/0008-selectable-asr.md) adds `ALOJAN_ASR_BACKEND=whisper|nemotron`
+to the existing launcher and private `.local/asr.env`. The default and active
+worker remain Whisper: neither tested Nemotron profile improved local Turkish
+accuracy. [Worker setup](../services/asr/README.md#optional-nemotron-backend-adr-0008)
+documents the separate frozen environment and explicit pinned model download.
+[Evaluation instructions](../tools/asr-compare/README.md) keep public/synthetic
+speech and detailed results under ignored `.local/`. Model preparation may need
+several GB of disk/network; runtime itself does not download weights.
+
+Use an unused loopback port, run comparison profiles sequentially, and stop only
+the temporary worker. Copying source or changing the private backend variable
+does not switch an already running process. An idle-line restart and successful
+quality/lifecycle validation are required for future promotion. The initial
+Nemotron adapter repeats cumulative audio for gRPC partials; it does not maintain
+incremental caches across partial requests. [Measured limitations](validation/nemotron-asr-2026-10-23.md).
+
+## Latency diagnostics and routing comparison (M4-01 / M5-03)
+
+The default OpenRouter route remains selected. Optional `ALOJAN_AGENT_ROUTING`
+values in the private agent environment are `default`, `latency`, `sticky` and
+`latency-sticky`; invalid values fail startup. Restart the agent only on an idle
+line after validating a configuration change. No new credential is required.
+
+Run the comparison on the Linux development host, with a new ignored output path:
+
+```sh
+uv run --frozen --env-file .local/agent.env python tools/benchmark-agent-routing.py \
+  --rounds 3 --output .local/routing-comparison.json
+uv run --frozen python tools/report-latency.py \
+  .local/logs/agent.log .local/logs/netgsm-gateway.log
+```
+
+The first command makes paid real API requests using synthetic callers, an
+in-memory note store and simulated receipts. Three rounds produce up to 72 turns;
+API failures are recorded and do not count as successful fast responses. The
+second command is read-only and prints aggregate metrics without caller content
+or call identities. Neither command places carrier calls or enables recording.
+Details and limits: [routing evidence](validation/latency-routing-2026-10-24.md).
+
+## Synthetic agent dialogue evaluation
+
+The agent README documents `tools/evaluate-agent-dialogue.py`, an explicitly invoked
+real-API check using synthetic fixtures and isolated loopback gRPC/in-memory notes.
+Use the primary Linux host and private env files. It does not place carrier calls,
+write production notes, or exercise CUDA speech. JSON output belongs under ignored
+`.local/`; do not commit private transcripts. Nonzero exit indicates failed checks;
+manual review of the rubric remains necessary even when automatic checks pass.
+
+## Offline native noise suppression comparison
+
+The owner-authorized M2-01/M5-03 experiment builds WebRTC 2.1, RNNoise v0.2 and
+SpeexDSP 1.2.1 privately on Ubuntu. It does not change the gateway or resident
+ASR worker. Follow [the pinned build/evaluation instructions](../tools/denoise-compare/README.md).
+Use only the existing public/synthetic fixture manifest; keep audio, detailed
+transcripts, native binaries and downloaded sources under ignored `.local/`.
+See [results and rejected promotion](validation/denoise-2026-10-24.md).
+
+The same evaluator also supports a pinned DTLN CPU follow-up, using the existing
+ONNX Runtime through Python/NumPy. See the README's DTLN section for downloads,
+model hashes, full/half-strength profiles and the distinction between processing
+cost and signal delay. Results: [DTLN evaluation](validation/dtln-2026-10-24.md).
+
+
+## Isolated endpoint replay
+
+The endpoint scheduling candidate is opt-in and not accepted for deployment.
+Regenerate protobuf bindings before building a client/worker pair. Linux checks:
+
+```sh
+uv run --frozen pytest -q tests/test_asr.py tests/sip-integration/test_turn.py tests/sip-integration/test_silence.py tests/sip-integration/test_agent_dialogue.py
+uv run ctest --preset local
+```
+
+`build/local/endpoint-replay-probe MODEL_DIR ASR_PORT TTS_PORT MANIFEST` is a
+synthetic test harness using the actual SpeechBridge. Manifest lines contain
+`synthetic_case_id hint_0_or_1 expected_end_audio_ms absolute_pcm_path`.
+Input is mono 16 kHz little-endian PCM16, at most 25 seconds. Use only synthetic
+fixtures and isolated loopback workers; no real caller input belongs in this
+manifest or in Git. A fake TTS worker is acceptable for endpoint-only measurements
+and must be identified as such. The paired quality failure and private evidence
+location are recorded in [the report](validation/endpoint-calibration-2026-10-24.md).
+
+### Live endpoint scheduling switch
+
+For the agent carrier profile, `scripts/run-netgsm.sh` reads
+`ALOJAN_TURN_PARTIAL_HINT` from the private carrier environment (default `0`).
+The owner-directed 2026-10-24 deployment sets it to `1` on the Linux host. This
+requires the compatible gateway and ASR scheduling implementation; it does not
+change the LLM or silence thresholds. See
+[deployment, rollback and the remaining quality gate](validation/endpoint-calibration-2026-10-24.md).
