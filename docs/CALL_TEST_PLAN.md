@@ -830,3 +830,8 @@ is enabled/running. G5 still needs a fresh completed phone call correlated with
 one delivered outbox receipt and the owner's received notification; the first
 check found no calls ending after activation. Include a failed summary case;
 verify that no message is sent before the persisted call end.
+
+
+M5-01 display-name follow-up: Telegram call and setup-test titles now use Alojan,
+as requested by the owner. Linux notification tests: 17 passed in 1.61 seconds.
+Notification worker active after restart; no new handset acceptance is claimed.

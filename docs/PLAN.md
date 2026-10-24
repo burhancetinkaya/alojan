@@ -971,3 +971,12 @@ A first check found no calls ending after activation and no outbox rows, so a fr
 phone call with a correlated delivery receipt is still required for G5.
 See [Telegram setup](TELEGRAM.md) and [validation](validation/telegram-2026-10-24.md);
 no publication or real post-call acceptance is claimed; the labeled setup test was delivered.
+
+
+### Telegram display name follow-up
+
+M5-01 / US-07: the owner selected Alojan as the Telegram notification name.
+Both the call title and setup-test message now use Alojan. The isolated release
+passed all 17 notification tests on Linux (1.61 seconds); Ruff and diff checks
+passed. The notification worker was restarted and verified active. No pending
+messages required a title update. Voice services and prompts were not modified.

@@ -8,6 +8,9 @@ notification delivery, not a Telegram conversation agent or an externally expose
 
 ## Behavior and boundaries
 
+Telegram notifications use the product name **Alojan**, including the call title
+and setup test message (owner preference, 2026-10-24).
+
 A separate process polls ended calls every two seconds. It uses the existing
 finalized, schema-validated summary without another LLM request. The notification
 contains the available caller name, carrier-supplied number (a hint, not verified

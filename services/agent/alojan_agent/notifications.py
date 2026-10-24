@@ -33,7 +33,7 @@ def notification_text(call):
             pass
     ended = call["ended_at"].astimezone(ZoneInfo("Europe/Istanbul"))
     lines = [
-        "Kübra · Arama tamamlandı",
+        "Alojan · Arama tamamlandı",
         ended.strftime("%d.%m.%Y %H:%M (Türkiye)"),
         "Arayan numara: " + clipped(call["from_number_e164"], 40),
     ]
@@ -178,7 +178,7 @@ def main():
         chat_id = int(os.environ["TELEGRAM_CHAT_ID"])
         telegram.private_chat(chat_id)
         if args.test_message:
-            telegram.send(chat_id, "Kübra bildirim testi: Telegram bağlantınız hazır.")
+            telegram.send(chat_id, "Alojan bildirim testi: Telegram bağlantınız hazır.")
             print("event=telegram_test_delivered", flush=True)
             return
         worker = Notifications(os.environ["ALOJAN_DATABASE_URL"], telegram, chat_id)
