@@ -10,6 +10,7 @@ message AudioFrame {
   string format = 6;          // pcm_s16le | pcm_f32le
   bytes audio = 7;
   string generation_id = 8;   // stream identity, including TTS responses
+  bool partial_hint = 9;      // advisory ASR scheduling only; never a final-turn signal
 }
 message TurnEvent {
   string call_id = 1;
@@ -50,8 +51,39 @@ message CancelRequest {
   string generation_id = 2;
 }
 message CancelReply { bool cancelled = 1; }
-service Recognition { rpc StreamRecognize(stream AudioFrame) returns (stream RecognitionEvent); }
-service Synthesis { rpc StreamSynthesize(SynthesisRequest) returns (stream AudioFrame); }
+message RecognitionConfiguration {
+  uint32 schema_version = 1; // exactly 1; explicit empty aliases disable legacy defaults
+  map<string, string> replacements = 2;
+}
+message RecognitionCallConfiguration {
+  string call_id = 1;
+  string release_id = 2;
+  string manifest_digest = 3;
+  RecognitionConfiguration configuration = 4;
+}
+service Recognition {
+  rpc ConfigureCall(RecognitionCallConfiguration) returns (AgentAck);
+  rpc StreamRecognize(stream AudioFrame) returns (stream RecognitionEvent);
+}
+message SynthesisConfiguration {
+  uint32 schema_version = 1; // exactly 1, fixed EMA output contract
+  string model = 2;
+  string model_revision = 3;
+  string voice = 4;
+  uint32 sample_rate_hz = 5;
+  uint32 channels = 6;
+  string format = 7;
+}
+message SynthesisCallConfiguration {
+  string call_id = 1;
+  string release_id = 2;
+  string manifest_digest = 3;
+  SynthesisConfiguration configuration = 4;
+}
+service Synthesis {
+  rpc ConfigureCall(SynthesisCallConfiguration) returns (AgentAck);
+  rpc StreamSynthesize(SynthesisRequest) returns (stream AudioFrame);
+}
 message PlaybackReport {
   string call_id = 1;
   string generation_id = 2;
@@ -62,11 +94,106 @@ message PlaybackReport {
 message CallEnd {
   string call_id = 1;
   string reason = 2; // completed/disconnected/failed
+  int64 answered_at_unix_ms = 3; // routed only: observed SIP ACK; zero if unanswered
+  int64 ended_at_unix_ms = 4;    // routed only: native termination observation
+  string release_id = 5;
+  string manifest_digest = 6;
 }
 message AgentAck { bool accepted = 1; }
+message CallAnswer {
+  string call_id = 1;
+  string release_id = 2;
+  string manifest_digest = 3;
+  int64 answered_at_unix_ms = 4; // observed SIP confirmation, not INVITE/200 readiness
+}
+message CallInitializationRequest {
+  string call_id = 1;       // OpenCall lease required; opaque managed gateway ID
+  string called_e164 = 2;   // canonical DID from an allowlisted carrier peer
+  string called_source = 3; // request_uri | to; deployment-selected, no fallback
+  string caller_e164 = 4;   // optional hint, never authorization
+}
+// Operator-owned timing limits pinned by the release, not caller or UI overrides.
+message NativeCalibration {
+  uint32 schema_version = 1;
+  bool partial_hint = 2;
+  uint32 vad_percent = 3;
+  uint32 candidate_ms = 4;
+  uint32 yes_no_ms = 5;
+  uint32 open_ms = 6;
+  uint32 uncertain_ms = 7;
+  uint32 incomplete_ms = 8;
+  uint32 silence_reminder_ms = 9;
+  uint32 interrupt_vad_percent = 10;
+  uint32 interrupt_min_voice_ms = 11;
+  uint32 interrupt_sustained_voice_ms = 12;
+  uint32 interrupt_max_quiet_ms = 13;
+  uint32 interrupt_sustained_quiet_ms = 14;
+}
+
+// System-owned speech limits, pinned with the release. No caller override.
+message OutputBudget {
+  uint32 schema_version = 1;
+  uint32 phrase_max_chars = 2;
+  uint32 phrase_max_bytes = 3;
+  uint32 max_phrases = 4;
+  uint32 turn_max_bytes = 5;
+}
+
+message GatewayConfiguration {
+  uint32 schema_version = 1;
+  uint32 max_call_seconds = 2;
+  uint32 answer_delay_ms = 3;
+  uint32 closing_delay_ms = 4;
+  uint32 media_drain_ms = 5;
+  uint32 max_call_turns = 6;
+  uint32 turn_timeout_seconds = 7;
+  NativeCalibration calibration = 8;
+  OutputBudget output = 9;
+}
+
+message CallInitializationReply {
+  string release_id = 1;
+  string manifest_digest = 2;
+  // A pinned route alone is not authorization to answer. Remains false until
+  // every native/prompt/tool/audio consumer has acknowledged the same release.
+  bool ready_for_answer = 3;
+  RecognitionConfiguration recognition = 4;
+  SynthesisConfiguration synthesis = 5;
+  GatewayConfiguration gateway = 6;
+}
+message CallSetupCancellation { string call_id = 1; }
+message PreparedAudioRequest {
+  string call_id = 1;
+  string release_id = 2;
+  string manifest_digest = 3;
+}
+message PreparedAudioReply {
+  string call_id = 1;
+  string release_id = 2;
+  string manifest_digest = 3;
+  // Complete mono PCM16 little-endian at 8 kHz; 20 ms aligned, <=30s each.
+  bytes greeting_pcm = 4;
+  bytes unavailable_pcm = 5;
+  uint32 greeting_pad_ms = 6;
+  bytes waiting_pcm = 7;
+  string waiting_text = 8;
+}
 service Agent {
+  rpc InitializeCall(CallInitializationRequest) returns (CallInitializationReply);
+  rpc CancelCallSetup(CallSetupCancellation) returns (AgentAck);
+  rpc GetPreparedAudio(PreparedAudioRequest) returns (PreparedAudioReply);
   rpc RunTurn(AgentRequest) returns (stream AgentEvent);
   rpc ReportPlayback(PlaybackReport) returns (AgentAck);
+  rpc ReportCallAnswered(CallAnswer) returns (AgentAck);
   rpc EndCall(CallEnd) returns (AgentAck);
 }
-service GenerationControl { rpc CancelGeneration(CancelRequest) returns (CancelReply); }
+message CallLeaseRequest {
+  string call_id = 1;
+  string lease = 2; // empty for OpenCall; returned worker token for ReleaseCall
+}
+message CallLeaseReply { string lease = 1; }
+service GenerationControl {
+  rpc CancelGeneration(CancelRequest) returns (CancelReply);
+  rpc OpenCall(CallLeaseRequest) returns (CallLeaseReply);
+  rpc ReleaseCall(CallLeaseRequest) returns (AgentAck);
+}

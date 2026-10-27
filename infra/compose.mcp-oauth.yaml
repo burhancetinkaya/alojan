@@ -1,0 +1,17 @@
+# Optional AGP-07 overlay; combine with management, credentials and MCP discovery.
+# Registry contains public client metadata, never client secrets or bearer tokens.
+services:
+  management-api:
+    networks: [management, mcp-oauth-egress]
+    environment:
+      ALOJAN_MCP_OAUTH_PROVIDERS_FILE: /run/secrets/mcp_oauth_providers
+    secrets: [mcp_oauth_providers]
+  mcp-discovery:
+    environment:
+      ALOJAN_MCP_OAUTH_PROVIDERS_FILE: /run/secrets/mcp_oauth_providers
+    secrets: [mcp_oauth_providers]
+networks:
+  mcp-oauth-egress: {}
+secrets:
+  mcp_oauth_providers:
+    file: ../.local/mcp-oauth-providers.json

@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh Alojan latency measurements once a minute
+
+[Timer]
+OnBootSec=60
+OnUnitInactiveSec=60
+AccuracySec=5
+Unit=alojan-latency-import.service
+
+[Install]
+WantedBy=timers.target

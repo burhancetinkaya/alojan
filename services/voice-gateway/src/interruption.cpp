@@ -11,6 +11,21 @@ float sample(const char *p) {
                                      (static_cast<unsigned char>(p[1]) << 8));
 }
 } // namespace
+bool InterruptionEvidence::observe(bool voice, unsigned audio_ms,
+                                   const InterruptionSettings &settings) {
+    if (!voice)
+        return false;
+    const auto gap_ms = audio_ms - last_voice_ms - 32;
+    const bool expired = audio_ms - last_voice_ms > settings.max_quiet_ms;
+    if (expired)
+        voiced_ms = 0;
+    voiced_ms += 32;
+    if (gap_ms >= settings.sustained_quiet_ms)
+        sustained_ms = 0;
+    sustained_ms += 32;
+    last_voice_ms = audio_ms;
+    return expired;
+}
 void EchoReference::append(std::span<const char, 320> pcm) {
     for (unsigned i = 0; i < 160; ++i)
         samples_[written_++ % samples_.size()] = sample(pcm.data() + 2 * i);
@@ -38,9 +53,10 @@ bool EchoReference::matches(std::span<const char, 640> pcm) const {
     }
     return false;
 }
-InterruptDecision interruption_policy(unsigned voiced_ms, unsigned quiet_ms, std::string_view text,
-                                      bool fresh) {
-    if (voiced_ms < 192 || quiet_ms > 800)
+InterruptDecision interruption_policy(unsigned voiced_ms, unsigned sustained_ms, unsigned quiet_ms,
+                                      std::string_view text, bool fresh,
+                                      const InterruptionSettings &settings) {
+    if (voiced_ms < settings.min_voice_ms || quiet_ms > settings.max_quiet_ms)
         return InterruptDecision::listen;
     std::string value(text);
     for (auto &c : value)
@@ -53,10 +69,11 @@ InterruptDecision interruption_policy(unsigned voiced_ms, unsigned quiet_ms, std
         value.erase(0, start);
     const bool acknowledgment =
         value == "evet" || value == "hı hı" || value == "hıhı" || value == "tamam";
-    if (fresh && acknowledgment && voiced_ms <= 640)
+    if (fresh && acknowledgment && voiced_ms <= settings.sustained_voice_ms)
         return InterruptDecision::backchannel;
     // shortcut: bounded lexical backchannels; M4 must add question/semantic context.
-    if ((fresh && !value.empty() && !acknowledgment) || (voiced_ms >= 640 && quiet_ms < 160))
+    if ((fresh && !value.empty() && !acknowledgment) ||
+        (sustained_ms >= settings.sustained_voice_ms && quiet_ms < settings.sustained_quiet_ms))
         return InterruptDecision::interrupt;
     return InterruptDecision::listen;
 }

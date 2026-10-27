@@ -1,6 +1,7 @@
 #pragma once
 
 #include "input_meter.hpp"
+#include "prepared_audio.hpp"
 #include "speech_bridge.hpp"
 #include <stdexcept>
 
@@ -15,10 +16,10 @@ class SpeechInput : public InputMeter {
 };
 
 // Use PJMEDIA's supplied buffer: the PJSUA2 vector callback would allocate every 20 ms.
-class SpeechOutput : public pj::AudioMedia {
+template <class Renderer> class PcmOutput : public pj::AudioMedia {
     struct Data {
         pj_pool_t *pool;
-        alojan::SpeechBridge *bridge;
+        Renderer *bridge;
     };
     pjmedia_port *port_ = nullptr;
 
@@ -44,7 +45,7 @@ class SpeechOutput : public pj::AudioMedia {
     }
 
   public:
-    void create(alojan::SpeechBridge &bridge) {
+    void create(Renderer &bridge) {
         auto *pool = pjsua_pool_create("speech-output", 512, 512);
         if (!pool)
             throw std::runtime_error("speech port allocation failed");
@@ -65,7 +66,7 @@ class SpeechOutput : public pj::AudioMedia {
         }
         registerMediaPort2(port_, pool);
     }
-    ~SpeechOutput() override {
+    ~PcmOutput() override {
         if (!port_)
             return;
         try {
@@ -79,3 +80,6 @@ class SpeechOutput : public pj::AudioMedia {
         pjmedia_port_destroy(port_);
     }
 };
+
+using SpeechOutput = PcmOutput<alojan::SpeechBridge>;
+using PreparedOutput = PcmOutput<alojan::PreparedPlayback>;

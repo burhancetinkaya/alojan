@@ -1,10 +1,12 @@
 """Existing PostgreSQL schema; no notifications or raw audio writes."""
 
 import asyncio
+import json
 import uuid
 
 import psycopg
 from psycopg.types.json import Jsonb
+from alojan_contracts.runtime import compile_release
 
 
 def call_uuid(call_id):
@@ -14,6 +16,11 @@ def call_uuid(call_id):
 class Store:
     def __init__(self, dsn):
         self.dsn = dsn
+
+    def for_route(self, route):
+        from .records import CallRecords
+
+        return CallRecords(self.dsn, route)
 
     def transaction(self, operation):
         with psycopg.connect(self.dsn, connect_timeout=3) as conn:
@@ -94,56 +101,106 @@ class Store:
     async def pending(self):
         return await self.run(
             lambda c: c.execute(
-                "SELECT call_id FROM summary_jobs WHERE status='pending' ORDER BY call_id LIMIT 1"
+                "SELECT call_id FROM summary_jobs WHERE status='pending' AND scope_id IS NULL ORDER BY call_id LIMIT 1"
             ).fetchone()
         )
 
+    async def reconcile_stale(self, age_seconds):
+        """Recover missing end events after the deployment's hard call limit plus margin."""
+        if not 300 <= age_seconds <= 86400:
+            raise ValueError("reconciliation age must be 300..86400 seconds")
+
+        def recover(c):
+            # Setup never became an answered conversation; do not create post-call work.
+            abandoned = c.execute(
+                "WITH stale AS (SELECT id FROM calls WHERE status='initializing' AND ended_at IS NULL "
+                "AND started_at < now()-make_interval(secs=>%s) "
+                "AND NOT EXISTS (SELECT 1 FROM call_route_snapshots s WHERE s.call_id=calls.id) "
+                "ORDER BY started_at LIMIT 100 FOR UPDATE SKIP LOCKED) "
+                "UPDATE calls SET status='ended',ended_at=now(),duration_ms=NULL,"
+                "hangup_reason='failed',failure_code='abandoned_initialization' "
+                "WHERE id IN (SELECT id FROM stale) RETURNING id",
+                (age_seconds,),
+            ).fetchall()
+            # Recovery time is not a measured hangup time; leave duration unknown.
+            rows = c.execute(
+                "WITH stale AS (SELECT id FROM calls WHERE status='active' AND ended_at IS NULL "
+                "AND started_at < now()-make_interval(secs=>%s) "
+                "AND NOT EXISTS (SELECT 1 FROM call_route_snapshots s WHERE s.call_id=calls.id) "
+                "ORDER BY started_at LIMIT 100 FOR UPDATE SKIP LOCKED) "
+                "UPDATE calls SET status='ended',ended_at=now(),duration_ms=NULL,"
+                "hangup_reason='failed',failure_code='missing_end_event' "
+                "WHERE id IN (SELECT id FROM stale) RETURNING id",
+                (age_seconds,),
+            ).fetchall()
+            for (cid,) in rows:
+                c.execute(
+                    "INSERT INTO summary_jobs(call_id) VALUES(%s) ON CONFLICT DO NOTHING", (cid,)
+                )
+                c.execute(
+                    "INSERT INTO call_events(id,call_id,event_type,metadata_jsonb) "
+                    "VALUES(%s,%s,'call_reconciled',%s)",
+                    (uuid.uuid4(), cid, Jsonb({"reason": "missing_end_event"})),
+                )
+            return len(rows) + len(abandoned)
+
+        return await self.run(recover)
+
     async def summary_input(self, cid):
         def load(c):
-            rows = c.execute(
-                "SELECT speaker,text FROM utterances WHERE call_id=%s "
-                "ORDER BY created_at DESC,id DESC LIMIT 100",
-                (cid,),
-            ).fetchall()
-            # Preserve the most recent corrections and bound the post-call model input.
-            recent = []
-            size = 0
-            for speaker, text in rows:
-                if size + len(text.encode()) > 12000:
-                    break
-                recent.append((speaker, text))
-                size += len(text.encode())
-            note = c.execute(
-                "SELECT text,confirmed FROM notes WHERE call_id=%s "
-                "ORDER BY note_version DESC LIMIT 1",
-                (cid,),
-            ).fetchone()
-            return {"utterances": list(reversed(recent)), "last_note": note}
+            runtime = None
+            if c.execute("SELECT to_regclass('call_route_snapshots')").fetchone()[0]:
+                # Fail if RLS would hide a route and accidentally select legacy identity.
+                # The current legacy worker is privileged; a scoped worker role is a rollout gate.
+                c.execute("SET LOCAL row_security=off")
+                snapshot = c.execute(
+                    "SELECT scope_id,release_id,manifest_digest FROM call_route_snapshots WHERE call_id=%s",
+                    (cid,),
+                ).fetchone()
+                c.execute("SET LOCAL row_security=on")
+                if snapshot:
+                    scope, release, digest = snapshot
+                    c.execute("SELECT set_config('alojan.scope_id',%s,true)", (str(scope),))
+                    row = c.execute(
+                        "SELECT manifest FROM agent_releases WHERE scope_id=%s AND id=%s",
+                        (scope, release),
+                    ).fetchone()
+                    if not row:
+                        raise ValueError("Pinned summary release unavailable")
+                    runtime = compile_release(json.dumps(row[0]), digest)
+            return self.read_summary(c, cid, runtime)
 
         return await self.run(load)
 
+    @staticmethod
+    def read_summary(c, cid, runtime):
+        byte_limit = runtime.engine.summary_input_max_bytes if runtime else 12000
+        rows = c.execute(
+            "SELECT speaker,text FROM utterances WHERE call_id=%s "
+            "ORDER BY created_at DESC,id DESC LIMIT 100",
+            (cid,),
+        ).fetchall()
+        # Preserve the most recent corrections and bound the post-call model input.
+        recent = []
+        size = 0
+        for speaker, text in rows:
+            if size + len(text.encode()) > byte_limit:
+                break
+            recent.append((speaker, text))
+            size += len(text.encode())
+        note = c.execute(
+            "SELECT text,confirmed FROM notes WHERE call_id=%s ORDER BY note_version DESC LIMIT 1",
+            (cid,),
+        ).fetchone()
+        return {"utterances": list(reversed(recent)), "last_note": note, "runtime": runtime}
+
     async def summary_result(self, cid, summary=None):
         def save(c):
+            row = c.execute("SELECT scope_id FROM summary_jobs WHERE call_id=%s", (cid,)).fetchone()
+            if row and row[0] is not None:
+                raise ValueError("routed summary requires a scoped claim")
             if summary is not None:
-                c.execute(
-                    "INSERT INTO call_summaries(call_id,caller_name,subject,summary,urgency,"
-                    "requested_action,confirmation_status,json_schema_version,detail_jsonb) "
-                    "VALUES(%s,%s,%s,%s,%s,%s,%s,1,%s) ON CONFLICT(call_id) DO UPDATE SET "
-                    "detail_jsonb=EXCLUDED.detail_jsonb,summary=EXCLUDED.summary,"
-                    "caller_name=EXCLUDED.caller_name,subject=EXCLUDED.subject,"
-                    "urgency=EXCLUDED.urgency,requested_action=EXCLUDED.requested_action,"
-                    "confirmation_status=EXCLUDED.confirmation_status",
-                    (
-                        cid,
-                        summary.caller_name,
-                        summary.subject,
-                        summary.summary,
-                        summary.urgency,
-                        summary.requested_action,
-                        summary.confirmation_status,
-                        Jsonb(summary.model_dump()),
-                    ),
-                )
+                self.write_summary(c, cid, summary)
             c.execute(
                 "UPDATE summary_jobs SET status=%s,attempts=attempts+1,failure_code=%s "
                 "WHERE call_id=%s",
@@ -151,3 +208,25 @@ class Store:
             )
 
         await self.run(save)
+
+    @staticmethod
+    def write_summary(c, cid, summary):
+        c.execute(
+            "INSERT INTO call_summaries(call_id,caller_name,subject,summary,urgency,"
+            "requested_action,confirmation_status,json_schema_version,detail_jsonb) "
+            "VALUES(%s,%s,%s,%s,%s,%s,%s,1,%s) ON CONFLICT(call_id) DO UPDATE SET "
+            "detail_jsonb=EXCLUDED.detail_jsonb,summary=EXCLUDED.summary,"
+            "caller_name=EXCLUDED.caller_name,subject=EXCLUDED.subject,"
+            "urgency=EXCLUDED.urgency,requested_action=EXCLUDED.requested_action,"
+            "confirmation_status=EXCLUDED.confirmation_status",
+            (
+                cid,
+                summary.caller_name,
+                summary.subject,
+                summary.summary,
+                summary.urgency,
+                summary.requested_action,
+                summary.confirmation_status,
+                Jsonb(summary.model_dump()),
+            ),
+        )

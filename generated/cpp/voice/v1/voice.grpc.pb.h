@@ -37,6 +37,13 @@ class Recognition final {
   class StubInterface {
    public:
     virtual ~StubInterface() {}
+    virtual ::grpc::Status ConfigureCall(::grpc::ClientContext* context, const ::voice::v1::RecognitionCallConfiguration& request, ::voice::v1::AgentAck* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>> AsyncConfigureCall(::grpc::ClientContext* context, const ::voice::v1::RecognitionCallConfiguration& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>>(AsyncConfigureCallRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>> PrepareAsyncConfigureCall(::grpc::ClientContext* context, const ::voice::v1::RecognitionCallConfiguration& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>>(PrepareAsyncConfigureCallRaw(context, request, cq));
+    }
     std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::voice::v1::AudioFrame, ::voice::v1::RecognitionEvent>> StreamRecognize(::grpc::ClientContext* context) {
       return std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::voice::v1::AudioFrame, ::voice::v1::RecognitionEvent>>(StreamRecognizeRaw(context));
     }
@@ -49,12 +56,16 @@ class Recognition final {
     class async_interface {
      public:
       virtual ~async_interface() {}
+      virtual void ConfigureCall(::grpc::ClientContext* context, const ::voice::v1::RecognitionCallConfiguration* request, ::voice::v1::AgentAck* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ConfigureCall(::grpc::ClientContext* context, const ::voice::v1::RecognitionCallConfiguration* request, ::voice::v1::AgentAck* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void StreamRecognize(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::voice::v1::AudioFrame,::voice::v1::RecognitionEvent>* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
     class async_interface* experimental_async() { return async(); }
    private:
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>* AsyncConfigureCallRaw(::grpc::ClientContext* context, const ::voice::v1::RecognitionCallConfiguration& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>* PrepareAsyncConfigureCallRaw(::grpc::ClientContext* context, const ::voice::v1::RecognitionCallConfiguration& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientReaderWriterInterface< ::voice::v1::AudioFrame, ::voice::v1::RecognitionEvent>* StreamRecognizeRaw(::grpc::ClientContext* context) = 0;
     virtual ::grpc::ClientAsyncReaderWriterInterface< ::voice::v1::AudioFrame, ::voice::v1::RecognitionEvent>* AsyncStreamRecognizeRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) = 0;
     virtual ::grpc::ClientAsyncReaderWriterInterface< ::voice::v1::AudioFrame, ::voice::v1::RecognitionEvent>* PrepareAsyncStreamRecognizeRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) = 0;
@@ -62,6 +73,13 @@ class Recognition final {
   class Stub final : public StubInterface {
    public:
     Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
+    ::grpc::Status ConfigureCall(::grpc::ClientContext* context, const ::voice::v1::RecognitionCallConfiguration& request, ::voice::v1::AgentAck* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>> AsyncConfigureCall(::grpc::ClientContext* context, const ::voice::v1::RecognitionCallConfiguration& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>>(AsyncConfigureCallRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>> PrepareAsyncConfigureCall(::grpc::ClientContext* context, const ::voice::v1::RecognitionCallConfiguration& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>>(PrepareAsyncConfigureCallRaw(context, request, cq));
+    }
     std::unique_ptr< ::grpc::ClientReaderWriter< ::voice::v1::AudioFrame, ::voice::v1::RecognitionEvent>> StreamRecognize(::grpc::ClientContext* context) {
       return std::unique_ptr< ::grpc::ClientReaderWriter< ::voice::v1::AudioFrame, ::voice::v1::RecognitionEvent>>(StreamRecognizeRaw(context));
     }
@@ -74,6 +92,8 @@ class Recognition final {
     class async final :
       public StubInterface::async_interface {
      public:
+      void ConfigureCall(::grpc::ClientContext* context, const ::voice::v1::RecognitionCallConfiguration* request, ::voice::v1::AgentAck* response, std::function<void(::grpc::Status)>) override;
+      void ConfigureCall(::grpc::ClientContext* context, const ::voice::v1::RecognitionCallConfiguration* request, ::voice::v1::AgentAck* response, ::grpc::ClientUnaryReactor* reactor) override;
       void StreamRecognize(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::voice::v1::AudioFrame,::voice::v1::RecognitionEvent>* reactor) override;
      private:
       friend class Stub;
@@ -86,9 +106,12 @@ class Recognition final {
    private:
     std::shared_ptr< ::grpc::ChannelInterface> channel_;
     class async async_stub_{this};
+    ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* AsyncConfigureCallRaw(::grpc::ClientContext* context, const ::voice::v1::RecognitionCallConfiguration& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* PrepareAsyncConfigureCallRaw(::grpc::ClientContext* context, const ::voice::v1::RecognitionCallConfiguration& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientReaderWriter< ::voice::v1::AudioFrame, ::voice::v1::RecognitionEvent>* StreamRecognizeRaw(::grpc::ClientContext* context) override;
     ::grpc::ClientAsyncReaderWriter< ::voice::v1::AudioFrame, ::voice::v1::RecognitionEvent>* AsyncStreamRecognizeRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) override;
     ::grpc::ClientAsyncReaderWriter< ::voice::v1::AudioFrame, ::voice::v1::RecognitionEvent>* PrepareAsyncStreamRecognizeRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) override;
+    const ::grpc::internal::RpcMethod rpcmethod_ConfigureCall_;
     const ::grpc::internal::RpcMethod rpcmethod_StreamRecognize_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
@@ -97,7 +120,28 @@ class Recognition final {
    public:
     Service();
     virtual ~Service();
+    virtual ::grpc::Status ConfigureCall(::grpc::ServerContext* context, const ::voice::v1::RecognitionCallConfiguration* request, ::voice::v1::AgentAck* response);
     virtual ::grpc::Status StreamRecognize(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::voice::v1::RecognitionEvent, ::voice::v1::AudioFrame>* stream);
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_ConfigureCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_ConfigureCall() {
+      ::grpc::Service::MarkMethodAsync(0);
+    }
+    ~WithAsyncMethod_ConfigureCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ConfigureCall(::grpc::ServerContext* /*context*/, const ::voice::v1::RecognitionCallConfiguration* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestConfigureCall(::grpc::ServerContext* context, ::voice::v1::RecognitionCallConfiguration* request, ::grpc::ServerAsyncResponseWriter< ::voice::v1::AgentAck>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+    }
   };
   template <class BaseClass>
   class WithAsyncMethod_StreamRecognize : public BaseClass {
@@ -105,7 +149,7 @@ class Recognition final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_StreamRecognize() {
-      ::grpc::Service::MarkMethodAsync(0);
+      ::grpc::Service::MarkMethodAsync(1);
     }
     ~WithAsyncMethod_StreamRecognize() override {
       BaseClassMustBeDerivedFromService(this);
@@ -116,17 +160,44 @@ class Recognition final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestStreamRecognize(::grpc::ServerContext* context, ::grpc::ServerAsyncReaderWriter< ::voice::v1::RecognitionEvent, ::voice::v1::AudioFrame>* stream, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncBidiStreaming(0, context, stream, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncBidiStreaming(1, context, stream, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_StreamRecognize<Service > AsyncService;
+  typedef WithAsyncMethod_ConfigureCall<WithAsyncMethod_StreamRecognize<Service > > AsyncService;
+  template <class BaseClass>
+  class WithCallbackMethod_ConfigureCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_ConfigureCall() {
+      ::grpc::Service::MarkMethodCallback(0,
+          new ::grpc::internal::CallbackUnaryHandler< ::voice::v1::RecognitionCallConfiguration, ::voice::v1::AgentAck>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::voice::v1::RecognitionCallConfiguration* request, ::voice::v1::AgentAck* response) { return this->ConfigureCall(context, request, response); }));}
+    void SetMessageAllocatorFor_ConfigureCall(
+        ::grpc::MessageAllocator< ::voice::v1::RecognitionCallConfiguration, ::voice::v1::AgentAck>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::voice::v1::RecognitionCallConfiguration, ::voice::v1::AgentAck>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_ConfigureCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ConfigureCall(::grpc::ServerContext* /*context*/, const ::voice::v1::RecognitionCallConfiguration* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ConfigureCall(
+      ::grpc::CallbackServerContext* /*context*/, const ::voice::v1::RecognitionCallConfiguration* /*request*/, ::voice::v1::AgentAck* /*response*/)  { return nullptr; }
+  };
   template <class BaseClass>
   class WithCallbackMethod_StreamRecognize : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_StreamRecognize() {
-      ::grpc::Service::MarkMethodCallback(0,
+      ::grpc::Service::MarkMethodCallback(1,
           new ::grpc::internal::CallbackBidiHandler< ::voice::v1::AudioFrame, ::voice::v1::RecognitionEvent>(
             [this](
                    ::grpc::CallbackServerContext* context) { return this->StreamRecognize(context); }));
@@ -143,15 +214,32 @@ class Recognition final {
       ::grpc::CallbackServerContext* /*context*/)
       { return nullptr; }
   };
-  typedef WithCallbackMethod_StreamRecognize<Service > CallbackService;
+  typedef WithCallbackMethod_ConfigureCall<WithCallbackMethod_StreamRecognize<Service > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
+  template <class BaseClass>
+  class WithGenericMethod_ConfigureCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_ConfigureCall() {
+      ::grpc::Service::MarkMethodGeneric(0);
+    }
+    ~WithGenericMethod_ConfigureCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ConfigureCall(::grpc::ServerContext* /*context*/, const ::voice::v1::RecognitionCallConfiguration* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
   template <class BaseClass>
   class WithGenericMethod_StreamRecognize : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_StreamRecognize() {
-      ::grpc::Service::MarkMethodGeneric(0);
+      ::grpc::Service::MarkMethodGeneric(1);
     }
     ~WithGenericMethod_StreamRecognize() override {
       BaseClassMustBeDerivedFromService(this);
@@ -163,12 +251,32 @@ class Recognition final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_ConfigureCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_ConfigureCall() {
+      ::grpc::Service::MarkMethodRaw(0);
+    }
+    ~WithRawMethod_ConfigureCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ConfigureCall(::grpc::ServerContext* /*context*/, const ::voice::v1::RecognitionCallConfiguration* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestConfigureCall(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithRawMethod_StreamRecognize : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_StreamRecognize() {
-      ::grpc::Service::MarkMethodRaw(0);
+      ::grpc::Service::MarkMethodRaw(1);
     }
     ~WithRawMethod_StreamRecognize() override {
       BaseClassMustBeDerivedFromService(this);
@@ -179,8 +287,30 @@ class Recognition final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestStreamRecognize(::grpc::ServerContext* context, ::grpc::ServerAsyncReaderWriter< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* stream, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncBidiStreaming(0, context, stream, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncBidiStreaming(1, context, stream, new_call_cq, notification_cq, tag);
     }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_ConfigureCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_ConfigureCall() {
+      ::grpc::Service::MarkMethodRawCallback(0,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ConfigureCall(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_ConfigureCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ConfigureCall(::grpc::ServerContext* /*context*/, const ::voice::v1::RecognitionCallConfiguration* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ConfigureCall(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithRawCallbackMethod_StreamRecognize : public BaseClass {
@@ -188,7 +318,7 @@ class Recognition final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_StreamRecognize() {
-      ::grpc::Service::MarkMethodRawCallback(0,
+      ::grpc::Service::MarkMethodRawCallback(1,
           new ::grpc::internal::CallbackBidiHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context) { return this->StreamRecognize(context); }));
@@ -205,9 +335,36 @@ class Recognition final {
       ::grpc::CallbackServerContext* /*context*/)
       { return nullptr; }
   };
-  typedef Service StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_ConfigureCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_ConfigureCall() {
+      ::grpc::Service::MarkMethodStreamed(0,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::voice::v1::RecognitionCallConfiguration, ::voice::v1::AgentAck>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::voice::v1::RecognitionCallConfiguration, ::voice::v1::AgentAck>* streamer) {
+                       return this->StreamedConfigureCall(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_ConfigureCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status ConfigureCall(::grpc::ServerContext* /*context*/, const ::voice::v1::RecognitionCallConfiguration* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedConfigureCall(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::voice::v1::RecognitionCallConfiguration,::voice::v1::AgentAck>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_ConfigureCall<Service > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef Service StreamedService;
+  typedef WithStreamedUnaryMethod_ConfigureCall<Service > StreamedService;
 };
 
 class Synthesis final {
@@ -218,6 +375,13 @@ class Synthesis final {
   class StubInterface {
    public:
     virtual ~StubInterface() {}
+    virtual ::grpc::Status ConfigureCall(::grpc::ClientContext* context, const ::voice::v1::SynthesisCallConfiguration& request, ::voice::v1::AgentAck* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>> AsyncConfigureCall(::grpc::ClientContext* context, const ::voice::v1::SynthesisCallConfiguration& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>>(AsyncConfigureCallRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>> PrepareAsyncConfigureCall(::grpc::ClientContext* context, const ::voice::v1::SynthesisCallConfiguration& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>>(PrepareAsyncConfigureCallRaw(context, request, cq));
+    }
     std::unique_ptr< ::grpc::ClientReaderInterface< ::voice::v1::AudioFrame>> StreamSynthesize(::grpc::ClientContext* context, const ::voice::v1::SynthesisRequest& request) {
       return std::unique_ptr< ::grpc::ClientReaderInterface< ::voice::v1::AudioFrame>>(StreamSynthesizeRaw(context, request));
     }
@@ -230,12 +394,16 @@ class Synthesis final {
     class async_interface {
      public:
       virtual ~async_interface() {}
+      virtual void ConfigureCall(::grpc::ClientContext* context, const ::voice::v1::SynthesisCallConfiguration* request, ::voice::v1::AgentAck* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ConfigureCall(::grpc::ClientContext* context, const ::voice::v1::SynthesisCallConfiguration* request, ::voice::v1::AgentAck* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void StreamSynthesize(::grpc::ClientContext* context, const ::voice::v1::SynthesisRequest* request, ::grpc::ClientReadReactor< ::voice::v1::AudioFrame>* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
     class async_interface* experimental_async() { return async(); }
    private:
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>* AsyncConfigureCallRaw(::grpc::ClientContext* context, const ::voice::v1::SynthesisCallConfiguration& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>* PrepareAsyncConfigureCallRaw(::grpc::ClientContext* context, const ::voice::v1::SynthesisCallConfiguration& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientReaderInterface< ::voice::v1::AudioFrame>* StreamSynthesizeRaw(::grpc::ClientContext* context, const ::voice::v1::SynthesisRequest& request) = 0;
     virtual ::grpc::ClientAsyncReaderInterface< ::voice::v1::AudioFrame>* AsyncStreamSynthesizeRaw(::grpc::ClientContext* context, const ::voice::v1::SynthesisRequest& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
     virtual ::grpc::ClientAsyncReaderInterface< ::voice::v1::AudioFrame>* PrepareAsyncStreamSynthesizeRaw(::grpc::ClientContext* context, const ::voice::v1::SynthesisRequest& request, ::grpc::CompletionQueue* cq) = 0;
@@ -243,6 +411,13 @@ class Synthesis final {
   class Stub final : public StubInterface {
    public:
     Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
+    ::grpc::Status ConfigureCall(::grpc::ClientContext* context, const ::voice::v1::SynthesisCallConfiguration& request, ::voice::v1::AgentAck* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>> AsyncConfigureCall(::grpc::ClientContext* context, const ::voice::v1::SynthesisCallConfiguration& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>>(AsyncConfigureCallRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>> PrepareAsyncConfigureCall(::grpc::ClientContext* context, const ::voice::v1::SynthesisCallConfiguration& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>>(PrepareAsyncConfigureCallRaw(context, request, cq));
+    }
     std::unique_ptr< ::grpc::ClientReader< ::voice::v1::AudioFrame>> StreamSynthesize(::grpc::ClientContext* context, const ::voice::v1::SynthesisRequest& request) {
       return std::unique_ptr< ::grpc::ClientReader< ::voice::v1::AudioFrame>>(StreamSynthesizeRaw(context, request));
     }
@@ -255,6 +430,8 @@ class Synthesis final {
     class async final :
       public StubInterface::async_interface {
      public:
+      void ConfigureCall(::grpc::ClientContext* context, const ::voice::v1::SynthesisCallConfiguration* request, ::voice::v1::AgentAck* response, std::function<void(::grpc::Status)>) override;
+      void ConfigureCall(::grpc::ClientContext* context, const ::voice::v1::SynthesisCallConfiguration* request, ::voice::v1::AgentAck* response, ::grpc::ClientUnaryReactor* reactor) override;
       void StreamSynthesize(::grpc::ClientContext* context, const ::voice::v1::SynthesisRequest* request, ::grpc::ClientReadReactor< ::voice::v1::AudioFrame>* reactor) override;
      private:
       friend class Stub;
@@ -267,9 +444,12 @@ class Synthesis final {
    private:
     std::shared_ptr< ::grpc::ChannelInterface> channel_;
     class async async_stub_{this};
+    ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* AsyncConfigureCallRaw(::grpc::ClientContext* context, const ::voice::v1::SynthesisCallConfiguration& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* PrepareAsyncConfigureCallRaw(::grpc::ClientContext* context, const ::voice::v1::SynthesisCallConfiguration& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientReader< ::voice::v1::AudioFrame>* StreamSynthesizeRaw(::grpc::ClientContext* context, const ::voice::v1::SynthesisRequest& request) override;
     ::grpc::ClientAsyncReader< ::voice::v1::AudioFrame>* AsyncStreamSynthesizeRaw(::grpc::ClientContext* context, const ::voice::v1::SynthesisRequest& request, ::grpc::CompletionQueue* cq, void* tag) override;
     ::grpc::ClientAsyncReader< ::voice::v1::AudioFrame>* PrepareAsyncStreamSynthesizeRaw(::grpc::ClientContext* context, const ::voice::v1::SynthesisRequest& request, ::grpc::CompletionQueue* cq) override;
+    const ::grpc::internal::RpcMethod rpcmethod_ConfigureCall_;
     const ::grpc::internal::RpcMethod rpcmethod_StreamSynthesize_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
@@ -278,7 +458,28 @@ class Synthesis final {
    public:
     Service();
     virtual ~Service();
+    virtual ::grpc::Status ConfigureCall(::grpc::ServerContext* context, const ::voice::v1::SynthesisCallConfiguration* request, ::voice::v1::AgentAck* response);
     virtual ::grpc::Status StreamSynthesize(::grpc::ServerContext* context, const ::voice::v1::SynthesisRequest* request, ::grpc::ServerWriter< ::voice::v1::AudioFrame>* writer);
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_ConfigureCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_ConfigureCall() {
+      ::grpc::Service::MarkMethodAsync(0);
+    }
+    ~WithAsyncMethod_ConfigureCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ConfigureCall(::grpc::ServerContext* /*context*/, const ::voice::v1::SynthesisCallConfiguration* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestConfigureCall(::grpc::ServerContext* context, ::voice::v1::SynthesisCallConfiguration* request, ::grpc::ServerAsyncResponseWriter< ::voice::v1::AgentAck>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+    }
   };
   template <class BaseClass>
   class WithAsyncMethod_StreamSynthesize : public BaseClass {
@@ -286,7 +487,7 @@ class Synthesis final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_StreamSynthesize() {
-      ::grpc::Service::MarkMethodAsync(0);
+      ::grpc::Service::MarkMethodAsync(1);
     }
     ~WithAsyncMethod_StreamSynthesize() override {
       BaseClassMustBeDerivedFromService(this);
@@ -297,17 +498,44 @@ class Synthesis final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestStreamSynthesize(::grpc::ServerContext* context, ::voice::v1::SynthesisRequest* request, ::grpc::ServerAsyncWriter< ::voice::v1::AudioFrame>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncServerStreaming(0, context, request, writer, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncServerStreaming(1, context, request, writer, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_StreamSynthesize<Service > AsyncService;
+  typedef WithAsyncMethod_ConfigureCall<WithAsyncMethod_StreamSynthesize<Service > > AsyncService;
+  template <class BaseClass>
+  class WithCallbackMethod_ConfigureCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_ConfigureCall() {
+      ::grpc::Service::MarkMethodCallback(0,
+          new ::grpc::internal::CallbackUnaryHandler< ::voice::v1::SynthesisCallConfiguration, ::voice::v1::AgentAck>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::voice::v1::SynthesisCallConfiguration* request, ::voice::v1::AgentAck* response) { return this->ConfigureCall(context, request, response); }));}
+    void SetMessageAllocatorFor_ConfigureCall(
+        ::grpc::MessageAllocator< ::voice::v1::SynthesisCallConfiguration, ::voice::v1::AgentAck>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::voice::v1::SynthesisCallConfiguration, ::voice::v1::AgentAck>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_ConfigureCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ConfigureCall(::grpc::ServerContext* /*context*/, const ::voice::v1::SynthesisCallConfiguration* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ConfigureCall(
+      ::grpc::CallbackServerContext* /*context*/, const ::voice::v1::SynthesisCallConfiguration* /*request*/, ::voice::v1::AgentAck* /*response*/)  { return nullptr; }
+  };
   template <class BaseClass>
   class WithCallbackMethod_StreamSynthesize : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_StreamSynthesize() {
-      ::grpc::Service::MarkMethodCallback(0,
+      ::grpc::Service::MarkMethodCallback(1,
           new ::grpc::internal::CallbackServerStreamingHandler< ::voice::v1::SynthesisRequest, ::voice::v1::AudioFrame>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::voice::v1::SynthesisRequest* request) { return this->StreamSynthesize(context, request); }));
@@ -323,15 +551,32 @@ class Synthesis final {
     virtual ::grpc::ServerWriteReactor< ::voice::v1::AudioFrame>* StreamSynthesize(
       ::grpc::CallbackServerContext* /*context*/, const ::voice::v1::SynthesisRequest* /*request*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_StreamSynthesize<Service > CallbackService;
+  typedef WithCallbackMethod_ConfigureCall<WithCallbackMethod_StreamSynthesize<Service > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
+  template <class BaseClass>
+  class WithGenericMethod_ConfigureCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_ConfigureCall() {
+      ::grpc::Service::MarkMethodGeneric(0);
+    }
+    ~WithGenericMethod_ConfigureCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ConfigureCall(::grpc::ServerContext* /*context*/, const ::voice::v1::SynthesisCallConfiguration* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
   template <class BaseClass>
   class WithGenericMethod_StreamSynthesize : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_StreamSynthesize() {
-      ::grpc::Service::MarkMethodGeneric(0);
+      ::grpc::Service::MarkMethodGeneric(1);
     }
     ~WithGenericMethod_StreamSynthesize() override {
       BaseClassMustBeDerivedFromService(this);
@@ -343,12 +588,32 @@ class Synthesis final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_ConfigureCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_ConfigureCall() {
+      ::grpc::Service::MarkMethodRaw(0);
+    }
+    ~WithRawMethod_ConfigureCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ConfigureCall(::grpc::ServerContext* /*context*/, const ::voice::v1::SynthesisCallConfiguration* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestConfigureCall(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithRawMethod_StreamSynthesize : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_StreamSynthesize() {
-      ::grpc::Service::MarkMethodRaw(0);
+      ::grpc::Service::MarkMethodRaw(1);
     }
     ~WithRawMethod_StreamSynthesize() override {
       BaseClassMustBeDerivedFromService(this);
@@ -359,8 +624,30 @@ class Synthesis final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestStreamSynthesize(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncServerStreaming(0, context, request, writer, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncServerStreaming(1, context, request, writer, new_call_cq, notification_cq, tag);
     }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_ConfigureCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_ConfigureCall() {
+      ::grpc::Service::MarkMethodRawCallback(0,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ConfigureCall(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_ConfigureCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ConfigureCall(::grpc::ServerContext* /*context*/, const ::voice::v1::SynthesisCallConfiguration* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ConfigureCall(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithRawCallbackMethod_StreamSynthesize : public BaseClass {
@@ -368,7 +655,7 @@ class Synthesis final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_StreamSynthesize() {
-      ::grpc::Service::MarkMethodRawCallback(0,
+      ::grpc::Service::MarkMethodRawCallback(1,
           new ::grpc::internal::CallbackServerStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const::grpc::ByteBuffer* request) { return this->StreamSynthesize(context, request); }));
@@ -384,14 +671,41 @@ class Synthesis final {
     virtual ::grpc::ServerWriteReactor< ::grpc::ByteBuffer>* StreamSynthesize(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/)  { return nullptr; }
   };
-  typedef Service StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_ConfigureCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_ConfigureCall() {
+      ::grpc::Service::MarkMethodStreamed(0,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::voice::v1::SynthesisCallConfiguration, ::voice::v1::AgentAck>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::voice::v1::SynthesisCallConfiguration, ::voice::v1::AgentAck>* streamer) {
+                       return this->StreamedConfigureCall(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_ConfigureCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status ConfigureCall(::grpc::ServerContext* /*context*/, const ::voice::v1::SynthesisCallConfiguration* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedConfigureCall(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::voice::v1::SynthesisCallConfiguration,::voice::v1::AgentAck>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_ConfigureCall<Service > StreamedUnaryService;
   template <class BaseClass>
   class WithSplitStreamingMethod_StreamSynthesize : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithSplitStreamingMethod_StreamSynthesize() {
-      ::grpc::Service::MarkMethodStreamed(0,
+      ::grpc::Service::MarkMethodStreamed(1,
         new ::grpc::internal::SplitServerStreamingHandler<
           ::voice::v1::SynthesisRequest, ::voice::v1::AudioFrame>(
             [this](::grpc::ServerContext* context,
@@ -413,7 +727,7 @@ class Synthesis final {
     virtual ::grpc::Status StreamedStreamSynthesize(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::voice::v1::SynthesisRequest,::voice::v1::AudioFrame>* server_split_streamer) = 0;
   };
   typedef WithSplitStreamingMethod_StreamSynthesize<Service > SplitStreamedService;
-  typedef WithSplitStreamingMethod_StreamSynthesize<Service > StreamedService;
+  typedef WithStreamedUnaryMethod_ConfigureCall<WithSplitStreamingMethod_StreamSynthesize<Service > > StreamedService;
 };
 
 class Agent final {
@@ -424,6 +738,27 @@ class Agent final {
   class StubInterface {
    public:
     virtual ~StubInterface() {}
+    virtual ::grpc::Status InitializeCall(::grpc::ClientContext* context, const ::voice::v1::CallInitializationRequest& request, ::voice::v1::CallInitializationReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::CallInitializationReply>> AsyncInitializeCall(::grpc::ClientContext* context, const ::voice::v1::CallInitializationRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::CallInitializationReply>>(AsyncInitializeCallRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::CallInitializationReply>> PrepareAsyncInitializeCall(::grpc::ClientContext* context, const ::voice::v1::CallInitializationRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::CallInitializationReply>>(PrepareAsyncInitializeCallRaw(context, request, cq));
+    }
+    virtual ::grpc::Status CancelCallSetup(::grpc::ClientContext* context, const ::voice::v1::CallSetupCancellation& request, ::voice::v1::AgentAck* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>> AsyncCancelCallSetup(::grpc::ClientContext* context, const ::voice::v1::CallSetupCancellation& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>>(AsyncCancelCallSetupRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>> PrepareAsyncCancelCallSetup(::grpc::ClientContext* context, const ::voice::v1::CallSetupCancellation& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>>(PrepareAsyncCancelCallSetupRaw(context, request, cq));
+    }
+    virtual ::grpc::Status GetPreparedAudio(::grpc::ClientContext* context, const ::voice::v1::PreparedAudioRequest& request, ::voice::v1::PreparedAudioReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::PreparedAudioReply>> AsyncGetPreparedAudio(::grpc::ClientContext* context, const ::voice::v1::PreparedAudioRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::PreparedAudioReply>>(AsyncGetPreparedAudioRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::PreparedAudioReply>> PrepareAsyncGetPreparedAudio(::grpc::ClientContext* context, const ::voice::v1::PreparedAudioRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::PreparedAudioReply>>(PrepareAsyncGetPreparedAudioRaw(context, request, cq));
+    }
     std::unique_ptr< ::grpc::ClientReaderInterface< ::voice::v1::AgentEvent>> RunTurn(::grpc::ClientContext* context, const ::voice::v1::AgentRequest& request) {
       return std::unique_ptr< ::grpc::ClientReaderInterface< ::voice::v1::AgentEvent>>(RunTurnRaw(context, request));
     }
@@ -440,6 +775,13 @@ class Agent final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>> PrepareAsyncReportPlayback(::grpc::ClientContext* context, const ::voice::v1::PlaybackReport& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>>(PrepareAsyncReportPlaybackRaw(context, request, cq));
     }
+    virtual ::grpc::Status ReportCallAnswered(::grpc::ClientContext* context, const ::voice::v1::CallAnswer& request, ::voice::v1::AgentAck* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>> AsyncReportCallAnswered(::grpc::ClientContext* context, const ::voice::v1::CallAnswer& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>>(AsyncReportCallAnsweredRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>> PrepareAsyncReportCallAnswered(::grpc::ClientContext* context, const ::voice::v1::CallAnswer& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>>(PrepareAsyncReportCallAnsweredRaw(context, request, cq));
+    }
     virtual ::grpc::Status EndCall(::grpc::ClientContext* context, const ::voice::v1::CallEnd& request, ::voice::v1::AgentAck* response) = 0;
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>> AsyncEndCall(::grpc::ClientContext* context, const ::voice::v1::CallEnd& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>>(AsyncEndCallRaw(context, request, cq));
@@ -450,9 +792,17 @@ class Agent final {
     class async_interface {
      public:
       virtual ~async_interface() {}
+      virtual void InitializeCall(::grpc::ClientContext* context, const ::voice::v1::CallInitializationRequest* request, ::voice::v1::CallInitializationReply* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void InitializeCall(::grpc::ClientContext* context, const ::voice::v1::CallInitializationRequest* request, ::voice::v1::CallInitializationReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void CancelCallSetup(::grpc::ClientContext* context, const ::voice::v1::CallSetupCancellation* request, ::voice::v1::AgentAck* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void CancelCallSetup(::grpc::ClientContext* context, const ::voice::v1::CallSetupCancellation* request, ::voice::v1::AgentAck* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void GetPreparedAudio(::grpc::ClientContext* context, const ::voice::v1::PreparedAudioRequest* request, ::voice::v1::PreparedAudioReply* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetPreparedAudio(::grpc::ClientContext* context, const ::voice::v1::PreparedAudioRequest* request, ::voice::v1::PreparedAudioReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void RunTurn(::grpc::ClientContext* context, const ::voice::v1::AgentRequest* request, ::grpc::ClientReadReactor< ::voice::v1::AgentEvent>* reactor) = 0;
       virtual void ReportPlayback(::grpc::ClientContext* context, const ::voice::v1::PlaybackReport* request, ::voice::v1::AgentAck* response, std::function<void(::grpc::Status)>) = 0;
       virtual void ReportPlayback(::grpc::ClientContext* context, const ::voice::v1::PlaybackReport* request, ::voice::v1::AgentAck* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void ReportCallAnswered(::grpc::ClientContext* context, const ::voice::v1::CallAnswer* request, ::voice::v1::AgentAck* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ReportCallAnswered(::grpc::ClientContext* context, const ::voice::v1::CallAnswer* request, ::voice::v1::AgentAck* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void EndCall(::grpc::ClientContext* context, const ::voice::v1::CallEnd* request, ::voice::v1::AgentAck* response, std::function<void(::grpc::Status)>) = 0;
       virtual void EndCall(::grpc::ClientContext* context, const ::voice::v1::CallEnd* request, ::voice::v1::AgentAck* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
@@ -460,17 +810,46 @@ class Agent final {
     virtual class async_interface* async() { return nullptr; }
     class async_interface* experimental_async() { return async(); }
    private:
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::CallInitializationReply>* AsyncInitializeCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallInitializationRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::CallInitializationReply>* PrepareAsyncInitializeCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallInitializationRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>* AsyncCancelCallSetupRaw(::grpc::ClientContext* context, const ::voice::v1::CallSetupCancellation& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>* PrepareAsyncCancelCallSetupRaw(::grpc::ClientContext* context, const ::voice::v1::CallSetupCancellation& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::PreparedAudioReply>* AsyncGetPreparedAudioRaw(::grpc::ClientContext* context, const ::voice::v1::PreparedAudioRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::PreparedAudioReply>* PrepareAsyncGetPreparedAudioRaw(::grpc::ClientContext* context, const ::voice::v1::PreparedAudioRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientReaderInterface< ::voice::v1::AgentEvent>* RunTurnRaw(::grpc::ClientContext* context, const ::voice::v1::AgentRequest& request) = 0;
     virtual ::grpc::ClientAsyncReaderInterface< ::voice::v1::AgentEvent>* AsyncRunTurnRaw(::grpc::ClientContext* context, const ::voice::v1::AgentRequest& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
     virtual ::grpc::ClientAsyncReaderInterface< ::voice::v1::AgentEvent>* PrepareAsyncRunTurnRaw(::grpc::ClientContext* context, const ::voice::v1::AgentRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>* AsyncReportPlaybackRaw(::grpc::ClientContext* context, const ::voice::v1::PlaybackReport& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>* PrepareAsyncReportPlaybackRaw(::grpc::ClientContext* context, const ::voice::v1::PlaybackReport& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>* AsyncReportCallAnsweredRaw(::grpc::ClientContext* context, const ::voice::v1::CallAnswer& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>* PrepareAsyncReportCallAnsweredRaw(::grpc::ClientContext* context, const ::voice::v1::CallAnswer& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>* AsyncEndCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallEnd& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>* PrepareAsyncEndCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallEnd& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
     Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
+    ::grpc::Status InitializeCall(::grpc::ClientContext* context, const ::voice::v1::CallInitializationRequest& request, ::voice::v1::CallInitializationReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::CallInitializationReply>> AsyncInitializeCall(::grpc::ClientContext* context, const ::voice::v1::CallInitializationRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::CallInitializationReply>>(AsyncInitializeCallRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::CallInitializationReply>> PrepareAsyncInitializeCall(::grpc::ClientContext* context, const ::voice::v1::CallInitializationRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::CallInitializationReply>>(PrepareAsyncInitializeCallRaw(context, request, cq));
+    }
+    ::grpc::Status CancelCallSetup(::grpc::ClientContext* context, const ::voice::v1::CallSetupCancellation& request, ::voice::v1::AgentAck* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>> AsyncCancelCallSetup(::grpc::ClientContext* context, const ::voice::v1::CallSetupCancellation& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>>(AsyncCancelCallSetupRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>> PrepareAsyncCancelCallSetup(::grpc::ClientContext* context, const ::voice::v1::CallSetupCancellation& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>>(PrepareAsyncCancelCallSetupRaw(context, request, cq));
+    }
+    ::grpc::Status GetPreparedAudio(::grpc::ClientContext* context, const ::voice::v1::PreparedAudioRequest& request, ::voice::v1::PreparedAudioReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::PreparedAudioReply>> AsyncGetPreparedAudio(::grpc::ClientContext* context, const ::voice::v1::PreparedAudioRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::PreparedAudioReply>>(AsyncGetPreparedAudioRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::PreparedAudioReply>> PrepareAsyncGetPreparedAudio(::grpc::ClientContext* context, const ::voice::v1::PreparedAudioRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::PreparedAudioReply>>(PrepareAsyncGetPreparedAudioRaw(context, request, cq));
+    }
     std::unique_ptr< ::grpc::ClientReader< ::voice::v1::AgentEvent>> RunTurn(::grpc::ClientContext* context, const ::voice::v1::AgentRequest& request) {
       return std::unique_ptr< ::grpc::ClientReader< ::voice::v1::AgentEvent>>(RunTurnRaw(context, request));
     }
@@ -487,6 +866,13 @@ class Agent final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>> PrepareAsyncReportPlayback(::grpc::ClientContext* context, const ::voice::v1::PlaybackReport& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>>(PrepareAsyncReportPlaybackRaw(context, request, cq));
     }
+    ::grpc::Status ReportCallAnswered(::grpc::ClientContext* context, const ::voice::v1::CallAnswer& request, ::voice::v1::AgentAck* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>> AsyncReportCallAnswered(::grpc::ClientContext* context, const ::voice::v1::CallAnswer& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>>(AsyncReportCallAnsweredRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>> PrepareAsyncReportCallAnswered(::grpc::ClientContext* context, const ::voice::v1::CallAnswer& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>>(PrepareAsyncReportCallAnsweredRaw(context, request, cq));
+    }
     ::grpc::Status EndCall(::grpc::ClientContext* context, const ::voice::v1::CallEnd& request, ::voice::v1::AgentAck* response) override;
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>> AsyncEndCall(::grpc::ClientContext* context, const ::voice::v1::CallEnd& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>>(AsyncEndCallRaw(context, request, cq));
@@ -497,9 +883,17 @@ class Agent final {
     class async final :
       public StubInterface::async_interface {
      public:
+      void InitializeCall(::grpc::ClientContext* context, const ::voice::v1::CallInitializationRequest* request, ::voice::v1::CallInitializationReply* response, std::function<void(::grpc::Status)>) override;
+      void InitializeCall(::grpc::ClientContext* context, const ::voice::v1::CallInitializationRequest* request, ::voice::v1::CallInitializationReply* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void CancelCallSetup(::grpc::ClientContext* context, const ::voice::v1::CallSetupCancellation* request, ::voice::v1::AgentAck* response, std::function<void(::grpc::Status)>) override;
+      void CancelCallSetup(::grpc::ClientContext* context, const ::voice::v1::CallSetupCancellation* request, ::voice::v1::AgentAck* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void GetPreparedAudio(::grpc::ClientContext* context, const ::voice::v1::PreparedAudioRequest* request, ::voice::v1::PreparedAudioReply* response, std::function<void(::grpc::Status)>) override;
+      void GetPreparedAudio(::grpc::ClientContext* context, const ::voice::v1::PreparedAudioRequest* request, ::voice::v1::PreparedAudioReply* response, ::grpc::ClientUnaryReactor* reactor) override;
       void RunTurn(::grpc::ClientContext* context, const ::voice::v1::AgentRequest* request, ::grpc::ClientReadReactor< ::voice::v1::AgentEvent>* reactor) override;
       void ReportPlayback(::grpc::ClientContext* context, const ::voice::v1::PlaybackReport* request, ::voice::v1::AgentAck* response, std::function<void(::grpc::Status)>) override;
       void ReportPlayback(::grpc::ClientContext* context, const ::voice::v1::PlaybackReport* request, ::voice::v1::AgentAck* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void ReportCallAnswered(::grpc::ClientContext* context, const ::voice::v1::CallAnswer* request, ::voice::v1::AgentAck* response, std::function<void(::grpc::Status)>) override;
+      void ReportCallAnswered(::grpc::ClientContext* context, const ::voice::v1::CallAnswer* request, ::voice::v1::AgentAck* response, ::grpc::ClientUnaryReactor* reactor) override;
       void EndCall(::grpc::ClientContext* context, const ::voice::v1::CallEnd* request, ::voice::v1::AgentAck* response, std::function<void(::grpc::Status)>) override;
       void EndCall(::grpc::ClientContext* context, const ::voice::v1::CallEnd* request, ::voice::v1::AgentAck* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
@@ -513,15 +907,27 @@ class Agent final {
    private:
     std::shared_ptr< ::grpc::ChannelInterface> channel_;
     class async async_stub_{this};
+    ::grpc::ClientAsyncResponseReader< ::voice::v1::CallInitializationReply>* AsyncInitializeCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallInitializationRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::voice::v1::CallInitializationReply>* PrepareAsyncInitializeCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallInitializationRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* AsyncCancelCallSetupRaw(::grpc::ClientContext* context, const ::voice::v1::CallSetupCancellation& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* PrepareAsyncCancelCallSetupRaw(::grpc::ClientContext* context, const ::voice::v1::CallSetupCancellation& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::voice::v1::PreparedAudioReply>* AsyncGetPreparedAudioRaw(::grpc::ClientContext* context, const ::voice::v1::PreparedAudioRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::voice::v1::PreparedAudioReply>* PrepareAsyncGetPreparedAudioRaw(::grpc::ClientContext* context, const ::voice::v1::PreparedAudioRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientReader< ::voice::v1::AgentEvent>* RunTurnRaw(::grpc::ClientContext* context, const ::voice::v1::AgentRequest& request) override;
     ::grpc::ClientAsyncReader< ::voice::v1::AgentEvent>* AsyncRunTurnRaw(::grpc::ClientContext* context, const ::voice::v1::AgentRequest& request, ::grpc::CompletionQueue* cq, void* tag) override;
     ::grpc::ClientAsyncReader< ::voice::v1::AgentEvent>* PrepareAsyncRunTurnRaw(::grpc::ClientContext* context, const ::voice::v1::AgentRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* AsyncReportPlaybackRaw(::grpc::ClientContext* context, const ::voice::v1::PlaybackReport& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* PrepareAsyncReportPlaybackRaw(::grpc::ClientContext* context, const ::voice::v1::PlaybackReport& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* AsyncReportCallAnsweredRaw(::grpc::ClientContext* context, const ::voice::v1::CallAnswer& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* PrepareAsyncReportCallAnsweredRaw(::grpc::ClientContext* context, const ::voice::v1::CallAnswer& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* AsyncEndCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallEnd& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* PrepareAsyncEndCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallEnd& request, ::grpc::CompletionQueue* cq) override;
+    const ::grpc::internal::RpcMethod rpcmethod_InitializeCall_;
+    const ::grpc::internal::RpcMethod rpcmethod_CancelCallSetup_;
+    const ::grpc::internal::RpcMethod rpcmethod_GetPreparedAudio_;
     const ::grpc::internal::RpcMethod rpcmethod_RunTurn_;
     const ::grpc::internal::RpcMethod rpcmethod_ReportPlayback_;
+    const ::grpc::internal::RpcMethod rpcmethod_ReportCallAnswered_;
     const ::grpc::internal::RpcMethod rpcmethod_EndCall_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
@@ -530,9 +936,73 @@ class Agent final {
    public:
     Service();
     virtual ~Service();
+    virtual ::grpc::Status InitializeCall(::grpc::ServerContext* context, const ::voice::v1::CallInitializationRequest* request, ::voice::v1::CallInitializationReply* response);
+    virtual ::grpc::Status CancelCallSetup(::grpc::ServerContext* context, const ::voice::v1::CallSetupCancellation* request, ::voice::v1::AgentAck* response);
+    virtual ::grpc::Status GetPreparedAudio(::grpc::ServerContext* context, const ::voice::v1::PreparedAudioRequest* request, ::voice::v1::PreparedAudioReply* response);
     virtual ::grpc::Status RunTurn(::grpc::ServerContext* context, const ::voice::v1::AgentRequest* request, ::grpc::ServerWriter< ::voice::v1::AgentEvent>* writer);
     virtual ::grpc::Status ReportPlayback(::grpc::ServerContext* context, const ::voice::v1::PlaybackReport* request, ::voice::v1::AgentAck* response);
+    virtual ::grpc::Status ReportCallAnswered(::grpc::ServerContext* context, const ::voice::v1::CallAnswer* request, ::voice::v1::AgentAck* response);
     virtual ::grpc::Status EndCall(::grpc::ServerContext* context, const ::voice::v1::CallEnd* request, ::voice::v1::AgentAck* response);
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_InitializeCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_InitializeCall() {
+      ::grpc::Service::MarkMethodAsync(0);
+    }
+    ~WithAsyncMethod_InitializeCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status InitializeCall(::grpc::ServerContext* /*context*/, const ::voice::v1::CallInitializationRequest* /*request*/, ::voice::v1::CallInitializationReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestInitializeCall(::grpc::ServerContext* context, ::voice::v1::CallInitializationRequest* request, ::grpc::ServerAsyncResponseWriter< ::voice::v1::CallInitializationReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_CancelCallSetup : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_CancelCallSetup() {
+      ::grpc::Service::MarkMethodAsync(1);
+    }
+    ~WithAsyncMethod_CancelCallSetup() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CancelCallSetup(::grpc::ServerContext* /*context*/, const ::voice::v1::CallSetupCancellation* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestCancelCallSetup(::grpc::ServerContext* context, ::voice::v1::CallSetupCancellation* request, ::grpc::ServerAsyncResponseWriter< ::voice::v1::AgentAck>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_GetPreparedAudio : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_GetPreparedAudio() {
+      ::grpc::Service::MarkMethodAsync(2);
+    }
+    ~WithAsyncMethod_GetPreparedAudio() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetPreparedAudio(::grpc::ServerContext* /*context*/, const ::voice::v1::PreparedAudioRequest* /*request*/, ::voice::v1::PreparedAudioReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestGetPreparedAudio(::grpc::ServerContext* context, ::voice::v1::PreparedAudioRequest* request, ::grpc::ServerAsyncResponseWriter< ::voice::v1::PreparedAudioReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
   };
   template <class BaseClass>
   class WithAsyncMethod_RunTurn : public BaseClass {
@@ -540,7 +1010,7 @@ class Agent final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_RunTurn() {
-      ::grpc::Service::MarkMethodAsync(0);
+      ::grpc::Service::MarkMethodAsync(3);
     }
     ~WithAsyncMethod_RunTurn() override {
       BaseClassMustBeDerivedFromService(this);
@@ -551,7 +1021,7 @@ class Agent final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestRunTurn(::grpc::ServerContext* context, ::voice::v1::AgentRequest* request, ::grpc::ServerAsyncWriter< ::voice::v1::AgentEvent>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncServerStreaming(0, context, request, writer, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncServerStreaming(3, context, request, writer, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -560,7 +1030,7 @@ class Agent final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_ReportPlayback() {
-      ::grpc::Service::MarkMethodAsync(1);
+      ::grpc::Service::MarkMethodAsync(4);
     }
     ~WithAsyncMethod_ReportPlayback() override {
       BaseClassMustBeDerivedFromService(this);
@@ -571,7 +1041,27 @@ class Agent final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestReportPlayback(::grpc::ServerContext* context, ::voice::v1::PlaybackReport* request, ::grpc::ServerAsyncResponseWriter< ::voice::v1::AgentAck>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_ReportCallAnswered : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_ReportCallAnswered() {
+      ::grpc::Service::MarkMethodAsync(5);
+    }
+    ~WithAsyncMethod_ReportCallAnswered() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReportCallAnswered(::grpc::ServerContext* /*context*/, const ::voice::v1::CallAnswer* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestReportCallAnswered(::grpc::ServerContext* context, ::voice::v1::CallAnswer* request, ::grpc::ServerAsyncResponseWriter< ::voice::v1::AgentAck>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -580,7 +1070,7 @@ class Agent final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_EndCall() {
-      ::grpc::Service::MarkMethodAsync(2);
+      ::grpc::Service::MarkMethodAsync(6);
     }
     ~WithAsyncMethod_EndCall() override {
       BaseClassMustBeDerivedFromService(this);
@@ -591,17 +1081,98 @@ class Agent final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestEndCall(::grpc::ServerContext* context, ::voice::v1::CallEnd* request, ::grpc::ServerAsyncResponseWriter< ::voice::v1::AgentAck>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_RunTurn<WithAsyncMethod_ReportPlayback<WithAsyncMethod_EndCall<Service > > > AsyncService;
+  typedef WithAsyncMethod_InitializeCall<WithAsyncMethod_CancelCallSetup<WithAsyncMethod_GetPreparedAudio<WithAsyncMethod_RunTurn<WithAsyncMethod_ReportPlayback<WithAsyncMethod_ReportCallAnswered<WithAsyncMethod_EndCall<Service > > > > > > > AsyncService;
+  template <class BaseClass>
+  class WithCallbackMethod_InitializeCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_InitializeCall() {
+      ::grpc::Service::MarkMethodCallback(0,
+          new ::grpc::internal::CallbackUnaryHandler< ::voice::v1::CallInitializationRequest, ::voice::v1::CallInitializationReply>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::voice::v1::CallInitializationRequest* request, ::voice::v1::CallInitializationReply* response) { return this->InitializeCall(context, request, response); }));}
+    void SetMessageAllocatorFor_InitializeCall(
+        ::grpc::MessageAllocator< ::voice::v1::CallInitializationRequest, ::voice::v1::CallInitializationReply>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::voice::v1::CallInitializationRequest, ::voice::v1::CallInitializationReply>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_InitializeCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status InitializeCall(::grpc::ServerContext* /*context*/, const ::voice::v1::CallInitializationRequest* /*request*/, ::voice::v1::CallInitializationReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* InitializeCall(
+      ::grpc::CallbackServerContext* /*context*/, const ::voice::v1::CallInitializationRequest* /*request*/, ::voice::v1::CallInitializationReply* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_CancelCallSetup : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_CancelCallSetup() {
+      ::grpc::Service::MarkMethodCallback(1,
+          new ::grpc::internal::CallbackUnaryHandler< ::voice::v1::CallSetupCancellation, ::voice::v1::AgentAck>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::voice::v1::CallSetupCancellation* request, ::voice::v1::AgentAck* response) { return this->CancelCallSetup(context, request, response); }));}
+    void SetMessageAllocatorFor_CancelCallSetup(
+        ::grpc::MessageAllocator< ::voice::v1::CallSetupCancellation, ::voice::v1::AgentAck>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::voice::v1::CallSetupCancellation, ::voice::v1::AgentAck>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_CancelCallSetup() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CancelCallSetup(::grpc::ServerContext* /*context*/, const ::voice::v1::CallSetupCancellation* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* CancelCallSetup(
+      ::grpc::CallbackServerContext* /*context*/, const ::voice::v1::CallSetupCancellation* /*request*/, ::voice::v1::AgentAck* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_GetPreparedAudio : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_GetPreparedAudio() {
+      ::grpc::Service::MarkMethodCallback(2,
+          new ::grpc::internal::CallbackUnaryHandler< ::voice::v1::PreparedAudioRequest, ::voice::v1::PreparedAudioReply>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::voice::v1::PreparedAudioRequest* request, ::voice::v1::PreparedAudioReply* response) { return this->GetPreparedAudio(context, request, response); }));}
+    void SetMessageAllocatorFor_GetPreparedAudio(
+        ::grpc::MessageAllocator< ::voice::v1::PreparedAudioRequest, ::voice::v1::PreparedAudioReply>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::voice::v1::PreparedAudioRequest, ::voice::v1::PreparedAudioReply>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_GetPreparedAudio() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetPreparedAudio(::grpc::ServerContext* /*context*/, const ::voice::v1::PreparedAudioRequest* /*request*/, ::voice::v1::PreparedAudioReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* GetPreparedAudio(
+      ::grpc::CallbackServerContext* /*context*/, const ::voice::v1::PreparedAudioRequest* /*request*/, ::voice::v1::PreparedAudioReply* /*response*/)  { return nullptr; }
+  };
   template <class BaseClass>
   class WithCallbackMethod_RunTurn : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_RunTurn() {
-      ::grpc::Service::MarkMethodCallback(0,
+      ::grpc::Service::MarkMethodCallback(3,
           new ::grpc::internal::CallbackServerStreamingHandler< ::voice::v1::AgentRequest, ::voice::v1::AgentEvent>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::voice::v1::AgentRequest* request) { return this->RunTurn(context, request); }));
@@ -623,13 +1194,13 @@ class Agent final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_ReportPlayback() {
-      ::grpc::Service::MarkMethodCallback(1,
+      ::grpc::Service::MarkMethodCallback(4,
           new ::grpc::internal::CallbackUnaryHandler< ::voice::v1::PlaybackReport, ::voice::v1::AgentAck>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::voice::v1::PlaybackReport* request, ::voice::v1::AgentAck* response) { return this->ReportPlayback(context, request, response); }));}
     void SetMessageAllocatorFor_ReportPlayback(
         ::grpc::MessageAllocator< ::voice::v1::PlaybackReport, ::voice::v1::AgentAck>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::voice::v1::PlaybackReport, ::voice::v1::AgentAck>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -645,18 +1216,45 @@ class Agent final {
       ::grpc::CallbackServerContext* /*context*/, const ::voice::v1::PlaybackReport* /*request*/, ::voice::v1::AgentAck* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
+  class WithCallbackMethod_ReportCallAnswered : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_ReportCallAnswered() {
+      ::grpc::Service::MarkMethodCallback(5,
+          new ::grpc::internal::CallbackUnaryHandler< ::voice::v1::CallAnswer, ::voice::v1::AgentAck>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::voice::v1::CallAnswer* request, ::voice::v1::AgentAck* response) { return this->ReportCallAnswered(context, request, response); }));}
+    void SetMessageAllocatorFor_ReportCallAnswered(
+        ::grpc::MessageAllocator< ::voice::v1::CallAnswer, ::voice::v1::AgentAck>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::voice::v1::CallAnswer, ::voice::v1::AgentAck>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_ReportCallAnswered() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReportCallAnswered(::grpc::ServerContext* /*context*/, const ::voice::v1::CallAnswer* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ReportCallAnswered(
+      ::grpc::CallbackServerContext* /*context*/, const ::voice::v1::CallAnswer* /*request*/, ::voice::v1::AgentAck* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
   class WithCallbackMethod_EndCall : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_EndCall() {
-      ::grpc::Service::MarkMethodCallback(2,
+      ::grpc::Service::MarkMethodCallback(6,
           new ::grpc::internal::CallbackUnaryHandler< ::voice::v1::CallEnd, ::voice::v1::AgentAck>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::voice::v1::CallEnd* request, ::voice::v1::AgentAck* response) { return this->EndCall(context, request, response); }));}
     void SetMessageAllocatorFor_EndCall(
         ::grpc::MessageAllocator< ::voice::v1::CallEnd, ::voice::v1::AgentAck>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(6);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::voice::v1::CallEnd, ::voice::v1::AgentAck>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -671,15 +1269,66 @@ class Agent final {
     virtual ::grpc::ServerUnaryReactor* EndCall(
       ::grpc::CallbackServerContext* /*context*/, const ::voice::v1::CallEnd* /*request*/, ::voice::v1::AgentAck* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_RunTurn<WithCallbackMethod_ReportPlayback<WithCallbackMethod_EndCall<Service > > > CallbackService;
+  typedef WithCallbackMethod_InitializeCall<WithCallbackMethod_CancelCallSetup<WithCallbackMethod_GetPreparedAudio<WithCallbackMethod_RunTurn<WithCallbackMethod_ReportPlayback<WithCallbackMethod_ReportCallAnswered<WithCallbackMethod_EndCall<Service > > > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
+  template <class BaseClass>
+  class WithGenericMethod_InitializeCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_InitializeCall() {
+      ::grpc::Service::MarkMethodGeneric(0);
+    }
+    ~WithGenericMethod_InitializeCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status InitializeCall(::grpc::ServerContext* /*context*/, const ::voice::v1::CallInitializationRequest* /*request*/, ::voice::v1::CallInitializationReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_CancelCallSetup : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_CancelCallSetup() {
+      ::grpc::Service::MarkMethodGeneric(1);
+    }
+    ~WithGenericMethod_CancelCallSetup() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CancelCallSetup(::grpc::ServerContext* /*context*/, const ::voice::v1::CallSetupCancellation* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_GetPreparedAudio : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_GetPreparedAudio() {
+      ::grpc::Service::MarkMethodGeneric(2);
+    }
+    ~WithGenericMethod_GetPreparedAudio() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetPreparedAudio(::grpc::ServerContext* /*context*/, const ::voice::v1::PreparedAudioRequest* /*request*/, ::voice::v1::PreparedAudioReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
   template <class BaseClass>
   class WithGenericMethod_RunTurn : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_RunTurn() {
-      ::grpc::Service::MarkMethodGeneric(0);
+      ::grpc::Service::MarkMethodGeneric(3);
     }
     ~WithGenericMethod_RunTurn() override {
       BaseClassMustBeDerivedFromService(this);
@@ -696,7 +1345,7 @@ class Agent final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_ReportPlayback() {
-      ::grpc::Service::MarkMethodGeneric(1);
+      ::grpc::Service::MarkMethodGeneric(4);
     }
     ~WithGenericMethod_ReportPlayback() override {
       BaseClassMustBeDerivedFromService(this);
@@ -708,12 +1357,29 @@ class Agent final {
     }
   };
   template <class BaseClass>
+  class WithGenericMethod_ReportCallAnswered : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_ReportCallAnswered() {
+      ::grpc::Service::MarkMethodGeneric(5);
+    }
+    ~WithGenericMethod_ReportCallAnswered() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReportCallAnswered(::grpc::ServerContext* /*context*/, const ::voice::v1::CallAnswer* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
   class WithGenericMethod_EndCall : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_EndCall() {
-      ::grpc::Service::MarkMethodGeneric(2);
+      ::grpc::Service::MarkMethodGeneric(6);
     }
     ~WithGenericMethod_EndCall() override {
       BaseClassMustBeDerivedFromService(this);
@@ -725,12 +1391,72 @@ class Agent final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_InitializeCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_InitializeCall() {
+      ::grpc::Service::MarkMethodRaw(0);
+    }
+    ~WithRawMethod_InitializeCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status InitializeCall(::grpc::ServerContext* /*context*/, const ::voice::v1::CallInitializationRequest* /*request*/, ::voice::v1::CallInitializationReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestInitializeCall(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_CancelCallSetup : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_CancelCallSetup() {
+      ::grpc::Service::MarkMethodRaw(1);
+    }
+    ~WithRawMethod_CancelCallSetup() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CancelCallSetup(::grpc::ServerContext* /*context*/, const ::voice::v1::CallSetupCancellation* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestCancelCallSetup(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_GetPreparedAudio : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_GetPreparedAudio() {
+      ::grpc::Service::MarkMethodRaw(2);
+    }
+    ~WithRawMethod_GetPreparedAudio() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetPreparedAudio(::grpc::ServerContext* /*context*/, const ::voice::v1::PreparedAudioRequest* /*request*/, ::voice::v1::PreparedAudioReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestGetPreparedAudio(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithRawMethod_RunTurn : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_RunTurn() {
-      ::grpc::Service::MarkMethodRaw(0);
+      ::grpc::Service::MarkMethodRaw(3);
     }
     ~WithRawMethod_RunTurn() override {
       BaseClassMustBeDerivedFromService(this);
@@ -741,7 +1467,7 @@ class Agent final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestRunTurn(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncServerStreaming(0, context, request, writer, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncServerStreaming(3, context, request, writer, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -750,7 +1476,7 @@ class Agent final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_ReportPlayback() {
-      ::grpc::Service::MarkMethodRaw(1);
+      ::grpc::Service::MarkMethodRaw(4);
     }
     ~WithRawMethod_ReportPlayback() override {
       BaseClassMustBeDerivedFromService(this);
@@ -761,7 +1487,27 @@ class Agent final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestReportPlayback(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_ReportCallAnswered : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_ReportCallAnswered() {
+      ::grpc::Service::MarkMethodRaw(5);
+    }
+    ~WithRawMethod_ReportCallAnswered() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReportCallAnswered(::grpc::ServerContext* /*context*/, const ::voice::v1::CallAnswer* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestReportCallAnswered(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -770,7 +1516,7 @@ class Agent final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_EndCall() {
-      ::grpc::Service::MarkMethodRaw(2);
+      ::grpc::Service::MarkMethodRaw(6);
     }
     ~WithRawMethod_EndCall() override {
       BaseClassMustBeDerivedFromService(this);
@@ -781,8 +1527,74 @@ class Agent final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestEndCall(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_InitializeCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_InitializeCall() {
+      ::grpc::Service::MarkMethodRawCallback(0,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->InitializeCall(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_InitializeCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status InitializeCall(::grpc::ServerContext* /*context*/, const ::voice::v1::CallInitializationRequest* /*request*/, ::voice::v1::CallInitializationReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* InitializeCall(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_CancelCallSetup : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_CancelCallSetup() {
+      ::grpc::Service::MarkMethodRawCallback(1,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->CancelCallSetup(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_CancelCallSetup() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CancelCallSetup(::grpc::ServerContext* /*context*/, const ::voice::v1::CallSetupCancellation* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* CancelCallSetup(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_GetPreparedAudio : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_GetPreparedAudio() {
+      ::grpc::Service::MarkMethodRawCallback(2,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetPreparedAudio(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_GetPreparedAudio() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetPreparedAudio(::grpc::ServerContext* /*context*/, const ::voice::v1::PreparedAudioRequest* /*request*/, ::voice::v1::PreparedAudioReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* GetPreparedAudio(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithRawCallbackMethod_RunTurn : public BaseClass {
@@ -790,7 +1602,7 @@ class Agent final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_RunTurn() {
-      ::grpc::Service::MarkMethodRawCallback(0,
+      ::grpc::Service::MarkMethodRawCallback(3,
           new ::grpc::internal::CallbackServerStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const::grpc::ByteBuffer* request) { return this->RunTurn(context, request); }));
@@ -812,7 +1624,7 @@ class Agent final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_ReportPlayback() {
-      ::grpc::Service::MarkMethodRawCallback(1,
+      ::grpc::Service::MarkMethodRawCallback(4,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ReportPlayback(context, request, response); }));
@@ -829,12 +1641,34 @@ class Agent final {
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
+  class WithRawCallbackMethod_ReportCallAnswered : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_ReportCallAnswered() {
+      ::grpc::Service::MarkMethodRawCallback(5,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ReportCallAnswered(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_ReportCallAnswered() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReportCallAnswered(::grpc::ServerContext* /*context*/, const ::voice::v1::CallAnswer* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ReportCallAnswered(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
   class WithRawCallbackMethod_EndCall : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_EndCall() {
-      ::grpc::Service::MarkMethodRawCallback(2,
+      ::grpc::Service::MarkMethodRawCallback(6,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->EndCall(context, request, response); }));
@@ -851,12 +1685,93 @@ class Agent final {
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
+  class WithStreamedUnaryMethod_InitializeCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_InitializeCall() {
+      ::grpc::Service::MarkMethodStreamed(0,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::voice::v1::CallInitializationRequest, ::voice::v1::CallInitializationReply>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::voice::v1::CallInitializationRequest, ::voice::v1::CallInitializationReply>* streamer) {
+                       return this->StreamedInitializeCall(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_InitializeCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status InitializeCall(::grpc::ServerContext* /*context*/, const ::voice::v1::CallInitializationRequest* /*request*/, ::voice::v1::CallInitializationReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedInitializeCall(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::voice::v1::CallInitializationRequest,::voice::v1::CallInitializationReply>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_CancelCallSetup : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_CancelCallSetup() {
+      ::grpc::Service::MarkMethodStreamed(1,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::voice::v1::CallSetupCancellation, ::voice::v1::AgentAck>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::voice::v1::CallSetupCancellation, ::voice::v1::AgentAck>* streamer) {
+                       return this->StreamedCancelCallSetup(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_CancelCallSetup() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status CancelCallSetup(::grpc::ServerContext* /*context*/, const ::voice::v1::CallSetupCancellation* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedCancelCallSetup(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::voice::v1::CallSetupCancellation,::voice::v1::AgentAck>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_GetPreparedAudio : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_GetPreparedAudio() {
+      ::grpc::Service::MarkMethodStreamed(2,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::voice::v1::PreparedAudioRequest, ::voice::v1::PreparedAudioReply>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::voice::v1::PreparedAudioRequest, ::voice::v1::PreparedAudioReply>* streamer) {
+                       return this->StreamedGetPreparedAudio(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_GetPreparedAudio() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status GetPreparedAudio(::grpc::ServerContext* /*context*/, const ::voice::v1::PreparedAudioRequest* /*request*/, ::voice::v1::PreparedAudioReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedGetPreparedAudio(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::voice::v1::PreparedAudioRequest,::voice::v1::PreparedAudioReply>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
   class WithStreamedUnaryMethod_ReportPlayback : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_ReportPlayback() {
-      ::grpc::Service::MarkMethodStreamed(1,
+      ::grpc::Service::MarkMethodStreamed(4,
         new ::grpc::internal::StreamedUnaryHandler<
           ::voice::v1::PlaybackReport, ::voice::v1::AgentAck>(
             [this](::grpc::ServerContext* context,
@@ -878,12 +1793,39 @@ class Agent final {
     virtual ::grpc::Status StreamedReportPlayback(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::voice::v1::PlaybackReport,::voice::v1::AgentAck>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
+  class WithStreamedUnaryMethod_ReportCallAnswered : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_ReportCallAnswered() {
+      ::grpc::Service::MarkMethodStreamed(5,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::voice::v1::CallAnswer, ::voice::v1::AgentAck>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::voice::v1::CallAnswer, ::voice::v1::AgentAck>* streamer) {
+                       return this->StreamedReportCallAnswered(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_ReportCallAnswered() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status ReportCallAnswered(::grpc::ServerContext* /*context*/, const ::voice::v1::CallAnswer* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedReportCallAnswered(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::voice::v1::CallAnswer,::voice::v1::AgentAck>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
   class WithStreamedUnaryMethod_EndCall : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_EndCall() {
-      ::grpc::Service::MarkMethodStreamed(2,
+      ::grpc::Service::MarkMethodStreamed(6,
         new ::grpc::internal::StreamedUnaryHandler<
           ::voice::v1::CallEnd, ::voice::v1::AgentAck>(
             [this](::grpc::ServerContext* context,
@@ -904,14 +1846,14 @@ class Agent final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedEndCall(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::voice::v1::CallEnd,::voice::v1::AgentAck>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_ReportPlayback<WithStreamedUnaryMethod_EndCall<Service > > StreamedUnaryService;
+  typedef WithStreamedUnaryMethod_InitializeCall<WithStreamedUnaryMethod_CancelCallSetup<WithStreamedUnaryMethod_GetPreparedAudio<WithStreamedUnaryMethod_ReportPlayback<WithStreamedUnaryMethod_ReportCallAnswered<WithStreamedUnaryMethod_EndCall<Service > > > > > > StreamedUnaryService;
   template <class BaseClass>
   class WithSplitStreamingMethod_RunTurn : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithSplitStreamingMethod_RunTurn() {
-      ::grpc::Service::MarkMethodStreamed(0,
+      ::grpc::Service::MarkMethodStreamed(3,
         new ::grpc::internal::SplitServerStreamingHandler<
           ::voice::v1::AgentRequest, ::voice::v1::AgentEvent>(
             [this](::grpc::ServerContext* context,
@@ -933,7 +1875,7 @@ class Agent final {
     virtual ::grpc::Status StreamedRunTurn(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::voice::v1::AgentRequest,::voice::v1::AgentEvent>* server_split_streamer) = 0;
   };
   typedef WithSplitStreamingMethod_RunTurn<Service > SplitStreamedService;
-  typedef WithSplitStreamingMethod_RunTurn<WithStreamedUnaryMethod_ReportPlayback<WithStreamedUnaryMethod_EndCall<Service > > > StreamedService;
+  typedef WithStreamedUnaryMethod_InitializeCall<WithStreamedUnaryMethod_CancelCallSetup<WithStreamedUnaryMethod_GetPreparedAudio<WithSplitStreamingMethod_RunTurn<WithStreamedUnaryMethod_ReportPlayback<WithStreamedUnaryMethod_ReportCallAnswered<WithStreamedUnaryMethod_EndCall<Service > > > > > > > StreamedService;
 };
 
 class GenerationControl final {
@@ -951,11 +1893,29 @@ class GenerationControl final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::CancelReply>> PrepareAsyncCancelGeneration(::grpc::ClientContext* context, const ::voice::v1::CancelRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::CancelReply>>(PrepareAsyncCancelGenerationRaw(context, request, cq));
     }
+    virtual ::grpc::Status OpenCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::voice::v1::CallLeaseReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::CallLeaseReply>> AsyncOpenCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::CallLeaseReply>>(AsyncOpenCallRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::CallLeaseReply>> PrepareAsyncOpenCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::CallLeaseReply>>(PrepareAsyncOpenCallRaw(context, request, cq));
+    }
+    virtual ::grpc::Status ReleaseCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::voice::v1::AgentAck* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>> AsyncReleaseCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>>(AsyncReleaseCallRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>> PrepareAsyncReleaseCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>>(PrepareAsyncReleaseCallRaw(context, request, cq));
+    }
     class async_interface {
      public:
       virtual ~async_interface() {}
       virtual void CancelGeneration(::grpc::ClientContext* context, const ::voice::v1::CancelRequest* request, ::voice::v1::CancelReply* response, std::function<void(::grpc::Status)>) = 0;
       virtual void CancelGeneration(::grpc::ClientContext* context, const ::voice::v1::CancelRequest* request, ::voice::v1::CancelReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void OpenCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest* request, ::voice::v1::CallLeaseReply* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void OpenCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest* request, ::voice::v1::CallLeaseReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void ReleaseCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest* request, ::voice::v1::AgentAck* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ReleaseCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest* request, ::voice::v1::AgentAck* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -963,6 +1923,10 @@ class GenerationControl final {
    private:
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::CancelReply>* AsyncCancelGenerationRaw(::grpc::ClientContext* context, const ::voice::v1::CancelRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::CancelReply>* PrepareAsyncCancelGenerationRaw(::grpc::ClientContext* context, const ::voice::v1::CancelRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::CallLeaseReply>* AsyncOpenCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::CallLeaseReply>* PrepareAsyncOpenCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>* AsyncReleaseCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::voice::v1::AgentAck>* PrepareAsyncReleaseCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -974,11 +1938,29 @@ class GenerationControl final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::CancelReply>> PrepareAsyncCancelGeneration(::grpc::ClientContext* context, const ::voice::v1::CancelRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::CancelReply>>(PrepareAsyncCancelGenerationRaw(context, request, cq));
     }
+    ::grpc::Status OpenCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::voice::v1::CallLeaseReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::CallLeaseReply>> AsyncOpenCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::CallLeaseReply>>(AsyncOpenCallRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::CallLeaseReply>> PrepareAsyncOpenCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::CallLeaseReply>>(PrepareAsyncOpenCallRaw(context, request, cq));
+    }
+    ::grpc::Status ReleaseCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::voice::v1::AgentAck* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>> AsyncReleaseCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>>(AsyncReleaseCallRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>> PrepareAsyncReleaseCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>>(PrepareAsyncReleaseCallRaw(context, request, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
       void CancelGeneration(::grpc::ClientContext* context, const ::voice::v1::CancelRequest* request, ::voice::v1::CancelReply* response, std::function<void(::grpc::Status)>) override;
       void CancelGeneration(::grpc::ClientContext* context, const ::voice::v1::CancelRequest* request, ::voice::v1::CancelReply* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void OpenCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest* request, ::voice::v1::CallLeaseReply* response, std::function<void(::grpc::Status)>) override;
+      void OpenCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest* request, ::voice::v1::CallLeaseReply* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void ReleaseCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest* request, ::voice::v1::AgentAck* response, std::function<void(::grpc::Status)>) override;
+      void ReleaseCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest* request, ::voice::v1::AgentAck* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -992,7 +1974,13 @@ class GenerationControl final {
     class async async_stub_{this};
     ::grpc::ClientAsyncResponseReader< ::voice::v1::CancelReply>* AsyncCancelGenerationRaw(::grpc::ClientContext* context, const ::voice::v1::CancelRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::voice::v1::CancelReply>* PrepareAsyncCancelGenerationRaw(::grpc::ClientContext* context, const ::voice::v1::CancelRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::voice::v1::CallLeaseReply>* AsyncOpenCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::voice::v1::CallLeaseReply>* PrepareAsyncOpenCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* AsyncReleaseCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* PrepareAsyncReleaseCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_CancelGeneration_;
+    const ::grpc::internal::RpcMethod rpcmethod_OpenCall_;
+    const ::grpc::internal::RpcMethod rpcmethod_ReleaseCall_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -1001,6 +1989,8 @@ class GenerationControl final {
     Service();
     virtual ~Service();
     virtual ::grpc::Status CancelGeneration(::grpc::ServerContext* context, const ::voice::v1::CancelRequest* request, ::voice::v1::CancelReply* response);
+    virtual ::grpc::Status OpenCall(::grpc::ServerContext* context, const ::voice::v1::CallLeaseRequest* request, ::voice::v1::CallLeaseReply* response);
+    virtual ::grpc::Status ReleaseCall(::grpc::ServerContext* context, const ::voice::v1::CallLeaseRequest* request, ::voice::v1::AgentAck* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_CancelGeneration : public BaseClass {
@@ -1022,7 +2012,47 @@ class GenerationControl final {
       ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_CancelGeneration<Service > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_OpenCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_OpenCall() {
+      ::grpc::Service::MarkMethodAsync(1);
+    }
+    ~WithAsyncMethod_OpenCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status OpenCall(::grpc::ServerContext* /*context*/, const ::voice::v1::CallLeaseRequest* /*request*/, ::voice::v1::CallLeaseReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestOpenCall(::grpc::ServerContext* context, ::voice::v1::CallLeaseRequest* request, ::grpc::ServerAsyncResponseWriter< ::voice::v1::CallLeaseReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_ReleaseCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_ReleaseCall() {
+      ::grpc::Service::MarkMethodAsync(2);
+    }
+    ~WithAsyncMethod_ReleaseCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReleaseCall(::grpc::ServerContext* /*context*/, const ::voice::v1::CallLeaseRequest* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestReleaseCall(::grpc::ServerContext* context, ::voice::v1::CallLeaseRequest* request, ::grpc::ServerAsyncResponseWriter< ::voice::v1::AgentAck>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_CancelGeneration<WithAsyncMethod_OpenCall<WithAsyncMethod_ReleaseCall<Service > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_CancelGeneration : public BaseClass {
    private:
@@ -1050,7 +2080,61 @@ class GenerationControl final {
     virtual ::grpc::ServerUnaryReactor* CancelGeneration(
       ::grpc::CallbackServerContext* /*context*/, const ::voice::v1::CancelRequest* /*request*/, ::voice::v1::CancelReply* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_CancelGeneration<Service > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_OpenCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_OpenCall() {
+      ::grpc::Service::MarkMethodCallback(1,
+          new ::grpc::internal::CallbackUnaryHandler< ::voice::v1::CallLeaseRequest, ::voice::v1::CallLeaseReply>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::voice::v1::CallLeaseRequest* request, ::voice::v1::CallLeaseReply* response) { return this->OpenCall(context, request, response); }));}
+    void SetMessageAllocatorFor_OpenCall(
+        ::grpc::MessageAllocator< ::voice::v1::CallLeaseRequest, ::voice::v1::CallLeaseReply>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::voice::v1::CallLeaseRequest, ::voice::v1::CallLeaseReply>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_OpenCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status OpenCall(::grpc::ServerContext* /*context*/, const ::voice::v1::CallLeaseRequest* /*request*/, ::voice::v1::CallLeaseReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* OpenCall(
+      ::grpc::CallbackServerContext* /*context*/, const ::voice::v1::CallLeaseRequest* /*request*/, ::voice::v1::CallLeaseReply* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_ReleaseCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_ReleaseCall() {
+      ::grpc::Service::MarkMethodCallback(2,
+          new ::grpc::internal::CallbackUnaryHandler< ::voice::v1::CallLeaseRequest, ::voice::v1::AgentAck>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::voice::v1::CallLeaseRequest* request, ::voice::v1::AgentAck* response) { return this->ReleaseCall(context, request, response); }));}
+    void SetMessageAllocatorFor_ReleaseCall(
+        ::grpc::MessageAllocator< ::voice::v1::CallLeaseRequest, ::voice::v1::AgentAck>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::voice::v1::CallLeaseRequest, ::voice::v1::AgentAck>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_ReleaseCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReleaseCall(::grpc::ServerContext* /*context*/, const ::voice::v1::CallLeaseRequest* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ReleaseCall(
+      ::grpc::CallbackServerContext* /*context*/, const ::voice::v1::CallLeaseRequest* /*request*/, ::voice::v1::AgentAck* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_CancelGeneration<WithCallbackMethod_OpenCall<WithCallbackMethod_ReleaseCall<Service > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_CancelGeneration : public BaseClass {
@@ -1065,6 +2149,40 @@ class GenerationControl final {
     }
     // disable synchronous version of this method
     ::grpc::Status CancelGeneration(::grpc::ServerContext* /*context*/, const ::voice::v1::CancelRequest* /*request*/, ::voice::v1::CancelReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_OpenCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_OpenCall() {
+      ::grpc::Service::MarkMethodGeneric(1);
+    }
+    ~WithGenericMethod_OpenCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status OpenCall(::grpc::ServerContext* /*context*/, const ::voice::v1::CallLeaseRequest* /*request*/, ::voice::v1::CallLeaseReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_ReleaseCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_ReleaseCall() {
+      ::grpc::Service::MarkMethodGeneric(2);
+    }
+    ~WithGenericMethod_ReleaseCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReleaseCall(::grpc::ServerContext* /*context*/, const ::voice::v1::CallLeaseRequest* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1090,6 +2208,46 @@ class GenerationControl final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_OpenCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_OpenCall() {
+      ::grpc::Service::MarkMethodRaw(1);
+    }
+    ~WithRawMethod_OpenCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status OpenCall(::grpc::ServerContext* /*context*/, const ::voice::v1::CallLeaseRequest* /*request*/, ::voice::v1::CallLeaseReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestOpenCall(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_ReleaseCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_ReleaseCall() {
+      ::grpc::Service::MarkMethodRaw(2);
+    }
+    ~WithRawMethod_ReleaseCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReleaseCall(::grpc::ServerContext* /*context*/, const ::voice::v1::CallLeaseRequest* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestReleaseCall(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithRawCallbackMethod_CancelGeneration : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
@@ -1109,6 +2267,50 @@ class GenerationControl final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* CancelGeneration(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_OpenCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_OpenCall() {
+      ::grpc::Service::MarkMethodRawCallback(1,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->OpenCall(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_OpenCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status OpenCall(::grpc::ServerContext* /*context*/, const ::voice::v1::CallLeaseRequest* /*request*/, ::voice::v1::CallLeaseReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* OpenCall(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_ReleaseCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_ReleaseCall() {
+      ::grpc::Service::MarkMethodRawCallback(2,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ReleaseCall(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_ReleaseCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReleaseCall(::grpc::ServerContext* /*context*/, const ::voice::v1::CallLeaseRequest* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ReleaseCall(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -1138,9 +2340,63 @@ class GenerationControl final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedCancelGeneration(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::voice::v1::CancelRequest,::voice::v1::CancelReply>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_CancelGeneration<Service > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_OpenCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_OpenCall() {
+      ::grpc::Service::MarkMethodStreamed(1,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::voice::v1::CallLeaseRequest, ::voice::v1::CallLeaseReply>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::voice::v1::CallLeaseRequest, ::voice::v1::CallLeaseReply>* streamer) {
+                       return this->StreamedOpenCall(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_OpenCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status OpenCall(::grpc::ServerContext* /*context*/, const ::voice::v1::CallLeaseRequest* /*request*/, ::voice::v1::CallLeaseReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedOpenCall(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::voice::v1::CallLeaseRequest,::voice::v1::CallLeaseReply>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_ReleaseCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_ReleaseCall() {
+      ::grpc::Service::MarkMethodStreamed(2,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::voice::v1::CallLeaseRequest, ::voice::v1::AgentAck>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::voice::v1::CallLeaseRequest, ::voice::v1::AgentAck>* streamer) {
+                       return this->StreamedReleaseCall(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_ReleaseCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status ReleaseCall(::grpc::ServerContext* /*context*/, const ::voice::v1::CallLeaseRequest* /*request*/, ::voice::v1::AgentAck* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedReleaseCall(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::voice::v1::CallLeaseRequest,::voice::v1::AgentAck>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_CancelGeneration<WithStreamedUnaryMethod_OpenCall<WithStreamedUnaryMethod_ReleaseCall<Service > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_CancelGeneration<Service > StreamedService;
+  typedef WithStreamedUnaryMethod_CancelGeneration<WithStreamedUnaryMethod_OpenCall<WithStreamedUnaryMethod_ReleaseCall<Service > > > StreamedService;
 };
 
 }  // namespace v1

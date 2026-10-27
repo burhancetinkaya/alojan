@@ -1,13 +1,15 @@
 """One admitted synthesis, bounded PCM frames, and cancellation across worker threads."""
 
 import asyncio
+import re
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeout
 import threading
 import unicodedata
 
 import grpc
-from alojan_contracts.audio import MAX_MESSAGE_BYTES
+from alojan_contracts.audio import IDENTIFIER, MAX_MESSAGE_BYTES
 from alojan_contracts.generation import GenerationControl
+from alojan_contracts.synthesis import SynthesisProfile
 from voice.v1 import voice_pb2 as pb
 from voice.v1 import voice_pb2_grpc as rpc
 
@@ -20,14 +22,53 @@ class InvalidText(ValueError):
 
 
 class SynthesisService(GenerationControl, rpc.SynthesisServicer):
-    def __init__(self, backend):
+    def __init__(self, backend, *, require_agent_release=False):
         super().__init__()
         self.backend = backend
+        profile = getattr(backend, "synthesis_profile", None)
+        if profile is not None and not isinstance(profile, SynthesisProfile):
+            raise ValueError("Invalid loaded synthesis profile")
+        self.loaded_profile = profile
+        self.require_agent_release = require_agent_release
+        self.configurations = {}
         self.executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="tts")
         self.inference = None
         self.active = False
         self.stop = threading.Event()
         self.queue_peak = 0
+
+    async def ConfigureCall(self, request, context):
+        if (
+            context.time_remaining() is None
+            or not IDENTIFIER.fullmatch(request.call_id)
+            or not request.call_id.startswith("managed-")
+            or not re.fullmatch(r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}", request.release_id)
+            or not re.fullmatch(r"[0-9a-f]{64}", request.manifest_digest)
+        ):
+            await context.abort(grpc.StatusCode.INVALID_ARGUMENT, "invalid synthesis configuration")
+        await self.require_lease(request.call_id, context)
+        try:
+            profile = SynthesisProfile.from_proto(request.configuration)
+        except ValueError:
+            await context.abort(grpc.StatusCode.INVALID_ARGUMENT, "invalid synthesis profile")
+        if self.loaded_profile is None or profile != self.loaded_profile:
+            await context.abort(grpc.StatusCode.FAILED_PRECONDITION, "synthesis worker mismatch")
+        identity = (request.release_id, request.manifest_digest, profile)
+        existing = self.configurations.get(request.call_id)
+        if existing:
+            if existing != identity:
+                await context.abort(grpc.StatusCode.FAILED_PRECONDITION, "synthesis release pinned")
+            return pb.AgentAck(accepted=True)
+        if any(
+            key[0] == request.call_id and state.started for key, state in self.generations.items()
+        ):
+            await context.abort(grpc.StatusCode.FAILED_PRECONDITION, "synthesis already started")
+        self.configurations[request.call_id] = identity
+        return pb.AgentAck(accepted=True)
+
+    def release_call(self, call_id):
+        super().release_call(call_id)
+        self.configurations.pop(call_id, None)
 
     def produce(self, text, queue, loop, stop):
         async def enqueue(item):
@@ -90,6 +131,7 @@ class SynthesisService(GenerationControl, rpc.SynthesisServicer):
                 if stream is not None:
                     stream.close()
             except Exception:
+                self.cleanup_failed = True
                 status = grpc.StatusCode.INTERNAL
             tail.clear()
             if not stop.is_set():
@@ -107,6 +149,10 @@ class SynthesisService(GenerationControl, rpc.SynthesisServicer):
         ):
             await context.abort(grpc.StatusCode.INVALID_ARGUMENT, "invalid synthesis text")
         state = await self.state(request, context)
+        if (
+            self.require_agent_release or request.call_id.startswith("managed-")
+        ) and request.call_id not in self.configurations:
+            await context.abort(grpc.StatusCode.FAILED_PRECONDITION, "synthesis not configured")
         if state.cancelled.is_set():
             await context.abort(grpc.StatusCode.CANCELLED, "generation cancelled")
         if state.started:
@@ -155,14 +201,17 @@ class SynthesisService(GenerationControl, rpc.SynthesisServicer):
                 queue.get_nowait()
 
     def close(self):
+        self.close_leases()
         self.stop.set()
         for state in self.generations.values():
             state.cancelled.set()
         self.executor.shutdown(wait=False, cancel_futures=True)
 
 
-def create_server(service):
+def create_server(service, *, maintenance=None):
+    service.maintenance = maintenance
     server = grpc.aio.server(
+        interceptors=[maintenance] if maintenance is not None else [],
         options=[
             ("grpc.max_receive_message_length", MAX_MESSAGE_BYTES),
             ("grpc.max_send_message_length", MAX_MESSAGE_BYTES),

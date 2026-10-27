@@ -1,0 +1,14 @@
+# Overlay only for an explicitly selected compatible gateway image.
+# Apply with the retained voice compose file; never apply to the old lifecycle image.
+services:
+  gateway:
+    image: ${ALOJAN_ADMISSION_IMAGE:?Set the tested gateway image with admission support}
+    environment:
+      ALOJAN_ADMISSION_FILE: /run/alojan-admission/state
+    volumes:
+      - type: bind
+        source: ${ALOJAN_ADMISSION_DIR:?Set the absolute private admission directory}
+        target: /run/alojan-admission
+        read_only: true
+        bind:
+          create_host_path: false

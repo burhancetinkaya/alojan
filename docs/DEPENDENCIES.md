@@ -1,5 +1,62 @@
 # Introduced dependencies
 
+## Management frontend (2026-10-26)
+
+Direct exact versions and transitive integrity hashes are in `services/web/package-lock.json`.
+Installed package metadata supplies the license labels below; these are inventory,
+not redistribution approval. Preserve upstream copyright/license notices and the
+standalone server’s transitive notices when packaging. No project LICENSE was added.
+
+| Dependency | Exact pin / upstream source | Metadata license |
+|---|---|---|
+| Next.js | 16.4.3; https://github.com/vercel/next.js | MIT |
+| React / React DOM | 19.3.1; https://github.com/facebook/react | MIT |
+| shadcn component generator | 4.22.1; https://github.com/shadcn-ui/ui | MIT; copied/generated UI components |
+| Radix UI | 1.8.1; https://github.com/radix-ui/primitives | MIT |
+| Lucide React | 1.61.0; https://github.com/lucide-icons/lucide | ISC; retain icon notices |
+| Tailwind / PostCSS adapter | 4.3.3; https://github.com/tailwindlabs/tailwindcss | MIT |
+| class-variance-authority | 0.7.1; https://github.com/joe-bell/cva | Apache-2.0 |
+| clsx / tailwind-merge | 2.1.1 / 3.6.0; https://github.com/lukeed/clsx / https://github.com/dcastil/tailwind-merge | MIT |
+| TypeScript | 5.9.3; https://github.com/microsoft/TypeScript | Apache-2.0 |
+| Playwright | 1.64.1; https://github.com/microsoft/playwright | Apache-2.0; browser binaries have additional notices |
+| Type declarations | Node 22.20.5 / React 19.3.0 / React DOM 19.3.0; https://github.com/DefinitelyTyped/DefinitelyTyped | MIT |
+| Prettier (one-off formatting) | 3.8.3; https://github.com/prettier/prettier | MIT; not shipped in runtime |
+
+Node 22.23.1 Bookworm-slim and Playwright 1.64.1 Noble image digests are pinned
+in the frontend Dockerfile/test harness. Private TLS reuses Nginx 1.28 Alpine at
+a pinned digest in `infra/compose.web.yaml`; Nginx uses the 2-clause BSD license.
+Node, browser, Debian/Ubuntu/Alpine and bundled OpenSSL packages require their own
+release inventory. No external font, analytics, media CDN or new GPU dependency.
+The shadcn generator ran once; its generated components use the existing `cn`
+helper and were adapted for flat styling and bounded textareas.
+
+Reference setup: https://ui.shadcn.com/docs/installation/next and
+https://nextjs.org/docs/app/getting-started/installation.
+
+
+Telegram delivery directly pins **httpx2 2.16.0**, already present transitively in the
+worker/root OpenAI Agents lock. Installed metadata identifies
+[source](https://github.com/pydantic/httpx2) and BSD-3-Clause; preserve its notices and
+review redistribution separately. Its pinned httpcore2 2.16.0 transport supports the
+SNI hostname extension used to retain certificate verification while connecting to a
+vetted IP literal. Client retries default to zero, ambient proxies/redirects are disabled,
+and HTTP log propagation is suppressed because Bot API paths contain credentials.
+No new HTTP framework/server or GPU dependency was introduced. Telegram receipt/error
+interpretation follows [sendMessage](https://core.telegram.org/bots/api#sendmessage) and
+[ResponseParameters](https://core.telegram.org/bots/api#responseparameters); real service
+acceptance remains separate from synthetic tests.
+
+Provider credentials reuse cryptography **50.0.2**, already pinned in the development
+lock and now declared directly in management/action-worker projects. Source:
+https://github.com/pyca/cryptography. Installed package metadata declares
+`Apache-2.0 OR BSD-3-Clause`; retain its bundled OpenSSL/third-party notices and review
+redistribution before release. Fernet supplies authenticated encryption; application
+envelopes bind workspace/reference/provider, with the key outside PostgreSQL.
+This is not a new custom cipher or a license-approval claim. The separate worker pins
+openai-agents 0.24.0, psycopg 3.2.6 and pydantic 2.14.1; complete transitive versions/
+hashes are in services/action-worker/uv.lock. Its image reuses the existing pinned
+Ubuntu/Python/uv foundation, installs no GPU/media runtime and is independently built.
+
 These pins describe the local foundation; they do not approve distribution or claim
 unmeasured model compatibility. Linux foundation/GPU smoke evidence is recorded separately. The project license remains pending.
 
@@ -49,6 +106,19 @@ SBOM or approval of the still-pending project license. Test transport is insecur
 loopback only; building TLS support does not configure production authentication.
 
 ## Linux development host additions (U0-01)
+
+AGP-02 management packaging reuses the root lock's existing Starlette 1.9.0,
+Uvicorn 0.54.0, Pydantic 2.14.1 and psycopg[binary] 3.2.6 as direct, frozen
+application dependencies in `services/app-api/uv.lock`. Upstream sources:
+[Starlette](https://github.com/Kludex/starlette),
+[Uvicorn](https://github.com/Kludex/uvicorn),
+[Pydantic](https://github.com/pydantic/pydantic), and
+[psycopg](https://github.com/psycopg/psycopg).
+Preserve their license and bundled notices in the release inventory; independent
+distribution/security review is pending. No new inference dependency is introduced.
+The separate management Dockerfile reuses the live baseline's digest-pinned
+Ubuntu 24.04 and uv 0.11.9 images and pinned Python/CA packages. Hashing uses
+Python/OpenSSL scrypt rather than an additional authentication framework.
 
 - uv 0.11.9: [upstream release](https://github.com/astral-sh/uv/releases/tag/0.11.9),
   `uv-x86_64-unknown-linux-gnu.tar.gz` verified against its published SHA-256;
@@ -186,3 +256,110 @@ complete the pending project/transitive license review.
   release preparation. Preserve upstream notices; no project license is adopted.
 - OpenRouter endpoint and exact model choice are in ADR 0005. API service terms
   and data policies are separate from SDK redistribution licenses.
+
+## Optional Nemotron ASR evaluation/runtime (ADR 0008)
+
+`services/asr-nemotron/uv.lock` isolates the candidate from the Whisper/EMA
+workers. Direct pins include Transformers 5.13.0 (Apache 2.0), PyTorch
+2.6.0+cu124 (BSD-style with separately licensed bundled components), librosa
+0.11.0 (ISC), SoundFile 0.13.1 (BSD-style; bundled libsndfile terms apply), and
+the existing pinned gRPC/protobuf interface. CUDA component redistribution terms
+remain separate; this record is not a blanket license approval.
+
+[NVIDIA Nemotron 3.5 ASR](https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b)
+revision `ea30d66debe3740a08b573244286791d423d6b3e` uses OpenMDW 1.1. Runtime verifies
+all six required files against `services/asr/nemotron.json`. No remote repository
+code execution or NIM/API service is used. Weights remain local and uncommitted.
+
+The evaluation-only FLEURS corpus is CC BY 4.0; exact conversion revision, artifact
+hash and attribution are in `tools/asr-compare/README.md`. PyArrow 19.0.1 (Apache
+2.0) is used only to prepare this local corpus, not by the recognition worker.
+
+
+## Optional offline denoising evaluation (2026-10-24)
+
+These are evaluation-only dependencies, not linked into the shipping gateway.
+[The build recipe](../tools/denoise-compare/build.sh) pins source/package SHA-256
+values; [the comparison README](../tools/denoise-compare/README.md) records sources
+and reproduction. Retain upstream notices for any later distribution; review
+remains separate from this experiment and no project license is introduced.
+
+| Dependency | Pin | Declared terms / use |
+|---|---|---|
+| WebRTC AudioProcessing | 2.1 source archive | BSD-style LICENSE and PATENTS; CPU C++ suppression |
+| Abseil | 20240722.0, upstream wrap patch revision 3 | Apache-2.0; hashes checked by Meson wrap |
+| RNNoise | v0.2, model 0b50c45 | BSD-3-Clause; CPU C library called by the C++ probe |
+| SpeexDSP | 1.2.1-1ubuntu3 amd64 dev/runtime packages | BSD-style notices; privately extracted, noise suppression and resampling |
+| Meson / Ninja | 1.7.0 / 1.11.1.3 | Apache-2.0; isolated build environment |
+| DTLN original ONNX models | breizhn/DTLN `1de1f15a8b5b7e1c44905618ff2ef70ca8277fbc` | Upstream MIT; both hashes checked in `tools/denoise-compare/dtln.py`; evaluation only |
+
+DTLN reuses ONNX Runtime 1.31.0 (MIT), CPU provider, and existing NumPy 2.5.4.
+No LiveKit package or new live dependency is introduced. The upstream notice is
+retained in `tools/denoise-compare/DTLN-NOTICE.txt`; review model redistribution
+separately before publishing a bundle.
+
+## Voice preparation host runtime
+
+`services/voice-preparer/pyproject.toml` and its lock reuse the already pinned
+versions of psycopg 3.2.6, pydantic 2.14.1, grpcio 1.78.0, protobuf 6.33.5 and
+cryptography 50.0.2 (indirect management configuration import). No torch/CUDA/model
+package is installed in this CPU coordinator; inference stays in the retained TTS
+image. Existing upstream/license records apply; this adds no license-approval claim.
+
+## MCP discovery compatibility (2026-10-26)
+
+AGP-07 reuses **mcp 2.3.0**, **mcp-types 2.3.0**, **jsonschema 4.26.0** and
+**httpx2/httpcore2 2.16.0**, already present at exact versions/hashes in the root and
+action-worker frozen locks. No new package or model dependency is introduced.
+Installed metadata identifies MCP and jsonschema as MIT; retain upstream notices
+and review redistribution separately. Sources: [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk),
+[jsonschema](https://github.com/python-jsonschema/jsonschema).
+
+The implemented discovery subset is pinned to protocol **2025-11-25**:
+[Streamable HTTP](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports)
+and [tool discovery](https://modelcontextprotocol.io/specification/2025-11-25/server/tools).
+The installed v2 SDK accepts a supplied httpx2 client and uses snake_case typed fields;
+transport tests exercise its actual JSON/SSE handshake and pagination. Its automatic
+same-origin redirect behavior is additionally blocked at Alojan's transport layer.
+OAuth, external references, tool execution and automatic capability approval are
+not provided by this discovery slice. No unreviewed license is claimed approved.
+
+AGP-07 selection additionally pins the existing **jsonschema 4.26.0** validator in
+`services/app-api/pyproject.toml` and its frozen lock. Transitive pins are attrs
+26.1.0, jsonschema-specifications 2025.9.1, referencing 0.37.0 and rpds-py 2026.9.1.
+Their hashes are recorded in that lock; existing root/action-worker dependencies
+are unchanged. This reuses the installed validator rather than introducing a custom
+JSON Schema implementation. The management image gains schema validation only;
+voice-preparer imports remain independent. Upstream sources/notices must accompany
+redistribution; no additional license approval is claimed.
+
+
+AGP-07 OAuth adds a direct **httpx2 2.16.0** pin to the management project, reusing
+the root/action-worker version. Its frozen lock records **httpcore2 2.16.0**,
+**httpx2-jsfetch 1.0** (Emscripten only) and **truststore 0.10.5** plus their dependency hashes. No SDK,
+framework or voice/model dependency is added. Inspect installed distribution metadata
+and upstream notices before redistribution; this change does not grant license approval.
+The DNS-pinned transport is shared between discovery and management OAuth requests.
+
+Installed frozen-image metadata identifies httpx2/httpcore2 as BSD-3-Clause and
+truststore as MIT. Sources: [httpx2/httpcore2](https://github.com/pydantic/httpx2)
+and [truststore](https://github.com/sethmlarson/truststore). Preserve these license
+and copyright notices in redistributed images; approval is still separate.
+
+## Management MCP service (2026-10-27)
+
+MCP-01–03 adds an independent frozen service lock, reusing installed versions:
+**mcp 2.3.0**, **httpx2 2.16.0**, **starlette 1.9.0**, **uvicorn 0.54.0** and
+**jsonschema 4.26.0**. Installed distribution metadata identifies MCP/jsonschema
+as MIT and httpx2/Starlette/Uvicorn as BSD-3-Clause. Sources are the
+[MCP SDK](https://github.com/modelcontextprotocol/python-sdk),
+[httpx2](https://github.com/pydantic/httpx2),
+[Starlette](https://github.com/Kludex/starlette),
+[Uvicorn](https://github.com/Kludex/uvicorn) and
+[jsonschema](https://github.com/python-jsonschema/jsonschema).
+Preserve copyright/license notices in redistributed images; no new license approval
+is claimed. No model/GPU package is added. Direct pins and all transitive hashes are
+in `services/management-mcp/pyproject.toml` and `uv.lock`; base/runtime images are
+pinned in its Dockerfile. HTTP tests explicitly exercise protocol 2025-11-25 and
+also initialize through the installed official SDK client. Real cloud clients
+remain a separate acceptance gate.

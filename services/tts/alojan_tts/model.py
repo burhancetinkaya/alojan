@@ -6,11 +6,13 @@ from pathlib import Path
 import threading
 from unittest.mock import patch
 
+from alojan_contracts.synthesis import EMA_MODEL, EMA_VOICE, SynthesisProfile
+
 from .outbox import CancellableOutbox
 from .service import InvalidText
 
 ROOT = Path(__file__).resolve().parents[3]
-MODEL = "canberkkkkkk/ema-lightning"
+MODEL = EMA_MODEL
 REVISION = "e7c96f2fc0ba843cd0f86e02786655bb56f50df8"
 WEIGHTS = {
     "config.json": "27546c470dd4e86d9ab8172fd1c85c45a4bffdf52d9ccb3f511c4b0c3ae38241",
@@ -97,9 +99,13 @@ class EmaBackend:
         if self.tts._engine.graphs is None:
             raise RuntimeError("EMA lightning validation failed")
         self.np, self.torch = np, torch
+        # Expose capability only after verified weights and successful CUDA graph warm-up.
+        self.synthesis_profile = SynthesisProfile(MODEL, REVISION, EMA_VOICE)
+        self.quiescence_confirmed = True
 
     def stream(self, text):
-        stream = self.tts.stream(text, seed=0, sample_rate=8000)
+        self.quiescence_confirmed = False
+        stream = self.tts.stream(text, seed=0, sample_rate=self.synthesis_profile.sample_rate_hz)
         try:
             for chunk in stream:
                 if (
@@ -121,6 +127,7 @@ class EmaBackend:
                 while not request.outbox.empty():
                     request.outbox.get_nowait()
                 self.tts.request = None
+            self.quiescence_confirmed = True
 
 
 if __name__ == "__main__":

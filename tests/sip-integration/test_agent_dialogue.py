@@ -99,6 +99,15 @@ def test_two_turns_complete_audio_before_hangup(agent_gateway, agent_service, co
             line for line in log.read_text().splitlines() if line.startswith("event=sent_speech")
         ]
         assert len(histories) == 2
+        timings = [x for x in log.read_text().splitlines() if x.startswith("event=turn_latency")]
+        assert len(timings) == 2
+        for line in timings:
+            assert "status=completed" in line and "kind=response" in line
+            metrics = dict(re.findall(r"(\w+_ms)=(-?\d+)", line))
+            assert int(metrics["agent_first_phrase_ms"]) >= 0
+            assert int(metrics["endpoint_to_audio_ms"]) >= int(metrics["asr_finalize_ms"]) >= 0
+            assert int(metrics["tts_first_chunk_ms"]) >= 0
+            assert int(metrics["vad_end_to_audio_estimate_ms"]) == -1  # Fixed capture, no VAD.
         for line in histories:
             assert "kind=response" in line
             metrics = dict(re.findall(r"(\w+_ms)=(-?\d+)", line))
@@ -120,6 +129,8 @@ def test_agent_failure_uses_spoken_fallback(agent_gateway, agent_service):
         media_port = connect(peer)
         _, _, bye = drive(peer, media_port, log, duration=20)
         assert bye and "event=speech_fallback" in log.read_text()
+        line = next(x for x in log.read_text().splitlines() if x.startswith("event=turn_latency"))
+        assert "status=failed" in line
     finally:
         peer.close()
 
@@ -216,5 +227,15 @@ def test_barge_in_cancels_pending_model_and_starts_next_generation(
             assert all(audioop.rms(audioop.alaw2lin(frame[12:], 2), 2) < 30 for frame in quiet)
             peer.send("BYE", 2, branch="z9hG4bKagent-stop")
             peer.response(200, "BYE")
+            until = time.monotonic() + 2
+            while "generation=turn-2 status=cancelled" not in log.read_text():
+                assert time.monotonic() < until, log.read_text()
+                time.sleep(0.01)
+            line = next(
+                x
+                for x in log.read_text().splitlines()
+                if x.startswith("event=turn_latency") and "generation=turn-1 " in x
+            )
+            assert "status=interrupted" in line and "endpoint_to_audio_ms=-1" in line
         finally:
             peer.close()

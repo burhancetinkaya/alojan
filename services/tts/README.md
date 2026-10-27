@@ -1,5 +1,15 @@
 # Native EMA speech worker (M2-02)
 
+## Operator maintenance fence
+
+`ALOJAN_WORKER_ADMISSION_FILE` opts into shared private worker admission control.
+The maintenance Health Check requires closed admission, no active requests/leases,
+a successful native-future completion and confirmed cleanup. EMA only confirms
+quiescence after stream closure, engine-lock synchronization, CUDA synchronization
+and closed scheduler/output cleanup. Cleanup failure keeps the receipt unready;
+normal service health does not imply an idle GPU. No second EMA instance is started.
+See the [operator sequence](../../docs/DEV_SETUP.md#dependent-worker-maintenance-fence).
+
 This worker keeps one pinned EMA instance on CUDA, compiles/warms it once, and
 serves `voice.v1.Synthesis` and `GenerationControl` on **127.0.0.1:15072**. Standard
 gRPC health for `voice.v1.Synthesis` becomes `SERVING` only after model checksum
@@ -41,8 +51,9 @@ Production process supervision, containers and call lifecycle cleanup remain ope
   most 2048 model letters across at most 16 pieces. No text is logged by the worker.
 - Exactly one stream is admitted. Busy requests fail `RESOURCE_EXHAUSTED` without
   enqueuing another inference. The service rejects used/cancelled IDs and retains
-  at most 4096 tombstones until restart, failing closed at capacity. A future call
-  release contract must replace this bounded development limitation.
+  at most 4096 tombstones, failing closed at capacity. Managed calls clear their
+  generations on explicit release/lease expiry; legacy callers retain tombstones
+  until restart.
 - The fixed transport profile is **8 kHz, mono, PCM16 little endian**, sequence zero
   onward, 160 samples / 20 ms per frame. EMA generates float32 native 48 kHz and
   uses its own stateful low-pass resampler for direct 8 kHz streaming. PCM rounds
@@ -99,3 +110,29 @@ service work, not exact kernel overlap. Recognition text is diagnostic rather th
 a pronunciation oracle or normalized WER acceptance test. Review the
 [Linux report](../../docs/validation/linux-tts-2026-10-23.md) for measured limits,
 normalization findings and remaining listening/quality work.
+
+
+## Managed call transport
+
+The shared GenerationControl requires a matching worker lease for `managed-*` calls,
+including synthesis and generation cancellation. The isolated gateway setup now opens
+this TTS lease before readiness and passes it through every SpeechBridge phrase;
+release cancels generations and removes lease state. This uses the existing single
+resident model and bounded inference/PCM queues without a per-agent worker or reload.
+
+A lease proves access to this private worker. Managed synthesis additionally requires
+Synthesis.ConfigureCall with the pinned release/digest and schema-v1 model, revision,
+voice and PCM contract. The service compares this with an immutable backend capability
+captured at startup; EMA exposes it only after checksum verification and CUDA graph
+warm-up. Missing/unsupported/mismatched profiles fail without switching or loading a
+model. Repeating the same configuration is idempotent; changing a pinned release fails.
+Release/expiry removes the pin and cancels generations. Each phrase checks the existing
+call pin, without DB/HTTP/manifest reads or another model instance.
+
+Legacy calls remain compatible by default. For a future fully routed deployment,
+`scripts/run-tts.sh --require-agent-release` rejects unconfigured legacy IDs too; do
+not enable it on the live legacy gateway. Managed IDs always require configuration.
+Upgrade the native gateway, agent, TTS and both generated bindings together. The v1
+profile preserves the existing fixed seed 0 and normalization/chunking; it adds no
+user tuning controls. Complete routed readiness and measured performance/quality
+acceptance remain pending. Native tests use synthetic PCM, not EMA/CUDA qualification.

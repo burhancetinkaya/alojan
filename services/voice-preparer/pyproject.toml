@@ -1,0 +1,12 @@
+[project]
+name = "alojan-voice-preparer"
+version = "0.1.0"
+description = "Private single-host resident EMA preparation coordinator"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "psycopg[binary]==3.2.6",
+    "cryptography==50.0.2",
+    "pydantic==2.14.1",
+    "grpcio==1.78.0",
+    "protobuf==6.33.5",
+]

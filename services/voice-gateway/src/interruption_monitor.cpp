@@ -7,6 +7,7 @@ namespace contract = ::voice::v1;
 
 void SpeechBridge::monitor() noexcept {
     try {
+        const auto &settings = gateway_settings_.interruption;
         auto stub = contract::Recognition::NewStub(asr_);
         auto stream = stub->StreamRecognize(asr_context_.get());
         std::atomic<bool> valid{true};
@@ -41,8 +42,11 @@ void SpeechBridge::monitor() noexcept {
             EchoReference reference;
             std::array<float, 576> vad{};
             std::array<float, 256> vad_state{};
-            unsigned pending = 0, samples = 0, voiced_ms = 0, last_voice = 0;
+            unsigned pending = 0, samples = 0;
+            InterruptionEvidence evidence;
+            unsigned rejected_echo_frames = 0, vad_milli = 0;
             bool acknowledged = false;
+            unsigned last_activity = 0;
             std::deque<std::array<char, 640>> pre_roll;
             contract::AudioFrame frame;
             frame.set_call_id(call_);
@@ -67,6 +71,7 @@ void SpeechBridge::monitor() noexcept {
                 if (reference.matches(pcm)) {
                     pcm.fill(0);
                     echo_frames.fetch_add(1);
+                    ++rejected_echo_frames;
                 }
                 pre_roll.push_back(pcm);
                 if (pre_roll.size() > 100)
@@ -79,14 +84,12 @@ void SpeechBridge::monitor() noexcept {
                     if (pending != 512)
                         continue;
                     const auto probability = models_->vad(vad, vad_state);
-                    if (probability >= 0.5f) {
-                        if ((samples - last_voice) / 16 > 800) {
-                            voiced_ms = 0;
-                            acknowledged = false;
-                        }
-                        voiced_ms += 32;
-                        last_voice = samples;
-                    }
+                    vad_milli = static_cast<unsigned>(probability * 1000);
+                    if (probability >= 0.10f)
+                        last_activity = samples;
+                    if (evidence.observe(probability >= settings.vad_percent / 100.0f, samples / 16,
+                                         settings))
+                        acknowledged = false;
                     std::copy(vad.end() - 64, vad.end(), vad.begin());
                     pending = 0;
                 }
@@ -99,10 +102,13 @@ void SpeechBridge::monitor() noexcept {
                 }
                 sent_frames.fetch_add(1);
                 InterruptDecision decision;
+                bool fresh;
                 {
                     std::lock_guard lock(mutex);
-                    decision = interruption_policy(voiced_ms, (samples - last_voice) / 16, partial,
-                                                   coverage > 0 && coverage >= last_voice / 16);
+                    fresh = coverage > 0 && coverage >= evidence.last_voice_ms;
+                    decision = interruption_policy(evidence.voiced_ms, evidence.sustained_ms,
+                                                   samples / 16 - evidence.last_voice_ms, partial,
+                                                   fresh, settings);
                     if (decision == InterruptDecision::backchannel && !acknowledged) {
                         backchannels.fetch_add(1);
                         acknowledged = true;
@@ -117,6 +123,12 @@ void SpeechBridge::monitor() noexcept {
                     state_.store(State::recognizing);
                     interrupted_.store(true);
                     interrupted_turn.store(recognitions_started.load());
+                    interrupt_voiced_ms.store(evidence.voiced_ms);
+                    interrupt_sustained_ms.store(evidence.sustained_ms);
+                    interrupt_quiet_ms.store(samples / 16 - evidence.last_voice_ms);
+                    interrupt_vad_milli.store(vad_milli);
+                    interrupt_echo_frames.store(rejected_echo_frames);
+                    interrupt_asr_fresh.store(fresh);
                     interruptions.fetch_add(1);
                     {
                         std::lock_guard lock(contexts_mutex_);
@@ -127,6 +139,12 @@ void SpeechBridge::monitor() noexcept {
                     break;
                 }
             }
+            // Preserve speech that starts near the end of a recovery prompt, even before
+            // it meets the interruption threshold. Echo-filtered pre-roll stays bounded.
+            if (!input_event_.empty() && !interrupted_.load() && last_activity &&
+                (samples - last_activity) / 16 < settings.max_quiet_ms && !stop_.load() &&
+                state() != State::failed)
+                replay_ = std::move(pre_roll);
         } catch (...) {
             fail(Error::turn_detection);
         }

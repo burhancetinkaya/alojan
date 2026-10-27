@@ -1,0 +1,52 @@
+# Independent post-call worker; opt-in overlay with infra/compose.yaml.
+services:
+  summary-worker:
+    image: alojan-action-worker:${ALOJAN_WORKER_TAG:-development}
+    build:
+      context: ..
+      dockerfile: infra/docker/action-worker.Dockerfile
+    user: "1000:1000"
+    init: true
+    restart: unless-stopped
+    read_only: true
+    cpus: 0.5
+    mem_limit: 512m
+    pids_limit: 64
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: [/tmp:size=64m,mode=1777]
+    environment:
+      ALOJAN_CREDENTIAL_KEY_FILE: /run/secrets/provider_key
+    secrets: [worker_env, provider_key]
+    logging:
+      driver: local
+      options: {max-size: 10m, max-file: '3'}
+  delivery-worker:
+    image: alojan-action-worker:${ALOJAN_WORKER_TAG:-development}
+    build:
+      context: ..
+      dockerfile: infra/docker/action-worker.Dockerfile
+    command: [uv, run, --frozen, --no-sync, --project, services/action-worker, --env-file, /run/secrets/delivery_env, python, -m, alojan_agent.delivery_worker]
+    user: "1000:1000"
+    init: true
+    restart: unless-stopped
+    read_only: true
+    cpus: 0.5
+    mem_limit: 512m
+    pids_limit: 64
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: [/tmp:size=64m,mode=1777]
+    environment:
+      ALOJAN_CREDENTIAL_KEY_FILE: /run/secrets/provider_key
+    secrets: [delivery_env, provider_key]
+    logging:
+      driver: local
+      options: {max-size: 10m, max-file: '3'}
+secrets:
+  delivery_env:
+    file: ../.local/delivery.env
+  worker_env:
+    file: ../.local/worker.env
+  provider_key:
+    file: ../.local/provider.key

@@ -3,6 +3,7 @@
 # shortcut: Python is pinned to 3.12; replace audioop before adopting Python 3.13.
 import audioop
 import math
+import os
 import re
 import select
 import shutil
@@ -37,6 +38,7 @@ class Peer:
         self.codec = codec
         self.audio_sequence = 0
         self.identity_headers = []
+        self.request_user = "alojan"
 
     def send_audio(self, media_port, payload, sequence=None):
         if sequence is None:
@@ -53,7 +55,7 @@ class Peer:
 
     def send(self, method, sequence=1, body="", branch=None):
         headers = [
-            f"{method} sip:alojan@127.0.0.1:{self.target[1]} SIP/2.0",
+            f"{method} sip:{self.request_user}@127.0.0.1:{self.target[1]} SIP/2.0",
             f"Via: SIP/2.0/UDP 127.0.0.1:{self.sip.getsockname()[1]};branch={branch or self.branch}",
             "Max-Forwards: 70",
             f"From: {self.local}",
@@ -140,7 +142,8 @@ def run_gateway(tmp_path, config):
     log = tmp_path / "gateway.log"
     with log.open("w") as output:
         process = subprocess.Popen(
-            [
+            config.get("command_prefix", [])
+            + [
                 str(executable),
                 "--port",
                 str(port),
@@ -163,6 +166,7 @@ def run_gateway(tmp_path, config):
             + config.get("network_options", [])
             + config.get("speech_options", []),
             cwd=ROOT,
+            env={**os.environ, "ALOJAN_SIP_PORT": str(port), **config.get("env", {})},
             stdout=output,
             stderr=subprocess.STDOUT,
         )

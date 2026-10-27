@@ -1,0 +1,422 @@
+[
+  {
+    "id": "quality-day",
+    "rubric": "Resolve a within-turn correction in all note fields; do not repeat the message.",
+    "turns": [
+      {
+        "text": "Teslimatı salı yapacağım, hayır perşembe yapacağım. Burhan Bey için bu mesajı bırakıyorum.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "perşembe"
+        ],
+        "note_none": [
+          "salı"
+        ]
+      },
+      {
+        "text": "Sağ olun, başka bir şey yok.",
+        "note": true,
+        "finish": true
+      }
+    ]
+  },
+  {
+    "id": "quality-time",
+    "rubric": "Keep a corrected time as caller intent, never confirm a meeting.",
+    "turns": [
+      {
+        "text": "Burhan Bey ile saat on birde, pardon on dört otuzda görüşmek istiyorum.",
+        "note": true,
+        "finish": false,
+        "note_any": [
+          "14:30",
+          "14.30",
+          "on dört otuz"
+        ],
+        "note_none": [
+          "11:00",
+          "11.00",
+          "on bir"
+        ]
+      },
+      {
+        "text": "İyi günler, kapatabiliriz.",
+        "note": true,
+        "finish": true
+      }
+    ]
+  },
+  {
+    "id": "quality-two-fields",
+    "rubric": "Replace two explicit fields but keep caller and business context.",
+    "turns": [
+      {
+        "text": "Ben Ece Test. Pazartesi bütçe tablosunu getireceğim.",
+        "note": true,
+        "finish": false
+      },
+      {
+        "text": "Gününü çarşamba, belgeyi de sözleşme olarak değiştirin.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "çarşamba",
+          "sözleşme"
+        ],
+        "note_none": [
+          "pazartesi",
+          "bütçe"
+        ]
+      },
+      {
+        "text": "Hepsi bu, teşekkürler.",
+        "note": true,
+        "finish": true
+      }
+    ]
+  },
+  {
+    "id": "quality-name",
+    "rubric": "A name correction changes contact identity without erasing the request.",
+    "turns": [
+      {
+        "text": "Ben Selim Test, teklif dosyasını e-postayla göndereceğim.",
+        "note": true,
+        "finish": false
+      },
+      {
+        "text": "İsmimi yanlış söyledim, Selim değil Cem Test.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "Cem",
+          "teklif"
+        ],
+        "note_none": [
+          "Selim"
+        ]
+      },
+      {
+        "text": "Başka bir şey yok, iyi günler.",
+        "note": true,
+        "finish": true
+      }
+    ]
+  },
+  {
+    "id": "quality-independent-days",
+    "rubric": "Two dates belonging to different actions must both survive.",
+    "turns": [
+      {
+        "text": "Pazartesi sözleşmeyi göndereceğim. Perşembe de ödeme yapacağım; ikisini de Burhan Bey bilsin.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "pazartesi",
+          "perşembe",
+          "sözleşme",
+          "ödeme"
+        ]
+      },
+      {
+        "text": "Sadece ödemeyi cumaya alalım.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "pazartesi",
+          "cuma",
+          "sözleşme",
+          "ödeme"
+        ],
+        "note_none": [
+          "perşembe"
+        ]
+      },
+      {
+        "text": "Tamam, hoşça kalın.",
+        "note": true,
+        "finish": true
+      }
+    ]
+  },
+  {
+    "id": "quality-quoted-speech",
+    "rubric": "A quoted colleague statement does not override the caller current request.",
+    "turns": [
+      {
+        "text": "Arkadaşım teslim için salı demiş. Ben perşembe teslim edeceğim; Burhan Bey için benim mesajım bu.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "perşembe"
+        ]
+      },
+      {
+        "text": "Teşekkürler, başka bir şey yok.",
+        "note": true,
+        "finish": true
+      }
+    ]
+  },
+  {
+    "id": "quality-negation",
+    "rubric": "Negated correction wording must preserve the asserted final day.",
+    "turns": [
+      {
+        "text": "Raporu cuma göndereceğim, Burhan Bey için not bırakıyorum.",
+        "note": true,
+        "finish": false
+      },
+      {
+        "text": "Pazartesiye almayın, cuma olarak kalsın.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "cuma"
+        ]
+      },
+      {
+        "text": "Hepsi bu.",
+        "note": true,
+        "finish": true
+      }
+    ]
+  },
+  {
+    "id": "quality-withdraw-one",
+    "rubric": "Withdraw one request without losing the independent remaining one.",
+    "turns": [
+      {
+        "text": "Burhan Bey beni arasın. Bir de sözleşmenin kopyasını istiyorum.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "sözleşme"
+        ]
+      },
+      {
+        "text": "Aramasına gerek kalmadı; sadece sözleşmeyi istiyorum.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "sözleşme"
+        ]
+      },
+      {
+        "text": "İyi günler.",
+        "note": true,
+        "finish": true
+      }
+    ]
+  },
+  {
+    "id": "quality-correction-exit",
+    "rubric": "Save the corrected complete note before a caller-authorized farewell.",
+    "turns": [
+      {
+        "text": "Burhan Bey için mesajım: dosyayı salı getireceğim.",
+        "note": true,
+        "finish": false
+      },
+      {
+        "text": "Salı değil perşembe getireceğim. Başka bir şey yok, iyi günler.",
+        "note": true,
+        "finish": true,
+        "note_all": [
+          "perşembe"
+        ],
+        "note_none": [
+          "salı"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "quality-ambiguous-target",
+    "rubric": "Ask which item an ambiguous change refers to, keep both independent requests.",
+    "turns": [
+      {
+        "text": "Salı raporu, cuma sözleşmeyi getireceğim.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "salı",
+          "cuma"
+        ]
+      },
+      {
+        "text": "Onu haftaya alalım.",
+        "note": true,
+        "finish": false,
+        "reply_all": [
+          "?"
+        ],
+        "version": 1,
+        "note_all": [
+          "salı",
+          "cuma"
+        ]
+      },
+      {
+        "text": "Sözleşmeyi kastettim. Rapor salı kalıyor.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "rapor",
+          "salı",
+          "sözleşme",
+          "hafta"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "quality-missing-product",
+    "rubric": "Clarify the product, preserve the actual problem, offer further help only afterwards.",
+    "turns": [
+      {
+        "text": "Hesabıma giriş yapamıyorum, Burhan Bey ilgilenebilir mi?",
+        "note": null,
+        "finish": false,
+        "reply_all": [
+          "?"
+        ]
+      },
+      {
+        "text": "Mira Portal uygulamasında.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "Mira"
+        ]
+      },
+      {
+        "text": "Teşekkürler, başka bir konu yok.",
+        "note": true,
+        "finish": true
+      }
+    ]
+  },
+  {
+    "id": "quality-addition",
+    "rubric": "Treat additions as new content, preserve earlier request, no repeated further-help question.",
+    "turns": [
+      {
+        "text": "Faturanın kopyasını istiyorum, Burhan Bey için not alın.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "fatura"
+        ]
+      },
+      {
+        "text": "Bir de eski adresim yerine yeni adresi kullanmasını rica ediyorum.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "fatura",
+          "adres"
+        ]
+      },
+      {
+        "text": "Hepsi bu, teşekkürler.",
+        "note": true,
+        "finish": true
+      }
+    ]
+  },
+  {
+    "id": "quality-repeat",
+    "rubric": "Explicit repeat remains possible without rewriting an unchanged note.",
+    "turns": [
+      {
+        "text": "Burhan Bey toplantı gündemini bana göndersin.",
+        "note": true,
+        "finish": false,
+        "version": 1
+      },
+      {
+        "text": "Son dediğinizi duyamadım, tekrar eder misiniz?",
+        "note": true,
+        "finish": false,
+        "version": 1
+      },
+      {
+        "text": "Tamamdır, başka bir şey yok.",
+        "note": true,
+        "finish": true,
+        "version": 1
+      }
+    ]
+  },
+  {
+    "id": "quality-unclear",
+    "rubric": "Clarify incoherent input without claiming understanding, saving or closing.",
+    "turns": [
+      {
+        "text": "Bulutlu makas yürüdü, hesap denizde kaldı.",
+        "note": false,
+        "finish": false,
+        "reply_all": [
+          "?"
+        ],
+        "reply_none": [
+          "anladım"
+        ]
+      },
+      {
+        "text": "Burhan Beyden ekim satış raporunu istiyorum.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "rapor"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "quality-playful",
+    "rubric": "Warm brief redirection with no invented transfer capability or business note.",
+    "turns": [
+      {
+        "text": "Beni Ayda çalışan müdüre bağlar mısınız?",
+        "note": false,
+        "finish": false
+      },
+      {
+        "text": "Şakaydı. Burhan Bey beni arayabilir mi?",
+        "note": true,
+        "finish": false
+      }
+    ]
+  },
+  {
+    "id": "quality-hurried-upset",
+    "rubric": "Acknowledge concrete frustration concisely; no blame or unsupported resolution promise.",
+    "turns": [
+      {
+        "text": "Toplantıya gireceğim, vaktim yok. Mira Portal iki gündür açılmıyor, işlerim kaldı. Burhan Bey bunu bilsin.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "Mira"
+        ]
+      },
+      {
+        "text": "Bir de ekran tamamen beyaz kalıyor.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "Mira",
+          "beyaz"
+        ]
+      },
+      {
+        "text": "Teşekkürler, şimdi kapatmam lazım.",
+        "note": true,
+        "finish": true
+      }
+    ]
+  }
+]

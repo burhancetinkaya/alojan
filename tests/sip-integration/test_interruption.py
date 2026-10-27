@@ -71,6 +71,16 @@ def test_interruption_cancels_old_output_and_recognizes_correction(
             assert int(re.search(r"aligned_text_bytes=(\d+)", records[1])[1]) > 0
             assert_isolated_tone(frames[-65:-10], codec, 660, 880)
             assert "event=fake_cancel service=tts" in speech_services[2].read_text()
+            interrupted = next(
+                line
+                for line in contents.splitlines()
+                if line.startswith("event=speech_interrupted")
+            )
+            evidence = {key: int(value) for key, value in re.findall(r"(\w+)=(\d+)", interrupted)}
+            assert evidence["voiced_ms"] >= 192
+            assert 0 <= evidence["sustained_ms"] <= evidence["voiced_ms"]
+            assert 0 <= evidence["vad_milli"] <= 1000 and evidence["quiet_ms"] <= 800
+            assert evidence["asr_fresh"] in (0, 1) and evidence["monitor_echo_frames"] >= 0
             decision = int(re.search(r"decision_ms=(\d+)", contents)[1]) / 1000
             decode = audioop.alaw2lin if codec == 8 else audioop.ulaw2lin
             old = []
@@ -133,8 +143,8 @@ def test_barge_in_requires_cpu_models():
 
 
 @pytest.mark.parametrize("speech_services", ["barge-backchannel"], indirect=True)
-@pytest.mark.parametrize("offset_ms", [0, 20, 40])
-def test_brief_acknowledgment_keeps_current_response(tmp_path, speech_services, offset_ms):
+@pytest.mark.parametrize("offset_ms, repeats", [(0, 1), (20, 1), (40, 1), (0, 6)])
+def test_brief_acknowledgment_keeps_current_response(tmp_path, speech_services, offset_ms, repeats):
     with contextmanager(run_gateway)(tmp_path, configuration(speech_services)) as (port, log, _):
         peer = Peer(port)
         try:
@@ -151,7 +161,9 @@ def test_brief_acknowledgment_keeps_current_response(tmp_path, speech_services, 
             entry = json.loads((fixture.parent / "manifest.json").read_text())["files"][0]
             assert hashlib.sha256(fixture.read_bytes()).hexdigest() == entry["sha256"]
             with wave.open(str(fixture)) as wav:
-                source = b"\0" * (offset_ms * 16) + wav.readframes(wav.getnframes())
+                clip = wav.readframes(wav.getnframes())
+            # Separate short voice bursts must not add up to sustained speech.
+            source = b"\0" * (offset_ms * 16) + (clip + b"\0" * (480 * 16)) * repeats
             _, _, ended = drive(peer, media, log, source=source, duration=12)
             contents = log.read_text()
             assert ended and "event=speech_fallback" not in contents, contents
@@ -161,9 +173,11 @@ def test_brief_acknowledgment_keeps_current_response(tmp_path, speech_services, 
             peer.close()
 
 
-def echo_output(peer, media, log, duration=12):
+def echo_output(peer, media, log, duration=12, noise_peak=0):
     from collections import deque
+    import random
 
+    rng = random.Random(73)
     pending = deque([b"\0" * 320] * 3)
     decode = audioop.alaw2lin if peer.codec == 8 else audioop.ulaw2lin
     encode = audioop.lin2alaw if peer.codec == 8 else audioop.lin2ulaw
@@ -171,6 +185,11 @@ def echo_output(peer, media, log, duration=12):
     while time.monotonic() - started < duration:
         if time.monotonic() >= next_frame:
             pcm = pending.popleft() if pending else b"\0" * 320
+            if noise_peak:
+                noise = struct.pack(
+                    "<160h", *(rng.randint(-noise_peak, noise_peak) for _ in range(160))
+                )
+                pcm = audioop.add(pcm, noise, 2)
             sequence = peer.audio_sequence
             peer.audio_sequence += 1
             peer.rtp.sendto(
@@ -195,7 +214,8 @@ def echo_output(peer, media, log, duration=12):
 
 @pytest.mark.parametrize("speech_services", ["barge-echo"], indirect=True)
 @pytest.mark.parametrize("codec", [8, 0])
-def test_delayed_speech_echo_does_not_interrupt(tmp_path, speech_services, codec):
+@pytest.mark.parametrize("noise_peak", [0, 1000])
+def test_delayed_speech_echo_does_not_interrupt(tmp_path, speech_services, codec, noise_peak):
     with contextmanager(run_gateway)(tmp_path, configuration(speech_services)) as (port, log, _):
         peer = Peer(port, codec)
         try:
@@ -207,7 +227,7 @@ def test_delayed_speech_echo_does_not_interrupt(tmp_path, speech_services, codec
                 source=phone(),
                 until="event=speech_speaking call=1 generation=turn-1",
             )
-            assert echo_output(peer, media, log), log.read_text()
+            assert echo_output(peer, media, log, noise_peak=noise_peak), log.read_text()
             contents = log.read_text()
             assert "event=speech_fallback" not in contents and "interruptions=0" in contents, (
                 contents

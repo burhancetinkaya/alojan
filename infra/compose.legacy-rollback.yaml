@@ -1,0 +1,6 @@
+# Last overlay for the preserved lifecycle Compose files, after schema upgrade.
+# The private file contains ONLY ALOJAN_DATABASE_URL for the dedicated legacy-rollback role.
+# Never point this at dev.env or use it for managed agent/worker services.
+secrets:
+  database_env:
+    file: ${ALOJAN_LEGACY_DATABASE_ENV:?Set absolute private restricted rollback environment file}

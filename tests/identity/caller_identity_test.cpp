@@ -36,6 +36,90 @@ alojan::CallerIdentity parse(const std::string &from, const std::string &headers
     return result;
 }
 
+alojan::NumberIdentity called(const std::string &target, const std::string &to,
+                              const alojan::IdentityPolicy &policy,
+                              alojan::CalledNumberSource field, const char *source = "127.0.0.1",
+                              const std::string &extra = "") {
+    auto message = "INVITE " + target +
+                   " SIP/2.0\r\n"
+                   "Via: SIP/2.0/UDP 127.0.0.1:19001;branch=z9hG4bKcalled\r\n"
+                   "From: <sip:+90850"
+                   "9999999@example.invalid>;tag=unit\r\n" +
+                   to + "Call-ID: synthetic-called\r\nCSeq: 1 INVITE\r\n" + extra +
+                   "Content-Length: 0\r\n\r\n";
+    auto *pool = pjsua_pool_create("called-test", 4096, 4096);
+    require(pool != nullptr, "called pool");
+    pjsip_rx_data data{};
+    data.tp_info.pool = pool;
+    data.msg_info.msg = pjsip_parse_msg(pool, message.data(), message.size(), nullptr);
+    auto ip = pj_str(const_cast<char *>(source));
+    require(pj_sockaddr_init(pj_AF_INET(), &data.pkt_info.src_addr, &ip, 19001) == PJ_SUCCESS,
+            "called peer address");
+    require(data.msg_info.msg != nullptr, "called fixture parses");
+    auto result = alojan::read_called_number(data, policy, field);
+    pj_pool_release(pool);
+    return result;
+}
+
+void called_cases() {
+    using Source = alojan::CalledNumberSource;
+    alojan::IdentityPolicy policy;
+    policy.add_trusted_ip("127.0.0.1");
+    const std::string did = "+90850"
+                            "1234567";
+    const std::string other = "+90850"
+                              "7654321";
+    const auto target = "sip:" + did + "@example.invalid";
+    const auto to = "To: <sip:" + other + "@example.invalid>\r\n";
+    require(called(target, to, policy, Source::request_uri).e164 == did,
+            "request URI selected independently of To and From");
+    const auto selected = called(target, to, policy, Source::to);
+    require(selected.e164 == other && selected.source == "to", "explicit To selection");
+    require(called(target, to, policy, Source::request_uri, "127.0.0.2").status == "untrusted",
+            "Via does not grant carrier trust");
+    policy.trusted_ips.clear();
+    require(called(target, to, policy, Source::to).e164.empty(), "empty allowlist denies routing");
+    policy.add_trusted_ip("127.0.0.1");
+    for (const auto &value :
+         {did.substr(1), "0" + did.substr(3), did.substr(3), "00" + did.substr(1)}) {
+        const auto uri = "sip:" + value + "@example.invalid";
+        require(called(uri, to, policy, Source::request_uri).e164.empty(),
+                "prefix conversion must be configured");
+        policy.turkish_national = true;
+        require(called(uri, to, policy, Source::request_uri).e164 == did,
+                "configured exact Turkish prefix accepted");
+        policy.turkish_national = false;
+    }
+    require(called("sip:missing@example.invalid", to, policy, Source::request_uri).e164.empty(),
+            "no To or From fallback for invalid request URI");
+    require(called(target, "", policy, Source::to).e164.empty(), "missing To denied");
+    require(called(target, to + to, policy, Source::to).e164.empty(), "duplicate To denied");
+    require(called(target, to + "To: <sip:" + did + "@example.invalid>\r\n", policy, Source::to)
+                .e164.empty(),
+            "conflicting To denied");
+    for (const auto &uri : std::vector<std::string>{
+             "sip:" + did + ":password@example.invalid",
+             "sip:" + did + "@example.invalid?Subject=synthetic",
+             "sip:" + did + "@example.invalid;user=ip", "sip:" + did + "%00@example.invalid",
+             "sip:+90-850"
+             "1234567@example.invalid",
+             "sip:+90555"
+             "1234567@example.invalid",
+             "tel:" + did}) {
+        require(called(uri, to, policy, Source::request_uri).e164.empty(),
+                "invalid called URI cannot select a release");
+    }
+    require(called("sip:missing@example.invalid", to, policy, Source::request_uri, "127.0.0.1",
+                   "P-Asserted-Identity: <sip:" + did +
+                       "@example.invalid>\r\n"
+                       "Diversion: <sip:" +
+                       did + "@example.invalid>\r\n")
+                .e164.empty(),
+            "asserted or forwarded identity cannot select agent");
+    require(called(target, to, policy, static_cast<Source>(99)).e164.empty(),
+            "invalid source selection denied");
+}
+
 void cases() {
     alojan::IdentityPolicy policy;
     policy.turkish_national = true;
@@ -197,6 +281,7 @@ int main() {
         config.logConfig.msgLogging = false;
         endpoint.libInit(config);
         cases();
+        called_cases();
         endpoint.libDestroy();
         std::cout << "identity_checks=" << checks << " passed\n";
         return 0;

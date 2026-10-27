@@ -1,0 +1,16 @@
+[
+  {
+    "id": "example",
+    "label": "Example MCP",
+    "resource": "",
+    "resource_metadata": "",
+    "issuer": "",
+    "server_metadata": "",
+    "authorization_endpoint": "",
+    "token_endpoint": "",
+    "client_id": "replace-with-preregistered-public-client",
+    "scopes": [
+      "records:read"
+    ]
+  }
+]

@@ -180,6 +180,66 @@ void IdentityPolicy::add_trusted_ip(const std::string &value) {
     trusted_ips.emplace_back(canonical);
 }
 
+NumberIdentity read_called_number(const pjsip_rx_data &data, const IdentityPolicy &policy,
+                                  CalledNumberSource source) {
+    NumberIdentity result;
+    result.status = "invalid";
+    if (source != CalledNumberSource::request_uri && source != CalledNumberSource::to)
+        return result;
+    result.source = source == CalledNumberSource::request_uri ? "request_uri" : "to";
+    const auto *msg = data.msg_info.msg;
+    if (!msg || msg->type != PJSIP_REQUEST_MSG || msg->line.req.method.id != PJSIP_INVITE_METHOD)
+        return result;
+    char ip[PJ_INET6_ADDRSTRLEN]{};
+    pj_sockaddr_print(&data.pkt_info.src_addr, ip, sizeof(ip), 0);
+    if (std::find(policy.trusted_ips.begin(), policy.trusted_ips.end(), ip) ==
+        policy.trusted_ips.end()) {
+        result.status = "untrusted";
+        return result;
+    }
+    pjsip_uri *wrapped = nullptr;
+    if (source == CalledNumberSource::request_uri) {
+        wrapped = msg->line.req.uri;
+    } else {
+        unsigned count = 0;
+        for (auto *hdr = msg->hdr.next; hdr != &msg->hdr; hdr = hdr->next) {
+            if (hdr->type == PJSIP_H_TO) {
+                ++count;
+                wrapped = reinterpret_cast<pjsip_to_hdr *>(hdr)->uri;
+            }
+        }
+        if (count != 1)
+            return result;
+    }
+    if (!wrapped)
+        return result;
+    auto *uri = static_cast<pjsip_uri *>(pjsip_uri_get_uri(wrapped));
+    // Netgsm routing accepts SIP telephone users only, without URI passwords or headers.
+    if (!PJSIP_URI_SCHEME_IS_SIP(uri) && !PJSIP_URI_SCHEME_IS_SIPS(uri))
+        return result;
+    const auto *sip = reinterpret_cast<pjsip_sip_uri *>(uri);
+    if (sip->passwd.slen || !pj_list_empty(&sip->header_param) || sip->user.slen > 15 ||
+        (sip->user_param.slen && text(sip->user_param) != "phone"))
+        return result;
+    auto value = text(sip->user);
+    if (policy.turkish_national && digits(value)) {
+        if (value.size() == 10 && value.starts_with("850"))
+            value = "+90" + value;
+        else if (value.size() == 11 && value.starts_with("0850"))
+            value = "+9" + value;
+        else if (value.size() == 12 && value.starts_with("90850"))
+            value = "+" + value;
+        else if (value.size() == 14 && value.starts_with("0090850"))
+            value = "+" + value.substr(2);
+    }
+    if (value.size() != 13 || !value.starts_with("+90850") ||
+        !digits(std::string_view(value).substr(6)))
+        return result;
+    result.e164 = std::move(value);
+    result.status = "available";
+    return result;
+}
+
 CallerIdentity read_identity(const pjsip_rx_data &data, const IdentityPolicy &policy) {
     CallerIdentity result;
     if (!data.msg_info.msg || !data.tp_info.pool)

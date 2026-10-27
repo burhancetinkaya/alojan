@@ -1,0 +1,36 @@
+import { test, expect } from "@playwright/test";
+import { readFileSync } from "node:fs";
+const fixture = JSON.parse(readFileSync(process.env.ALOJAN_WEB_TEST_FIXTURE!, "utf8"));
+
+test("prompt variables persist and undefined placeholders cannot replace a saved draft", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/giris");
+  await page.getByLabel("E-posta", { exact: true }).fill(fixture.mcp.login);
+  await page.getByLabel("Şifre", { exact: true }).fill(fixture.password);
+  await page.getByRole("button", { name: "Giriş yap", exact: true }).click();
+  await page.getByRole("link").filter({ hasText: "MCP JSON Asistanı" }).click();
+  await page.getByRole("tab", { name: "Talimatlar", exact: true }).click();
+  await page.getByLabel("Talimat değişkenlerini kullan").check();
+  await page.getByRole("button", { name: "Özel değişken ekle", exact: true }).click();
+  await page.getByLabel("Değişken adı 1", { exact: true }).fill("team");
+  await page.getByLabel("Değişken değeri 1", { exact: true }).fill("Synthetic Team");
+  await page.getByLabel("Agent talimatları", { exact: true }).fill("{{team}} için yanıtla. Bugün: ");
+  await page.getByRole("button", { name: "Bugünün tarihi ekle", exact: true }).click();
+  await page.getByRole("button", { name: "Taslağı kaydet", exact: true }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Taslak kaydedildi" })).toBeVisible();
+  await page.reload();
+  await page.getByRole("tab", { name: "Talimatlar", exact: true }).click();
+  await expect(page.getByLabel("Değişken değeri 1", { exact: true })).toHaveValue("Synthetic Team");
+  await expect(page.getByLabel("Talimat saat dilimi")).toHaveValue("Europe/Istanbul");
+  await expect(page.getByLabel("Agent talimatları", { exact: true })).toHaveValue(/\{\{current_date\}\}/);
+  await page.getByLabel("Agent talimatları", { exact: true }).fill("{{unknown}}");
+  const response = page.waitForResponse((r) => r.request().method() === "PUT" && r.url().includes("/agents/"));
+  await page.getByRole("button", { name: "Taslağı kaydet", exact: true }).click();
+  expect((await response).status()).toBe(400);
+  await expect(page.getByRole("alert").filter({ hasText: "Agent ayarları geçerli değil" })).toBeVisible();
+  const saved = await page.evaluate(async (f) => (await fetch(`/v1/workspaces/${f.scope}/agents/${f.json_agent}`)).json(), fixture.mcp);
+  expect(saved.content.instructions).toContain("{{current_date}}");
+  expect(saved.content.prompt_template.variables).toEqual([{ name: "team", value: "Synthetic Team" }]);
+  expect(errors).toEqual([]);
+});

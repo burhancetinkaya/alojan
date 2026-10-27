@@ -1,0 +1,27 @@
+[project]
+name = "alojan-asr-nemotron"
+version = "0.1.0"
+description = "Optional Nemotron runtime for the shared Alojan recognition service"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "torch==2.6.0+cu124",
+    "transformers==5.13.0",
+    "librosa==0.11.0",
+    "soundfile==0.13.1",
+    "numpy==2.5.4",
+    "huggingface-hub==1.33.0",
+    "grpcio==1.78.0",
+    "grpcio-health-checking==1.78.0",
+    "protobuf==6.33.5",
+]
+
+[tool.uv]
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
+
+[[tool.uv.index]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu124" }

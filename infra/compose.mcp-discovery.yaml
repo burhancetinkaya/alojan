@@ -1,0 +1,29 @@
+# AGP-07a: opt-in discovery only. No HTTP listener, GPU or serving-agent dependency.
+services:
+  mcp-discovery:
+    image: alojan-action-worker:${ALOJAN_MCP_WORKER_TAG:-development}
+    build:
+      context: ..
+      dockerfile: infra/docker/action-worker.Dockerfile
+    command: [uv, run, --frozen, --no-sync, --project, services/action-worker, --env-file, /run/secrets/mcp_discovery_env, python, -m, alojan_agent.mcp_discovery_worker]
+    user: "1000:1000"
+    init: true
+    restart: unless-stopped
+    read_only: true
+    cpus: 0.25
+    mem_limit: 256m
+    pids_limit: 32
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ["/tmp:size=32m,mode=1777"]
+    environment:
+      ALOJAN_CREDENTIAL_KEY_FILE: /run/secrets/provider_key
+    secrets: [mcp_discovery_env, provider_key]
+    logging:
+      driver: local
+      options: {max-size: 10m, max-file: '3'}
+secrets:
+  mcp_discovery_env:
+    file: ../.local/mcp-discovery.env
+  provider_key:
+    file: ../.local/provider.key

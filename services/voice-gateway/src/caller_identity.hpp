@@ -29,4 +29,9 @@ struct CallerIdentity {
 
 // Only transport provenance may establish operator trust; no SIP header authenticates a caller.
 CallerIdentity read_identity(const pjsip_rx_data &data, const IdentityPolicy &policy);
+
+enum class CalledNumberSource { request_uri, to };
+// Select one deployment-configured field. Never infer the destination from caller identity.
+NumberIdentity read_called_number(const pjsip_rx_data &data, const IdentityPolicy &policy,
+                                  CalledNumberSource source);
 } // namespace alojan

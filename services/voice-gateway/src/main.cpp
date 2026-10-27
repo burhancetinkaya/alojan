@@ -1,5 +1,7 @@
+#include "call_setup.hpp"
 #include "caller_identity.hpp"
 #include "speech_media.hpp"
+#include <string_view>
 
 #include <algorithm>
 #include <arpa/inet.h>
@@ -21,6 +23,8 @@
 using Clock = std::chrono::steady_clock;
 static volatile std::sig_atomic_t stopping = 0;
 static void stop(int) { stopping = 1; }
+static volatile std::sig_atomic_t admission_closed = 0;
+static void admission_signal(int signal) { admission_closed = signal == SIGUSR1 ? 1 : 0; }
 
 struct Options {
     unsigned port = 15060;
@@ -32,9 +36,16 @@ struct Options {
     unsigned max_call_seconds = 30;
     unsigned rtp_timeout_ms = 10000;
     unsigned test_max_calls = 1;
+    bool start_drained = false;
     unsigned speech_test_ms = 0, asr_port = 15071, tts_port = 15072, agent_port = 0;
+    unsigned setup_test_agent_port = 0, setup_test_asr_port = 0, setup_test_tts_port = 0;
+    alojan::CalledNumberSource called_source = alojan::CalledNumberSource::request_uri;
+    bool called_national = false, custom_called_source = false;
+    bool setup_test_conversation = false;
+    bool managed_profile = false, isolated_setup_option = false;
     std::string turn_model_dir;
-    bool barge_in = false;
+    bool barge_in = false, custom_turn_settings = false;
+    alojan::TurnSettings turn_settings;
     alojan::QuestionContext turn_context = alojan::QuestionContext::open;
     std::shared_ptr<alojan::TurnModels> turn_models;
     std::string wav;
@@ -66,6 +77,8 @@ Options options(int argc, char **argv) {
         if (i + 1 >= argc)
             throw std::invalid_argument("options require values");
         const std::string key(argv[i]), value(argv[i + 1]);
+        if (key.starts_with("--setup-test-"))
+            result.isolated_setup_option = true;
         if (key == "--port")
             result.port = number(value, 1024, 65535);
         else if (key == "--rtp-port")
@@ -88,13 +101,36 @@ Options options(int argc, char **argv) {
             result.rtp_timeout_ms = number(value, 100, 300000);
         else if (key == "--test-max-calls")
             result.test_max_calls = number(value, 1, 2);
+        else if (key == "--start-drained")
+            result.start_drained = number(value, 0, 1) != 0;
         else if (key == "--speech-test-ms")
             result.speech_test_ms = number(value, 1000, 10000);
         else if (key == "--barge-in")
             result.barge_in = number(value, 0, 1) != 0;
         else if (key == "--turn-model-dir")
             result.turn_model_dir = value;
-        else if (key == "--turn-context") {
+        else if (key == "--turn-partial-hint") {
+            result.custom_turn_settings = true;
+            result.turn_settings.partial_hint = number(value, 0, 1) != 0;
+        } else if (key == "--turn-vad-percent" || key == "--turn-candidate-ms" ||
+                   key == "--turn-yes-no-ms" || key == "--turn-open-ms" ||
+                   key == "--turn-uncertain-ms" || key == "--turn-incomplete-ms") {
+            result.custom_turn_settings = true;
+            auto &settings = result.turn_settings;
+            const auto parsed = number(value, 1, 5000);
+            if (key == "--turn-vad-percent")
+                settings.vad_percent = parsed;
+            else if (key == "--turn-candidate-ms")
+                settings.candidate_ms = parsed;
+            else if (key == "--turn-yes-no-ms")
+                settings.yes_no_ms = parsed;
+            else if (key == "--turn-open-ms")
+                settings.open_ms = parsed;
+            else if (key == "--turn-uncertain-ms")
+                settings.uncertain_ms = parsed;
+            else
+                settings.incomplete_ms = parsed;
+        } else if (key == "--turn-context") {
             if (value != "open" && value != "yes-no")
                 throw std::invalid_argument("turn context must be open or yes-no");
             result.turn_context =
@@ -103,7 +139,36 @@ Options options(int argc, char **argv) {
             result.asr_port = number(value, 1024, 65535);
         else if (key == "--agent-port")
             result.agent_port = number(value, 1024, 65535);
-        else if (key == "--tts-port")
+        else if (key == "--managed-agent-port" || key == "--managed-asr-port" ||
+                 key == "--managed-tts-port") {
+            result.managed_profile = result.setup_test_conversation = true;
+            const auto port = number(value, 1024, 65535);
+            if (key == "--managed-agent-port")
+                result.setup_test_agent_port = port;
+            else if (key == "--managed-asr-port")
+                result.setup_test_asr_port = port;
+            else
+                result.setup_test_tts_port = port;
+        } else if (key == "--setup-test-conversation")
+            result.setup_test_conversation = number(value, 0, 1) != 0;
+        else if (key == "--setup-test-agent-port")
+            result.setup_test_agent_port = number(value, 1024, 65535);
+        else if (key == "--setup-test-asr-port")
+            result.setup_test_asr_port = number(value, 1024, 65535);
+        else if (key == "--setup-test-tts-port")
+            result.setup_test_tts_port = number(value, 1024, 65535);
+        else if (key == "--called-source") {
+            if (value != "request_uri" && value != "to")
+                throw std::invalid_argument("called source must be request_uri or to");
+            result.custom_called_source = true;
+            result.called_source = value == "to" ? alojan::CalledNumberSource::to
+                                                 : alojan::CalledNumberSource::request_uri;
+        } else if (key == "--called-national-prefix") {
+            if (value != "0" && value != "none")
+                throw std::invalid_argument("called national prefix must be 0 or none");
+            result.called_national = value == "0";
+            result.custom_called_source = true;
+        } else if (key == "--tts-port")
             result.tts_port = number(value, 1024, 65535);
         else if (key == "--trusted-identity-ip")
             result.identity.add_trusted_ip(value);
@@ -124,6 +189,9 @@ Options options(int argc, char **argv) {
         } else
             throw std::invalid_argument("unknown option");
     }
+    result.turn_settings.validate();
+    if (result.custom_turn_settings && result.turn_model_dir.empty())
+        throw std::invalid_argument("turn thresholds require turn models");
     if (result.speech_test_ms && (result.speech_test_ms % 20 || result.custom_wav))
         throw std::invalid_argument("speech test requires 20 ms alignment and standard prompts");
     if (!result.turn_model_dir.empty() && (result.speech_test_ms || result.custom_wav))
@@ -144,6 +212,42 @@ Options options(int argc, char **argv) {
             "carrier networking requires public address and allowed SIP sources");
     if (result.custom_wav && result.custom_prompt_dir)
         throw std::invalid_argument("choose --wav or --prompt-dir");
+    if (result.managed_profile) {
+        if (result.isolated_setup_option || !result.barge_in || result.speech_test_ms ||
+            result.allowed_sip_ips.empty() || result.identity.trusted_ips.empty() ||
+            result.setup_test_agent_port == result.setup_test_asr_port ||
+            result.setup_test_agent_port == result.setup_test_tts_port ||
+            result.setup_test_asr_port == result.setup_test_tts_port)
+            throw std::invalid_argument("managed profile requires distinct services, adaptive "
+                                        "turns and explicit SIP trust");
+        for (const auto &ip : result.identity.trusted_ips)
+            if (std::find(result.allowed_sip_ips.begin(), result.allowed_sip_ips.end(), ip) ==
+                result.allowed_sip_ips.end())
+                throw std::invalid_argument("trusted managed source must be allowed");
+    }
+    if (result.setup_test_asr_port && !result.setup_test_agent_port)
+        throw std::invalid_argument("recognition setup requires the isolated setup test profile");
+    if (result.setup_test_tts_port && !result.setup_test_agent_port)
+        throw std::invalid_argument("synthesis setup requires the isolated setup test profile");
+    if (result.custom_called_source && !result.setup_test_agent_port)
+        throw std::invalid_argument("called routing requires the isolated setup test profile");
+    if (result.setup_test_conversation &&
+        (!result.setup_test_agent_port || !result.setup_test_asr_port ||
+         !result.setup_test_tts_port || (!result.speech_test_ms && !result.barge_in) ||
+         result.custom_turn_settings || result.turn_context != alojan::QuestionContext::open))
+        throw std::invalid_argument(
+            "managed conversation test requires complete services and capture");
+    if (result.setup_test_agent_port) {
+        if ((!result.managed_profile &&
+             (result.bind_address != "127.0.0.1" || result.public_address != "127.0.0.1")) ||
+            result.identity.trusted_ips.empty() || result.custom_wav || result.custom_prompt_dir ||
+            result.agent_port ||
+            (!result.setup_test_conversation &&
+             (result.speech_test_ms || !result.turn_model_dir.empty())))
+            throw std::invalid_argument(
+                "setup test requires loopback, explicit trust and no legacy speech profile");
+        return result;
+    }
     if (result.custom_wav)
         result.playback_files = {result.wav};
     else
@@ -230,11 +334,17 @@ class Session : public pj::Call {
     std::array<Playback, 2> playback;
     unsigned playback_index = 0, playback_count = 0;
     // Ports die before their bridge; detached PJMEDIA callbacks cannot access freed work.
+    std::unique_ptr<alojan::CallSetup> setup;
     std::unique_ptr<alojan::SpeechBridge> speech;
+    std::shared_ptr<const alojan::GatewaySettings> gateway_settings;
+    alojan::NumberIdentity called;
+    std::array<std::unique_ptr<alojan::PreparedPlayback>, 2> prepared;
+    std::array<PreparedOutput, 2> prepared_ports;
     SpeechInput input;
     SpeechOutput output;
     bool speech_started = false, speech_fallback = false, speech_reported = false;
     std::string speech_id;
+    unsigned reported_reminders = 0, reported_clarifications = 0;
     unsigned reported_responses = 0, reported_interruptions = 0, reported_recognitions = 0;
 
     Session(pj::Account &account, int id, unsigned serial_id)
@@ -247,14 +357,28 @@ class Session : public pj::Call {
             << " code=" << info.lastStatusCode << " elapsed_ms="
             << std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - created).count()
             << std::endl;
+        if (info.state == PJSIP_INV_STATE_CONFIRMED && setup && !ending)
+            setup->answered();
         if (info.state == PJSIP_INV_STATE_DISCONNECTED) {
             disconnected = true;
-            if (speech)
-                speech->cancel();
+            cancel_setup();
         }
     }
     void onCallMediaState(pj::OnCallMediaStateParam &) override {
         // Wire ports from the main loop, outside signaling callbacks.
+    }
+    void
+    cancel_setup(alojan::CallSetup::Outcome outcome = alojan::CallSetup::Outcome::disconnected) {
+        if (speech)
+            speech->cancel();
+        for (auto &clip : prepared)
+            if (clip)
+                clip->cancel();
+        if (setup) {
+            setup->cancel(outcome);
+            if (!speech || speech->quiesced())
+                setup->consumers_finished();
+        }
     }
     void start_media(const Options &config) {
         if (media_started || !answered || disconnected)
@@ -267,32 +391,55 @@ class Session : public pj::Call {
                 continue;
             pj::MediaFormatAudio format;
             format.init(PJMEDIA_FORMAT_PCM, InputMeter::rate_hz, 1, 20000, 16);
-            playback_count = static_cast<unsigned>(config.playback_files.size());
-            for (unsigned i = 0; i < playback_count; ++i)
-                playback[i].createPlayer(config.playback_files[i], PJMEDIA_FILE_NO_LOOP);
+            playback_count = setup ? 2 : static_cast<unsigned>(config.playback_files.size());
+            if (setup) {
+                auto pack = setup->audio();
+                if (!pack)
+                    throw std::runtime_error("prepared setup unavailable");
+                for (unsigned i = 0; i < 2; ++i) {
+                    prepared[i] = std::make_unique<alojan::PreparedPlayback>(pack, i == 0);
+                    prepared_ports[i].create(*prepared[i]);
+                }
+            } else
+                for (unsigned i = 0; i < playback_count; ++i)
+                    playback[i].createPlayer(config.playback_files[i], PJMEDIA_FILE_NO_LOOP);
             auto audio = getAudioMedia(static_cast<int>(media.index));
             if (config.speech_test_ms || config.turn_models) {
                 const auto remaining =
-                    std::chrono::seconds(config.max_call_seconds) - (Clock::now() - created);
+                    std::chrono::seconds(gateway_settings ? gateway_settings->max_call_seconds
+                                                          : config.max_call_seconds) -
+                    (Clock::now() - created);
                 speech = std::make_unique<alojan::SpeechBridge>(
                     speech_id, config.asr_port, config.tts_port,
                     config.turn_models ? 1000 : config.speech_test_ms / 20,
-                    "Şu anda mesaj alamıyorum. Lütfen daha sonra tekrar arayın. Hoşça kalın.",
+                    setup
+                        ? ""
+                        : "Şu anda mesaj alamıyorum. Lütfen daha sonra tekrar arayın. Hoşça kalın.",
                     std::chrono::system_clock::now() +
                         std::chrono::duration_cast<std::chrono::system_clock::duration>(remaining),
                     config.turn_models, config.turn_context, config.barge_in, config.agent_port,
-                    identity.trusted_source ? identity.caller.e164 : "");
+                    identity.trusted_source ? identity.caller.e164 : "", config.turn_settings,
+                    setup ? setup->recognition() : nullptr, setup ? setup->agent() : nullptr,
+                    setup ? setup->synthesis() : nullptr, gateway_settings,
+                    setup ? setup->audio() : nullptr);
                 input.bridge = speech.get();
                 output.create(*speech);
+                if (setup)
+                    setup->hold_consumers();
             }
             input.createPort("input-meter", format);
             audio.startTransmit(input);
-            playback[0].startTransmit(audio);
+            if (setup)
+                prepared_ports[0].startTransmit(audio);
+            else
+                playback[0].startTransmit(audio);
             media_started = true;
             media_index = media.index;
             last_rtp = Clock::now();
-            std::cout << "event=media_started call=" << serial
-                      << " playback=" << (config.custom_wav ? "test_wav" : "ai_greeting_fallback")
+            std::cout << "event=media_started call=" << serial << " playback="
+                      << (setup               ? "prepared_setup_test"
+                          : config.custom_wav ? "test_wav"
+                                              : "ai_greeting_fallback")
                       << " invite_to_media_ms="
                       << std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() -
                                                                                created)
@@ -303,6 +450,31 @@ class Session : public pj::Call {
     }
 
     bool playback_finished() {
+        if (setup && (!speech_started || speech_fallback)) {
+            if (!media_started)
+                return false;
+            const auto pack = setup->audio();
+            if (!pack)
+                throw std::runtime_error("prepared setup cancelled");
+            const auto bytes =
+                playback_index ? pack->unavailable().size() : pack->greeting().size();
+            if (prepared[playback_index]->sent_frames() < bytes / 320)
+                return false;
+            if (playback_index == 1)
+                return true;
+            if (speech && !setup->answer_persisted())
+                return false;
+            auto audio = getAudioMedia(static_cast<int>(media_index));
+            prepared_ports[0].stopTransmit(audio);
+            if (speech && !speech_started) {
+                speech_started = true;
+                output.startTransmit(audio);
+                speech->start();
+                std::cout << "event=speech_test_capture call=" << serial << std::endl;
+            } else
+                prepared_ports[++playback_index].startTransmit(audio);
+            return false;
+        }
         if (speech && speech_started && !speech_fallback) {
             if (speech->recognitions_started.load() != reported_recognitions) {
                 reported_recognitions = speech->recognitions_started.load();
@@ -314,11 +486,25 @@ class Session : public pj::Call {
                 std::cout << "event=speech_speaking call=" << serial << " generation=turn-"
                           << reported_responses << std::endl;
             }
+            if (speech->silence_reminders.load() != reported_reminders) {
+                reported_reminders = speech->silence_reminders.load();
+                std::cout << "event=silence_reminder call=" << serial << std::endl;
+            }
+            if (speech->clarification_requests.load() != reported_clarifications) {
+                reported_clarifications = speech->clarification_requests.load();
+                std::cout << "event=clarification_requested call=" << serial << std::endl;
+            }
             if (speech->interruptions.load() != reported_interruptions) {
                 reported_interruptions = speech->interruptions.load();
                 std::cout << "event=speech_interrupted call=" << serial
                           << " cancelled_generation=turn-" << speech->interrupted_turn.load()
                           << " decision_ms=" << speech->interrupt_ms.load()
+                          << " voiced_ms=" << speech->interrupt_voiced_ms.load()
+                          << " sustained_ms=" << speech->interrupt_sustained_ms.load()
+                          << " quiet_ms=" << speech->interrupt_quiet_ms.load()
+                          << " vad_milli=" << speech->interrupt_vad_milli.load()
+                          << " asr_fresh=" << speech->interrupt_asr_fresh.load()
+                          << " monitor_echo_frames=" << speech->interrupt_echo_frames.load()
                           << " waiting_music_ms=" << speech->waiting_music_frames.load() * 20
                           << " last_sent_ms=" << speech->last_sent_ms.load() << std::endl;
             }
@@ -327,7 +513,10 @@ class Session : public pj::Call {
                 auto audio = getAudioMedia(static_cast<int>(media_index));
                 output.stopTransmit(audio);
                 playback_index = playback_count - 1;
-                playback[playback_index].startTransmit(audio);
+                if (setup)
+                    prepared_ports[playback_index].startTransmit(audio);
+                else
+                    playback[playback_index].startTransmit(audio);
                 std::cout << "event=speech_fallback call=" << serial
                           << " error=" << static_cast<int>(speech->error()) << std::endl;
                 return false;
@@ -415,15 +604,17 @@ class Session : public pj::Call {
         }
         return now - last_rtp >= std::chrono::milliseconds(timeout_ms);
     }
-    void end(const char *reason) {
+    void end(const char *reason, pjsip_status_code status = PJSIP_SC_DECLINE) {
         if (disconnected || ending)
             return;
         ending = true;
-        if (speech)
-            speech->cancel();
+        cancel_setup(std::string_view(reason) == "playback_complete" ||
+                             std::string_view(reason) == "speech_test_complete"
+                         ? alojan::CallSetup::Outcome::completed
+                         : alojan::CallSetup::Outcome::failed);
         std::cout << "event=call_ending call=" << serial << " reason=" << reason << std::endl;
         pj::CallOpParam param;
-        param.statusCode = PJSIP_SC_DECLINE;
+        param.statusCode = status;
         hangup(param);
     }
 };
@@ -433,20 +624,42 @@ class LocalAccount : public pj::Account {
     std::vector<std::unique_ptr<Session>> calls;
     unsigned next_serial = 1;
     const unsigned admission_limit;
+    int reported_admission = -1;
+    bool reported_drained = false;
     const std::string speech_run = [] {
         std::random_device random;
         return std::to_string(random()) + "-" + std::to_string(random());
     }();
     const alojan::IdentityPolicy identity_policy;
     const std::vector<std::string> allowed_sip_ips;
+    const std::shared_ptr<grpc::Channel> setup_channel, recognition_channel, synthesis_channel,
+        conversation_channel;
+    const alojan::CalledNumberSource called_source;
+    alojan::IdentityPolicy called_policy;
     explicit LocalAccount(const Options &config)
         : admission_limit(config.test_max_calls), identity_policy(config.identity),
-          allowed_sip_ips(config.allowed_sip_ips) {}
+          allowed_sip_ips(config.allowed_sip_ips),
+          setup_channel(config.setup_test_agent_port
+                            ? alojan::prepared_audio_channel(config.setup_test_agent_port)
+                            : nullptr),
+          recognition_channel(config.setup_test_asr_port
+                                  ? alojan::speech_channel(config.setup_test_asr_port)
+                                  : nullptr),
+          synthesis_channel(config.setup_test_tts_port
+                                ? alojan::speech_channel(config.setup_test_tts_port)
+                                : nullptr),
+          conversation_channel(config.setup_test_agent_port
+                                   ? alojan::speech_channel(config.setup_test_agent_port)
+                                   : nullptr),
+          called_source(config.called_source) {
+        called_policy.trusted_ips = config.identity.trusted_ips;
+        called_policy.turkish_national = config.called_national;
+    }
     void onIncomingCall(pj::OnIncomingCallParam &param) override {
         unsigned active = 0;
         for (const auto &call : calls)
-            active += !call->disconnected;
-        const bool busy = stopping != 0 || active >= admission_limit;
+            active += !call->disconnected || (call->setup && !call->setup->finished());
+        const bool busy = stopping != 0 || admission_closed != 0 || active >= admission_limit;
         auto call = std::make_unique<Session>(*this, param.callId, next_serial++);
         char source[PJ_INET6_ADDRSTRLEN]{};
         if (param.rdata.pjRxData)
@@ -459,35 +672,108 @@ class LocalAccount : public pj::Account {
         if (!busy && !denied && param.rdata.pjRxData)
             call->identity = alojan::read_identity(
                 *static_cast<pjsip_rx_data *>(param.rdata.pjRxData), identity_policy);
+        if (setup_channel && !busy && !denied && param.rdata.pjRxData)
+            call->called = alojan::read_called_number(
+                *static_cast<pjsip_rx_data *>(param.rdata.pjRxData), called_policy, called_source);
+        const bool invalid_called = setup_channel && call->called.e164.empty();
         if (!busy && !denied)
             std::cout << "event=caller_identity call=" << call->serial << " "
                       << call->identity.log_fields() << std::endl;
-        call->speech_id = "speech-" + speech_run + "-" + std::to_string(call->serial);
+        call->speech_id = (setup_channel ? "managed-" : "speech-") + speech_run + "-" +
+                          std::to_string(call->serial);
         auto *session = call.get();
         calls.push_back(std::move(call));
         pj::CallOpParam answer;
-        answer.statusCode = denied ? PJSIP_SC_FORBIDDEN
-                            : busy ? PJSIP_SC_BUSY_HERE
-                                   : PJSIP_SC_RINGING;
+        answer.statusCode = denied           ? PJSIP_SC_FORBIDDEN
+                            : busy           ? PJSIP_SC_BUSY_HERE
+                            : invalid_called ? PJSIP_SC_NOT_FOUND
+                                             : PJSIP_SC_RINGING;
         if (denied)
             std::cout << "event=call_rejected call=" << session->serial
                       << " reason=source_not_allowed" << std::endl;
         session->answer(answer);
         session->ringing_at = Clock::now();
-        if (busy || denied)
+        if (busy || denied || invalid_called)
             session->ending = true;
     }
     void tick(const Options &config) {
+        const int admission = admission_closed;
+        if (!stopping && reported_admission != admission) {
+            reported_admission = admission;
+            reported_drained = false;
+            std::cout << "event=admission_state mode=" << (admission ? "draining" : "open")
+                      << std::endl;
+        }
         for (auto &call : calls) {
+            if (call->setup && (call->disconnected || call->ending) &&
+                (!call->speech || call->speech->quiesced()))
+                call->setup->consumers_finished();
             if (call->disconnected || call->ending)
                 continue;
             auto now = Clock::now();
-            if (stopping || now - call->created > std::chrono::seconds(config.max_call_seconds)) {
+            // Before setup finishes only the infrastructure ceiling applies, never legacy CLI
+            // defaults. Admission itself retains its independent 1.8-second deadline.
+            const auto max_seconds = call->gateway_settings
+                                         ? call->gateway_settings->max_call_seconds
+                                     : setup_channel ? 300u
+                                                     : config.max_call_seconds;
+            if (stopping || now - call->created > std::chrono::seconds(max_seconds)) {
                 call->end(stopping ? "shutdown" : "max_duration");
                 continue;
             }
+            if (setup_channel && !call->setup) {
+                voice::v1::CallInitializationRequest request;
+                request.set_call_id(call->speech_id);
+                request.set_called_e164(call->called.e164);
+                request.set_called_source(call->called.source);
+                request.set_caller_e164(call->identity.trusted_source ? call->identity.caller.e164
+                                                                      : "");
+                try {
+                    const auto remaining = call->created + std::chrono::milliseconds(1800) - now;
+                    call->setup = std::make_unique<alojan::CallSetup>(
+                        setup_channel, request, std::chrono::system_clock::now() + remaining,
+                        recognition_channel, synthesis_channel, conversation_channel);
+                } catch (...) {
+                    call->end("setup_start_failed", PJSIP_SC_SERVICE_UNAVAILABLE);
+                    continue;
+                }
+            }
+            if (call->setup && call->setup->state() != alojan::CallSetup::State::ready) {
+                if (call->setup->state() != alojan::CallSetup::State::pending)
+                    call->end("setup_not_ready", PJSIP_SC_SERVICE_UNAVAILABLE);
+                continue;
+            }
+            if (call->setup && !call->gateway_settings)
+                call->gateway_settings = call->setup->settings();
+            if (call->setup && !call->gateway_settings) {
+                call->end("setup_not_ready", PJSIP_SC_SERVICE_UNAVAILABLE);
+                continue;
+            }
+            const auto answer_delay_ms = call->gateway_settings
+                                             ? call->gateway_settings->answer_delay_ms
+                                             : config.answer_delay_ms;
+            if (call->setup && !call->answered) {
+                const auto pack = call->setup->audio();
+                if (!pack) {
+                    call->end("setup_not_ready", PJSIP_SC_SERVICE_UNAVAILABLE);
+                    continue;
+                }
+                const auto clip_ms = (pack->greeting().size() + pack->unavailable().size()) / 16;
+                const auto elapsed =
+                    std::chrono::duration_cast<std::chrono::milliseconds>(now - call->created)
+                        .count();
+                const auto ring_left = std::max<std::int64_t>(
+                    0, answer_delay_ms - std::chrono::duration_cast<std::chrono::milliseconds>(
+                                             now - call->ringing_at)
+                                             .count());
+                if (elapsed + ring_left + clip_ms + call->gateway_settings->media_drain_ms >=
+                    call->gateway_settings->max_call_seconds * 1000) {
+                    call->end("setup_duration_insufficient", PJSIP_SC_SERVICE_UNAVAILABLE);
+                    continue;
+                }
+            }
             if (!call->answered &&
-                now - call->ringing_at >= std::chrono::milliseconds(config.answer_delay_ms)) {
+                now - call->ringing_at >= std::chrono::milliseconds(answer_delay_ms)) {
                 pj::CallOpParam answer;
                 answer.statusCode = PJSIP_SC_OK;
                 answer.opt.audioCount = 1;
@@ -515,8 +801,13 @@ class LocalAccount : public pj::Account {
             if (playback_done) {
                 if (call->eof_at == Clock::time_point{})
                     call->eof_at = now;
-                // Drain queued media, then leave three seconds after the agent closing.
-                const auto closing_delay = config.agent_port && !call->speech_fallback ? 3150 : 150;
+                // Unavailable fallback drains media without a conversational farewell pause.
+                const bool farewell =
+                    call->speech && !call->speech_fallback && (call->setup || config.agent_port);
+                const auto closing_delay = call->gateway_settings
+                                               ? call->gateway_settings->closing_wait_ms(farewell)
+                                           : farewell ? 3150u
+                                                      : 150u;
                 if (now - call->eof_at > std::chrono::milliseconds(closing_delay))
                     call->end(config.custom_wav                       ? "playback_complete"
                               : call->speech && call->speech_reported ? "speech_test_complete"
@@ -524,8 +815,12 @@ class LocalAccount : public pj::Account {
             }
         }
         std::erase_if(calls, [](const auto &call) {
-            if (!call->disconnected || (call->speech && !call->speech->finished()))
+            if (!call->disconnected || (call->speech && !call->speech->quiesced()) ||
+                (call->setup && !call->setup->finished()))
                 return false;
+            if (call->setup)
+                std::cout << "event=setup_released call=" << call->serial
+                          << " confirmed=" << call->setup->cleanup_confirmed() << std::endl;
             std::cout << "event=call_closed call=" << call->serial
                       << " input_frames=" << call->input.frames.load()
                       << " input_rate_hz=" << InputMeter::rate_hz
@@ -542,16 +837,25 @@ class LocalAccount : public pj::Account {
                       << (call->speech ? call->speech->played.load() * 20 : 0) << std::endl;
             return true;
         });
+        // Reaping waits for local media/setup cleanup; this is not a remote GPU idle receipt.
+        if (!stopping && admission_closed && reported_admission == 1 && calls.empty() &&
+            !reported_drained) {
+            reported_drained = true;
+            std::cout << "event=admission_drained local_calls=0" << std::endl;
+        }
     }
 };
 
 int main(int argc, char **argv) {
     try {
         auto config = options(argc, argv);
+        admission_closed = config.start_drained ? 1 : 0;
         if (!config.turn_model_dir.empty())
             config.turn_models = std::make_shared<alojan::TurnModels>(config.turn_model_dir);
         std::signal(SIGINT, stop);
         std::signal(SIGTERM, stop);
+        std::signal(SIGUSR1, admission_signal);
+        std::signal(SIGUSR2, admission_signal);
         pj_log_set_level(0);
         pj::Endpoint endpoint;
         endpoint.libCreate();
@@ -593,10 +897,12 @@ int main(int argc, char **argv) {
             ac.mediaConfig.transportConfig.publicAddress = config.public_address;
             account.create(ac);
             std::cout << "event=ready mode="
-                      << (config.turn_models      ? "adaptive_turn_test"
-                          : config.speech_test_ms ? "speech_test"
-                          : config.custom_wav     ? "local_wav"
-                                                  : "dependency_fallback")
+                      << (config.managed_profile         ? "managed"
+                          : config.setup_test_agent_port ? "prepared_setup_test"
+                          : config.turn_models           ? "adaptive_turn_test"
+                          : config.speech_test_ms        ? "speech_test"
+                          : config.custom_wav            ? "local_wav"
+                                                         : "dependency_fallback")
                       << " voice_pipeline_ready=0 sip_port=" << config.port
                       << " admission_limit=" << config.test_max_calls << std::endl;
             while (!stopping) {

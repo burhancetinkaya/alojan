@@ -1,0 +1,12 @@
+[project]
+name = "alojan-action-worker"
+version = "0.1.0"
+description = "Independent scoped Alojan post-call worker"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "openai-agents==0.24.0",
+    "httpx2==2.16.0",
+    "psycopg[binary]==3.2.6",
+    "cryptography==50.0.2",
+    "pydantic==2.14.1",
+]

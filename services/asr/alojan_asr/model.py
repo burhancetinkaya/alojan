@@ -4,6 +4,8 @@ import hashlib
 import json
 from pathlib import Path
 
+from alojan_contracts.vocabulary import compile_replacements
+
 ROOT = Path(__file__).resolve().parents[3]
 PIN = json.loads((Path(__file__).resolve().parents[1] / "model.json").read_text())
 
@@ -28,7 +30,10 @@ def model_path(download=False):
 
 
 class WhisperBackend:
-    def __init__(self):
+    pin = PIN
+
+    def __init__(self, replacements="{}"):
+        self.replacement_pattern, self.replacements = compile_replacements(replacements)
         import ctranslate2
         import numpy as np
         from faster_whisper import WhisperModel
@@ -47,7 +52,7 @@ class WhisperBackend:
         # Readiness requires a real decode, not just allocated model weights.
         self._decode(np.zeros(16000, dtype=np.float32))
 
-    def transcribe(self, audio, sample_format):
+    def transcribe(self, audio, sample_format, replacements=None):
         import numpy as np
 
         samples = np.frombuffer(audio, dtype="<i2" if sample_format == "pcm_s16le" else "<f4")
@@ -57,9 +62,9 @@ class WhisperBackend:
         # Whisper can hallucinate even on exact digital silence; do not suppress quiet speech.
         if not np.any(samples):
             return ""
-        return self._decode(samples)
+        return self._decode(samples, replacements)
 
-    def _decode(self, samples):
+    def _decode(self, samples, replacements=None):
         segments, _ = self.model.transcribe(
             samples,
             language="tr",
@@ -71,7 +76,13 @@ class WhisperBackend:
             word_timestamps=False,
             max_new_tokens=440,
         )
-        return "".join(segment.text for segment in segments).strip()
+        text = "".join(segment.text for segment in segments).strip()
+        pattern, aliases = (
+            (self.replacement_pattern, self.replacements) if replacements is None else replacements
+        )
+        if pattern:
+            text = pattern.sub(lambda match: aliases[match.lastgroup], text)
+        return text
 
 
 if __name__ == "__main__":

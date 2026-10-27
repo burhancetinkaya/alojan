@@ -98,6 +98,45 @@ struct SynthesisRequestDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SynthesisRequestDefaultTypeInternal _SynthesisRequest_default_instance_;
 
+inline constexpr SynthesisConfiguration::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        model_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        model_revision_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        voice_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        format_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        schema_version_{0u},
+        sample_rate_hz_{0u},
+        channels_{0u} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR SynthesisConfiguration::SynthesisConfiguration(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(SynthesisConfiguration_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct SynthesisConfigurationDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SynthesisConfigurationDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SynthesisConfigurationDefaultTypeInternal() {}
+  union {
+    SynthesisConfiguration _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SynthesisConfigurationDefaultTypeInternal _SynthesisConfiguration_default_instance_;
+
 inline constexpr RecognitionEvent::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : _cached_size_{0},
@@ -132,6 +171,103 @@ struct RecognitionEventDefaultTypeInternal {
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 RecognitionEventDefaultTypeInternal _RecognitionEvent_default_instance_;
+template <typename>
+PROTOBUF_CONSTEXPR RecognitionConfiguration_ReplacementsEntry_DoNotUse::RecognitionConfiguration_ReplacementsEntry_DoNotUse(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : RecognitionConfiguration_ReplacementsEntry_DoNotUse::MapEntry(RecognitionConfiguration_ReplacementsEntry_DoNotUse_class_data_.base()){}
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : RecognitionConfiguration_ReplacementsEntry_DoNotUse::MapEntry() {
+}
+#endif  // PROTOBUF_CUSTOM_VTABLE
+struct RecognitionConfiguration_ReplacementsEntry_DoNotUseDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR RecognitionConfiguration_ReplacementsEntry_DoNotUseDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~RecognitionConfiguration_ReplacementsEntry_DoNotUseDefaultTypeInternal() {}
+  union {
+    RecognitionConfiguration_ReplacementsEntry_DoNotUse _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 RecognitionConfiguration_ReplacementsEntry_DoNotUseDefaultTypeInternal _RecognitionConfiguration_ReplacementsEntry_DoNotUse_default_instance_;
+
+inline constexpr PreparedAudioRequest::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        call_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        release_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        manifest_digest_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()) {}
+
+template <typename>
+PROTOBUF_CONSTEXPR PreparedAudioRequest::PreparedAudioRequest(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(PreparedAudioRequest_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct PreparedAudioRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR PreparedAudioRequestDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~PreparedAudioRequestDefaultTypeInternal() {}
+  union {
+    PreparedAudioRequest _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PreparedAudioRequestDefaultTypeInternal _PreparedAudioRequest_default_instance_;
+
+inline constexpr PreparedAudioReply::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        call_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        release_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        manifest_digest_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        greeting_pcm_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        unavailable_pcm_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        waiting_pcm_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        waiting_text_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        greeting_pad_ms_{0u} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR PreparedAudioReply::PreparedAudioReply(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(PreparedAudioReply_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct PreparedAudioReplyDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR PreparedAudioReplyDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~PreparedAudioReplyDefaultTypeInternal() {}
+  union {
+    PreparedAudioReply _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PreparedAudioReplyDefaultTypeInternal _PreparedAudioReply_default_instance_;
 
 inline constexpr PlaybackReport::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
@@ -165,6 +301,73 @@ struct PlaybackReportDefaultTypeInternal {
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PlaybackReportDefaultTypeInternal _PlaybackReport_default_instance_;
+
+inline constexpr OutputBudget::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        schema_version_{0u},
+        phrase_max_chars_{0u},
+        phrase_max_bytes_{0u},
+        max_phrases_{0u},
+        turn_max_bytes_{0u} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR OutputBudget::OutputBudget(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(OutputBudget_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct OutputBudgetDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR OutputBudgetDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~OutputBudgetDefaultTypeInternal() {}
+  union {
+    OutputBudget _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 OutputBudgetDefaultTypeInternal _OutputBudget_default_instance_;
+
+inline constexpr NativeCalibration::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        schema_version_{0u},
+        partial_hint_{false},
+        vad_percent_{0u},
+        candidate_ms_{0u},
+        yes_no_ms_{0u},
+        open_ms_{0u},
+        uncertain_ms_{0u},
+        incomplete_ms_{0u},
+        silence_reminder_ms_{0u},
+        interrupt_vad_percent_{0u},
+        interrupt_min_voice_ms_{0u},
+        interrupt_sustained_voice_ms_{0u},
+        interrupt_max_quiet_ms_{0u},
+        interrupt_sustained_quiet_ms_{0u} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR NativeCalibration::NativeCalibration(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(NativeCalibration_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct NativeCalibrationDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR NativeCalibrationDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~NativeCalibrationDefaultTypeInternal() {}
+  union {
+    NativeCalibration _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 NativeCalibrationDefaultTypeInternal _NativeCalibration_default_instance_;
 
 inline constexpr CancelRequest::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
@@ -221,6 +424,126 @@ struct CancelReplyDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CancelReplyDefaultTypeInternal _CancelReply_default_instance_;
 
+inline constexpr CallSetupCancellation::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        call_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()) {}
+
+template <typename>
+PROTOBUF_CONSTEXPR CallSetupCancellation::CallSetupCancellation(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(CallSetupCancellation_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct CallSetupCancellationDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR CallSetupCancellationDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~CallSetupCancellationDefaultTypeInternal() {}
+  union {
+    CallSetupCancellation _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CallSetupCancellationDefaultTypeInternal _CallSetupCancellation_default_instance_;
+
+inline constexpr CallLeaseRequest::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        call_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        lease_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()) {}
+
+template <typename>
+PROTOBUF_CONSTEXPR CallLeaseRequest::CallLeaseRequest(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(CallLeaseRequest_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct CallLeaseRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR CallLeaseRequestDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~CallLeaseRequestDefaultTypeInternal() {}
+  union {
+    CallLeaseRequest _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CallLeaseRequestDefaultTypeInternal _CallLeaseRequest_default_instance_;
+
+inline constexpr CallLeaseReply::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        lease_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()) {}
+
+template <typename>
+PROTOBUF_CONSTEXPR CallLeaseReply::CallLeaseReply(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(CallLeaseReply_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct CallLeaseReplyDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR CallLeaseReplyDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~CallLeaseReplyDefaultTypeInternal() {}
+  union {
+    CallLeaseReply _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CallLeaseReplyDefaultTypeInternal _CallLeaseReply_default_instance_;
+
+inline constexpr CallInitializationRequest::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        call_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        called_e164_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        called_source_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        caller_e164_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()) {}
+
+template <typename>
+PROTOBUF_CONSTEXPR CallInitializationRequest::CallInitializationRequest(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(CallInitializationRequest_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct CallInitializationRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR CallInitializationRequestDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~CallInitializationRequestDefaultTypeInternal() {}
+  union {
+    CallInitializationRequest _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CallInitializationRequestDefaultTypeInternal _CallInitializationRequest_default_instance_;
+
 inline constexpr CallEnd::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : _cached_size_{0},
@@ -229,7 +552,15 @@ inline constexpr CallEnd::Impl_::Impl_(
             ::_pbi::ConstantInitialized()),
         reason_(
             &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()) {}
+            ::_pbi::ConstantInitialized()),
+        release_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        manifest_digest_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        answered_at_unix_ms_{::int64_t{0}},
+        ended_at_unix_ms_{::int64_t{0}} {}
 
 template <typename>
 PROTOBUF_CONSTEXPR CallEnd::CallEnd(::_pbi::ConstantInitialized)
@@ -251,6 +582,40 @@ struct CallEndDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CallEndDefaultTypeInternal _CallEnd_default_instance_;
 
+inline constexpr CallAnswer::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        call_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        release_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        manifest_digest_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        answered_at_unix_ms_{::int64_t{0}} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR CallAnswer::CallAnswer(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(CallAnswer_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct CallAnswerDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR CallAnswerDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~CallAnswerDefaultTypeInternal() {}
+  union {
+    CallAnswer _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CallAnswerDefaultTypeInternal _CallAnswer_default_instance_;
+
 inline constexpr AudioFrame::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : _cached_size_{0},
@@ -269,7 +634,8 @@ inline constexpr AudioFrame::Impl_::Impl_(
         sequence_{::uint64_t{0u}},
         captured_at_unix_ms_{::int64_t{0}},
         sample_rate_hz_{0u},
-        channels_{0u} {}
+        channels_{0u},
+        partial_hint_{false} {}
 
 template <typename>
 PROTOBUF_CONSTEXPR AudioFrame::AudioFrame(::_pbi::ConstantInitialized)
@@ -390,6 +756,167 @@ struct AgentAckDefaultTypeInternal {
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 AgentAckDefaultTypeInternal _AgentAck_default_instance_;
+
+inline constexpr SynthesisCallConfiguration::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        call_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        release_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        manifest_digest_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        configuration_{nullptr} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR SynthesisCallConfiguration::SynthesisCallConfiguration(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(SynthesisCallConfiguration_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct SynthesisCallConfigurationDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SynthesisCallConfigurationDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SynthesisCallConfigurationDefaultTypeInternal() {}
+  union {
+    SynthesisCallConfiguration _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SynthesisCallConfigurationDefaultTypeInternal _SynthesisCallConfiguration_default_instance_;
+
+inline constexpr RecognitionConfiguration::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        replacements_{},
+        schema_version_{0u} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR RecognitionConfiguration::RecognitionConfiguration(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(RecognitionConfiguration_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct RecognitionConfigurationDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR RecognitionConfigurationDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~RecognitionConfigurationDefaultTypeInternal() {}
+  union {
+    RecognitionConfiguration _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 RecognitionConfigurationDefaultTypeInternal _RecognitionConfiguration_default_instance_;
+
+inline constexpr GatewayConfiguration::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        calibration_{nullptr},
+        output_{nullptr},
+        schema_version_{0u},
+        max_call_seconds_{0u},
+        answer_delay_ms_{0u},
+        closing_delay_ms_{0u},
+        media_drain_ms_{0u},
+        max_call_turns_{0u},
+        turn_timeout_seconds_{0u} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR GatewayConfiguration::GatewayConfiguration(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(GatewayConfiguration_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct GatewayConfigurationDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR GatewayConfigurationDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~GatewayConfigurationDefaultTypeInternal() {}
+  union {
+    GatewayConfiguration _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 GatewayConfigurationDefaultTypeInternal _GatewayConfiguration_default_instance_;
+
+inline constexpr RecognitionCallConfiguration::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        call_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        release_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        manifest_digest_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        configuration_{nullptr} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR RecognitionCallConfiguration::RecognitionCallConfiguration(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(RecognitionCallConfiguration_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct RecognitionCallConfigurationDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR RecognitionCallConfigurationDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~RecognitionCallConfigurationDefaultTypeInternal() {}
+  union {
+    RecognitionCallConfiguration _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 RecognitionCallConfigurationDefaultTypeInternal _RecognitionCallConfiguration_default_instance_;
+
+inline constexpr CallInitializationReply::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        release_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        manifest_digest_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        recognition_{nullptr},
+        synthesis_{nullptr},
+        gateway_{nullptr},
+        ready_for_answer_{false} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR CallInitializationReply::CallInitializationReply(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(CallInitializationReply_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct CallInitializationReplyDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR CallInitializationReplyDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~CallInitializationReplyDefaultTypeInternal() {}
+  union {
+    CallInitializationReply _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CallInitializationReplyDefaultTypeInternal _CallInitializationReply_default_instance_;
 }  // namespace v1
 }  // namespace voice
 static constexpr const ::_pb::EnumDescriptor *PROTOBUF_NONNULL *PROTOBUF_NULLABLE
@@ -401,7 +928,7 @@ const ::uint32_t
         protodesc_cold) = {
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::voice::v1::AudioFrame, _impl_._has_bits_),
-        11, // hasbit index offset
+        12, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::voice::v1::AudioFrame, _impl_.call_id_),
         PROTOBUF_FIELD_OFFSET(::voice::v1::AudioFrame, _impl_.sequence_),
         PROTOBUF_FIELD_OFFSET(::voice::v1::AudioFrame, _impl_.captured_at_unix_ms_),
@@ -410,6 +937,7 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::voice::v1::AudioFrame, _impl_.format_),
         PROTOBUF_FIELD_OFFSET(::voice::v1::AudioFrame, _impl_.audio_),
         PROTOBUF_FIELD_OFFSET(::voice::v1::AudioFrame, _impl_.generation_id_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::AudioFrame, _impl_.partial_hint_),
         0,
         4,
         5,
@@ -418,6 +946,7 @@ const ::uint32_t
         1,
         2,
         3,
+        8,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::voice::v1::TurnEvent, _impl_._has_bits_),
         9, // hasbit index offset
@@ -492,6 +1021,59 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::voice::v1::CancelReply, _impl_.cancelled_),
         0,
         0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::voice::v1::RecognitionConfiguration_ReplacementsEntry_DoNotUse, _impl_._has_bits_),
+        5, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::voice::v1::RecognitionConfiguration_ReplacementsEntry_DoNotUse, _impl_.key_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::RecognitionConfiguration_ReplacementsEntry_DoNotUse, _impl_.value_),
+        0,
+        1,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::voice::v1::RecognitionConfiguration, _impl_._has_bits_),
+        5, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::voice::v1::RecognitionConfiguration, _impl_.schema_version_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::RecognitionConfiguration, _impl_.replacements_),
+        0,
+        ~0u,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::voice::v1::RecognitionCallConfiguration, _impl_._has_bits_),
+        7, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::voice::v1::RecognitionCallConfiguration, _impl_.call_id_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::RecognitionCallConfiguration, _impl_.release_id_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::RecognitionCallConfiguration, _impl_.manifest_digest_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::RecognitionCallConfiguration, _impl_.configuration_),
+        0,
+        1,
+        2,
+        3,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::voice::v1::SynthesisConfiguration, _impl_._has_bits_),
+        10, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::voice::v1::SynthesisConfiguration, _impl_.schema_version_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::SynthesisConfiguration, _impl_.model_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::SynthesisConfiguration, _impl_.model_revision_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::SynthesisConfiguration, _impl_.voice_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::SynthesisConfiguration, _impl_.sample_rate_hz_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::SynthesisConfiguration, _impl_.channels_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::SynthesisConfiguration, _impl_.format_),
+        4,
+        0,
+        1,
+        2,
+        5,
+        6,
+        3,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::voice::v1::SynthesisCallConfiguration, _impl_._has_bits_),
+        7, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::voice::v1::SynthesisCallConfiguration, _impl_.call_id_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::SynthesisCallConfiguration, _impl_.release_id_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::SynthesisCallConfiguration, _impl_.manifest_digest_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::SynthesisCallConfiguration, _impl_.configuration_),
+        0,
+        1,
+        2,
+        3,
+        0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::voice::v1::PlaybackReport, _impl_._has_bits_),
         8, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::voice::v1::PlaybackReport, _impl_.call_id_),
@@ -506,31 +1088,202 @@ const ::uint32_t
         4,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::voice::v1::CallEnd, _impl_._has_bits_),
-        5, // hasbit index offset
+        9, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::voice::v1::CallEnd, _impl_.call_id_),
         PROTOBUF_FIELD_OFFSET(::voice::v1::CallEnd, _impl_.reason_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallEnd, _impl_.answered_at_unix_ms_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallEnd, _impl_.ended_at_unix_ms_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallEnd, _impl_.release_id_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallEnd, _impl_.manifest_digest_),
         0,
         1,
+        4,
+        5,
+        2,
+        3,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::voice::v1::AgentAck, _impl_._has_bits_),
         4, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::voice::v1::AgentAck, _impl_.accepted_),
+        0,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallAnswer, _impl_._has_bits_),
+        7, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallAnswer, _impl_.call_id_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallAnswer, _impl_.release_id_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallAnswer, _impl_.manifest_digest_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallAnswer, _impl_.answered_at_unix_ms_),
+        0,
+        1,
+        2,
+        3,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallInitializationRequest, _impl_._has_bits_),
+        7, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallInitializationRequest, _impl_.call_id_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallInitializationRequest, _impl_.called_e164_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallInitializationRequest, _impl_.called_source_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallInitializationRequest, _impl_.caller_e164_),
+        0,
+        1,
+        2,
+        3,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::voice::v1::NativeCalibration, _impl_._has_bits_),
+        17, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::voice::v1::NativeCalibration, _impl_.schema_version_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::NativeCalibration, _impl_.partial_hint_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::NativeCalibration, _impl_.vad_percent_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::NativeCalibration, _impl_.candidate_ms_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::NativeCalibration, _impl_.yes_no_ms_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::NativeCalibration, _impl_.open_ms_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::NativeCalibration, _impl_.uncertain_ms_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::NativeCalibration, _impl_.incomplete_ms_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::NativeCalibration, _impl_.silence_reminder_ms_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::NativeCalibration, _impl_.interrupt_vad_percent_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::NativeCalibration, _impl_.interrupt_min_voice_ms_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::NativeCalibration, _impl_.interrupt_sustained_voice_ms_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::NativeCalibration, _impl_.interrupt_max_quiet_ms_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::NativeCalibration, _impl_.interrupt_sustained_quiet_ms_),
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::voice::v1::OutputBudget, _impl_._has_bits_),
+        8, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::voice::v1::OutputBudget, _impl_.schema_version_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::OutputBudget, _impl_.phrase_max_chars_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::OutputBudget, _impl_.phrase_max_bytes_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::OutputBudget, _impl_.max_phrases_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::OutputBudget, _impl_.turn_max_bytes_),
+        0,
+        1,
+        2,
+        3,
+        4,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::voice::v1::GatewayConfiguration, _impl_._has_bits_),
+        12, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::voice::v1::GatewayConfiguration, _impl_.schema_version_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::GatewayConfiguration, _impl_.max_call_seconds_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::GatewayConfiguration, _impl_.answer_delay_ms_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::GatewayConfiguration, _impl_.closing_delay_ms_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::GatewayConfiguration, _impl_.media_drain_ms_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::GatewayConfiguration, _impl_.max_call_turns_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::GatewayConfiguration, _impl_.turn_timeout_seconds_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::GatewayConfiguration, _impl_.calibration_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::GatewayConfiguration, _impl_.output_),
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        0,
+        1,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallInitializationReply, _impl_._has_bits_),
+        9, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallInitializationReply, _impl_.release_id_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallInitializationReply, _impl_.manifest_digest_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallInitializationReply, _impl_.ready_for_answer_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallInitializationReply, _impl_.recognition_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallInitializationReply, _impl_.synthesis_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallInitializationReply, _impl_.gateway_),
+        0,
+        1,
+        5,
+        2,
+        3,
+        4,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallSetupCancellation, _impl_._has_bits_),
+        4, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallSetupCancellation, _impl_.call_id_),
+        0,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::voice::v1::PreparedAudioRequest, _impl_._has_bits_),
+        6, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::voice::v1::PreparedAudioRequest, _impl_.call_id_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::PreparedAudioRequest, _impl_.release_id_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::PreparedAudioRequest, _impl_.manifest_digest_),
+        0,
+        1,
+        2,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::voice::v1::PreparedAudioReply, _impl_._has_bits_),
+        11, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::voice::v1::PreparedAudioReply, _impl_.call_id_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::PreparedAudioReply, _impl_.release_id_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::PreparedAudioReply, _impl_.manifest_digest_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::PreparedAudioReply, _impl_.greeting_pcm_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::PreparedAudioReply, _impl_.unavailable_pcm_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::PreparedAudioReply, _impl_.greeting_pad_ms_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::PreparedAudioReply, _impl_.waiting_pcm_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::PreparedAudioReply, _impl_.waiting_text_),
+        0,
+        1,
+        2,
+        3,
+        4,
+        7,
+        5,
+        6,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallLeaseRequest, _impl_._has_bits_),
+        5, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallLeaseRequest, _impl_.call_id_),
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallLeaseRequest, _impl_.lease_),
+        0,
+        1,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallLeaseReply, _impl_._has_bits_),
+        4, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::voice::v1::CallLeaseReply, _impl_.lease_),
         0,
 };
 
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, sizeof(::voice::v1::AudioFrame)},
-        {19, sizeof(::voice::v1::TurnEvent)},
-        {34, sizeof(::voice::v1::AgentRequest)},
-        {45, sizeof(::voice::v1::AgentEvent)},
-        {58, sizeof(::voice::v1::RecognitionEvent)},
-        {71, sizeof(::voice::v1::SynthesisRequest)},
-        {80, sizeof(::voice::v1::CancelRequest)},
-        {87, sizeof(::voice::v1::CancelReply)},
-        {92, sizeof(::voice::v1::PlaybackReport)},
-        {105, sizeof(::voice::v1::CallEnd)},
-        {112, sizeof(::voice::v1::AgentAck)},
+        {21, sizeof(::voice::v1::TurnEvent)},
+        {36, sizeof(::voice::v1::AgentRequest)},
+        {47, sizeof(::voice::v1::AgentEvent)},
+        {60, sizeof(::voice::v1::RecognitionEvent)},
+        {73, sizeof(::voice::v1::SynthesisRequest)},
+        {82, sizeof(::voice::v1::CancelRequest)},
+        {89, sizeof(::voice::v1::CancelReply)},
+        {94, sizeof(::voice::v1::RecognitionConfiguration_ReplacementsEntry_DoNotUse)},
+        {101, sizeof(::voice::v1::RecognitionConfiguration)},
+        {108, sizeof(::voice::v1::RecognitionCallConfiguration)},
+        {119, sizeof(::voice::v1::SynthesisConfiguration)},
+        {136, sizeof(::voice::v1::SynthesisCallConfiguration)},
+        {147, sizeof(::voice::v1::PlaybackReport)},
+        {160, sizeof(::voice::v1::CallEnd)},
+        {175, sizeof(::voice::v1::AgentAck)},
+        {180, sizeof(::voice::v1::CallAnswer)},
+        {191, sizeof(::voice::v1::CallInitializationRequest)},
+        {202, sizeof(::voice::v1::NativeCalibration)},
+        {233, sizeof(::voice::v1::OutputBudget)},
+        {246, sizeof(::voice::v1::GatewayConfiguration)},
+        {267, sizeof(::voice::v1::CallInitializationReply)},
+        {282, sizeof(::voice::v1::CallSetupCancellation)},
+        {287, sizeof(::voice::v1::PreparedAudioRequest)},
+        {296, sizeof(::voice::v1::PreparedAudioReply)},
+        {315, sizeof(::voice::v1::CallLeaseRequest)},
+        {322, sizeof(::voice::v1::CallLeaseReply)},
 };
 static const ::_pb::Message* PROTOBUF_NONNULL const file_default_instances[] = {
     &::voice::v1::_AudioFrame_default_instance_._instance,
@@ -541,61 +1294,154 @@ static const ::_pb::Message* PROTOBUF_NONNULL const file_default_instances[] = {
     &::voice::v1::_SynthesisRequest_default_instance_._instance,
     &::voice::v1::_CancelRequest_default_instance_._instance,
     &::voice::v1::_CancelReply_default_instance_._instance,
+    &::voice::v1::_RecognitionConfiguration_ReplacementsEntry_DoNotUse_default_instance_._instance,
+    &::voice::v1::_RecognitionConfiguration_default_instance_._instance,
+    &::voice::v1::_RecognitionCallConfiguration_default_instance_._instance,
+    &::voice::v1::_SynthesisConfiguration_default_instance_._instance,
+    &::voice::v1::_SynthesisCallConfiguration_default_instance_._instance,
     &::voice::v1::_PlaybackReport_default_instance_._instance,
     &::voice::v1::_CallEnd_default_instance_._instance,
     &::voice::v1::_AgentAck_default_instance_._instance,
+    &::voice::v1::_CallAnswer_default_instance_._instance,
+    &::voice::v1::_CallInitializationRequest_default_instance_._instance,
+    &::voice::v1::_NativeCalibration_default_instance_._instance,
+    &::voice::v1::_OutputBudget_default_instance_._instance,
+    &::voice::v1::_GatewayConfiguration_default_instance_._instance,
+    &::voice::v1::_CallInitializationReply_default_instance_._instance,
+    &::voice::v1::_CallSetupCancellation_default_instance_._instance,
+    &::voice::v1::_PreparedAudioRequest_default_instance_._instance,
+    &::voice::v1::_PreparedAudioReply_default_instance_._instance,
+    &::voice::v1::_CallLeaseRequest_default_instance_._instance,
+    &::voice::v1::_CallLeaseReply_default_instance_._instance,
 };
 const char descriptor_table_protodef_voice_2fv1_2fvoice_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
-    "\n\024voice/v1/voice.proto\022\010voice.v1\"\254\001\n\nAud"
+    "\n\024voice/v1/voice.proto\022\010voice.v1\"\302\001\n\nAud"
     "ioFrame\022\017\n\007call_id\030\001 \001(\t\022\020\n\010sequence\030\002 \001"
     "(\004\022\033\n\023captured_at_unix_ms\030\003 \001(\003\022\026\n\016sampl"
     "e_rate_hz\030\004 \001(\r\022\020\n\010channels\030\005 \001(\r\022\016\n\006for"
     "mat\030\006 \001(\t\022\r\n\005audio\030\007 \001(\014\022\025\n\rgeneration_i"
-    "d\030\010 \001(\t\"~\n\tTurnEvent\022\017\n\007call_id\030\001 \001(\t\022\025\n"
-    "\rgeneration_id\030\002 \001(\t\022\014\n\004type\030\003 \001(\t\022\022\n\nat"
-    "_unix_ms\030\004 \001(\003\022\022\n\nconfidence\030\005 \001(\002\022\023\n\013de"
-    "tail_json\030\006 \001(\t\"e\n\014AgentRequest\022\017\n\007call_"
-    "id\030\001 \001(\t\022\025\n\rgeneration_id\030\002 \001(\t\022\027\n\017final"
-    "_user_text\030\003 \001(\t\022\024\n\014context_json\030\004 \001(\t\"e"
-    "\n\nAgentEvent\022\017\n\007call_id\030\001 \001(\t\022\025\n\rgenerat"
-    "ion_id\030\002 \001(\t\022\014\n\004type\030\003 \001(\t\022\014\n\004text\030\004 \001(\t"
-    "\022\023\n\013detail_json\030\005 \001(\t\"v\n\020RecognitionEven"
-    "t\022\017\n\007call_id\030\001 \001(\t\022\025\n\rgeneration_id\030\002 \001("
-    "\t\022\014\n\004text\030\003 \001(\t\022\020\n\010is_final\030\004 \001(\010\022\032\n\022pro"
-    "cessed_audio_ms\030\005 \001(\r\"H\n\020SynthesisReques"
-    "t\022\017\n\007call_id\030\001 \001(\t\022\025\n\rgeneration_id\030\002 \001("
-    "\t\022\014\n\004text\030\003 \001(\t\"7\n\rCancelRequest\022\017\n\007call"
-    "_id\030\001 \001(\t\022\025\n\rgeneration_id\030\002 \001(\t\" \n\013Canc"
-    "elReply\022\021\n\tcancelled\030\001 \001(\010\"x\n\016PlaybackRe"
-    "port\022\017\n\007call_id\030\001 \001(\t\022\025\n\rgeneration_id\030\002"
-    " \001(\t\022\024\n\014phrase_index\030\003 \001(\r\022\025\n\rsent_audio"
-    "_ms\030\004 \001(\r\022\021\n\tcompleted\030\005 \001(\010\"*\n\007CallEnd\022"
-    "\017\n\007call_id\030\001 \001(\t\022\016\n\006reason\030\002 \001(\t\"\034\n\010Agen"
-    "tAck\022\020\n\010accepted\030\001 \001(\0102V\n\013Recognition\022G\n"
-    "\017StreamRecognize\022\024.voice.v1.AudioFrame\032\032"
-    ".voice.v1.RecognitionEvent(\0010\0012S\n\tSynthe"
-    "sis\022F\n\020StreamSynthesize\022\032.voice.v1.Synth"
-    "esisRequest\032\024.voice.v1.AudioFrame0\0012\264\001\n\005"
-    "Agent\0229\n\007RunTurn\022\026.voice.v1.AgentRequest"
-    "\032\024.voice.v1.AgentEvent0\001\022>\n\016ReportPlayba"
-    "ck\022\030.voice.v1.PlaybackReport\032\022.voice.v1."
-    "AgentAck\0220\n\007EndCall\022\021.voice.v1.CallEnd\032\022"
-    ".voice.v1.AgentAck2W\n\021GenerationControl\022"
-    "B\n\020CancelGeneration\022\027.voice.v1.CancelReq"
-    "uest\032\025.voice.v1.CancelReplyb\006proto3"
+    "d\030\010 \001(\t\022\024\n\014partial_hint\030\t \001(\010\"~\n\tTurnEve"
+    "nt\022\017\n\007call_id\030\001 \001(\t\022\025\n\rgeneration_id\030\002 \001"
+    "(\t\022\014\n\004type\030\003 \001(\t\022\022\n\nat_unix_ms\030\004 \001(\003\022\022\n\n"
+    "confidence\030\005 \001(\002\022\023\n\013detail_json\030\006 \001(\t\"e\n"
+    "\014AgentRequest\022\017\n\007call_id\030\001 \001(\t\022\025\n\rgenera"
+    "tion_id\030\002 \001(\t\022\027\n\017final_user_text\030\003 \001(\t\022\024"
+    "\n\014context_json\030\004 \001(\t\"e\n\nAgentEvent\022\017\n\007ca"
+    "ll_id\030\001 \001(\t\022\025\n\rgeneration_id\030\002 \001(\t\022\014\n\004ty"
+    "pe\030\003 \001(\t\022\014\n\004text\030\004 \001(\t\022\023\n\013detail_json\030\005 "
+    "\001(\t\"v\n\020RecognitionEvent\022\017\n\007call_id\030\001 \001(\t"
+    "\022\025\n\rgeneration_id\030\002 \001(\t\022\014\n\004text\030\003 \001(\t\022\020\n"
+    "\010is_final\030\004 \001(\010\022\032\n\022processed_audio_ms\030\005 "
+    "\001(\r\"H\n\020SynthesisRequest\022\017\n\007call_id\030\001 \001(\t"
+    "\022\025\n\rgeneration_id\030\002 \001(\t\022\014\n\004text\030\003 \001(\t\"7\n"
+    "\rCancelRequest\022\017\n\007call_id\030\001 \001(\t\022\025\n\rgener"
+    "ation_id\030\002 \001(\t\" \n\013CancelReply\022\021\n\tcancell"
+    "ed\030\001 \001(\010\"\263\001\n\030RecognitionConfiguration\022\026\n"
+    "\016schema_version\030\001 \001(\r\022J\n\014replacements\030\002 "
+    "\003(\01324.voice.v1.RecognitionConfiguration."
+    "ReplacementsEntry\0323\n\021ReplacementsEntry\022\013"
+    "\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"\227\001\n\034Recog"
+    "nitionCallConfiguration\022\017\n\007call_id\030\001 \001(\t"
+    "\022\022\n\nrelease_id\030\002 \001(\t\022\027\n\017manifest_digest\030"
+    "\003 \001(\t\0229\n\rconfiguration\030\004 \001(\0132\".voice.v1."
+    "RecognitionConfiguration\"\240\001\n\026SynthesisCo"
+    "nfiguration\022\026\n\016schema_version\030\001 \001(\r\022\r\n\005m"
+    "odel\030\002 \001(\t\022\026\n\016model_revision\030\003 \001(\t\022\r\n\005vo"
+    "ice\030\004 \001(\t\022\026\n\016sample_rate_hz\030\005 \001(\r\022\020\n\010cha"
+    "nnels\030\006 \001(\r\022\016\n\006format\030\007 \001(\t\"\223\001\n\032Synthesi"
+    "sCallConfiguration\022\017\n\007call_id\030\001 \001(\t\022\022\n\nr"
+    "elease_id\030\002 \001(\t\022\027\n\017manifest_digest\030\003 \001(\t"
+    "\0227\n\rconfiguration\030\004 \001(\0132 .voice.v1.Synth"
+    "esisConfiguration\"x\n\016PlaybackReport\022\017\n\007c"
+    "all_id\030\001 \001(\t\022\025\n\rgeneration_id\030\002 \001(\t\022\024\n\014p"
+    "hrase_index\030\003 \001(\r\022\025\n\rsent_audio_ms\030\004 \001(\r"
+    "\022\021\n\tcompleted\030\005 \001(\010\"\216\001\n\007CallEnd\022\017\n\007call_"
+    "id\030\001 \001(\t\022\016\n\006reason\030\002 \001(\t\022\033\n\023answered_at_"
+    "unix_ms\030\003 \001(\003\022\030\n\020ended_at_unix_ms\030\004 \001(\003\022"
+    "\022\n\nrelease_id\030\005 \001(\t\022\027\n\017manifest_digest\030\006"
+    " \001(\t\"\034\n\010AgentAck\022\020\n\010accepted\030\001 \001(\010\"g\n\nCa"
+    "llAnswer\022\017\n\007call_id\030\001 \001(\t\022\022\n\nrelease_id\030"
+    "\002 \001(\t\022\027\n\017manifest_digest\030\003 \001(\t\022\033\n\023answer"
+    "ed_at_unix_ms\030\004 \001(\003\"m\n\031CallInitializatio"
+    "nRequest\022\017\n\007call_id\030\001 \001(\t\022\023\n\013called_e164"
+    "\030\002 \001(\t\022\025\n\rcalled_source\030\003 \001(\t\022\023\n\013caller_"
+    "e164\030\004 \001(\t\"\205\003\n\021NativeCalibration\022\026\n\016sche"
+    "ma_version\030\001 \001(\r\022\024\n\014partial_hint\030\002 \001(\010\022\023"
+    "\n\013vad_percent\030\003 \001(\r\022\024\n\014candidate_ms\030\004 \001("
+    "\r\022\021\n\tyes_no_ms\030\005 \001(\r\022\017\n\007open_ms\030\006 \001(\r\022\024\n"
+    "\014uncertain_ms\030\007 \001(\r\022\025\n\rincomplete_ms\030\010 \001"
+    "(\r\022\033\n\023silence_reminder_ms\030\t \001(\r\022\035\n\025inter"
+    "rupt_vad_percent\030\n \001(\r\022\036\n\026interrupt_min_"
+    "voice_ms\030\013 \001(\r\022$\n\034interrupt_sustained_vo"
+    "ice_ms\030\014 \001(\r\022\036\n\026interrupt_max_quiet_ms\030\r"
+    " \001(\r\022$\n\034interrupt_sustained_quiet_ms\030\016 \001"
+    "(\r\"\207\001\n\014OutputBudget\022\026\n\016schema_version\030\001 "
+    "\001(\r\022\030\n\020phrase_max_chars\030\002 \001(\r\022\030\n\020phrase_"
+    "max_bytes\030\003 \001(\r\022\023\n\013max_phrases\030\004 \001(\r\022\026\n\016"
+    "turn_max_bytes\030\005 \001(\r\"\243\002\n\024GatewayConfigur"
+    "ation\022\026\n\016schema_version\030\001 \001(\r\022\030\n\020max_cal"
+    "l_seconds\030\002 \001(\r\022\027\n\017answer_delay_ms\030\003 \001(\r"
+    "\022\030\n\020closing_delay_ms\030\004 \001(\r\022\026\n\016media_drai"
+    "n_ms\030\005 \001(\r\022\026\n\016max_call_turns\030\006 \001(\r\022\034\n\024tu"
+    "rn_timeout_seconds\030\007 \001(\r\0220\n\013calibration\030"
+    "\010 \001(\0132\033.voice.v1.NativeCalibration\022&\n\006ou"
+    "tput\030\t \001(\0132\026.voice.v1.OutputBudget\"\377\001\n\027C"
+    "allInitializationReply\022\022\n\nrelease_id\030\001 \001"
+    "(\t\022\027\n\017manifest_digest\030\002 \001(\t\022\030\n\020ready_for"
+    "_answer\030\003 \001(\010\0227\n\013recognition\030\004 \001(\0132\".voi"
+    "ce.v1.RecognitionConfiguration\0223\n\tsynthe"
+    "sis\030\005 \001(\0132 .voice.v1.SynthesisConfigurat"
+    "ion\022/\n\007gateway\030\006 \001(\0132\036.voice.v1.GatewayC"
+    "onfiguration\"(\n\025CallSetupCancellation\022\017\n"
+    "\007call_id\030\001 \001(\t\"T\n\024PreparedAudioRequest\022\017"
+    "\n\007call_id\030\001 \001(\t\022\022\n\nrelease_id\030\002 \001(\t\022\027\n\017m"
+    "anifest_digest\030\003 \001(\t\"\305\001\n\022PreparedAudioRe"
+    "ply\022\017\n\007call_id\030\001 \001(\t\022\022\n\nrelease_id\030\002 \001(\t"
+    "\022\027\n\017manifest_digest\030\003 \001(\t\022\024\n\014greeting_pc"
+    "m\030\004 \001(\014\022\027\n\017unavailable_pcm\030\005 \001(\014\022\027\n\017gree"
+    "ting_pad_ms\030\006 \001(\r\022\023\n\013waiting_pcm\030\007 \001(\014\022\024"
+    "\n\014waiting_text\030\010 \001(\t\"2\n\020CallLeaseRequest"
+    "\022\017\n\007call_id\030\001 \001(\t\022\r\n\005lease\030\002 \001(\t\"\037\n\016Call"
+    "LeaseReply\022\r\n\005lease\030\001 \001(\t2\243\001\n\013Recognitio"
+    "n\022K\n\rConfigureCall\022&.voice.v1.Recognitio"
+    "nCallConfiguration\032\022.voice.v1.AgentAck\022G"
+    "\n\017StreamRecognize\022\024.voice.v1.AudioFrame\032"
+    "\032.voice.v1.RecognitionEvent(\0010\0012\236\001\n\tSynt"
+    "hesis\022I\n\rConfigureCall\022$.voice.v1.Synthe"
+    "sisCallConfiguration\032\022.voice.v1.AgentAck"
+    "\022F\n\020StreamSynthesize\022\032.voice.v1.Synthesi"
+    "sRequest\032\024.voice.v1.AudioFrame0\0012\350\003\n\005Age"
+    "nt\022X\n\016InitializeCall\022#.voice.v1.CallInit"
+    "ializationRequest\032!.voice.v1.CallInitial"
+    "izationReply\022F\n\017CancelCallSetup\022\037.voice."
+    "v1.CallSetupCancellation\032\022.voice.v1.Agen"
+    "tAck\022P\n\020GetPreparedAudio\022\036.voice.v1.Prep"
+    "aredAudioRequest\032\034.voice.v1.PreparedAudi"
+    "oReply\0229\n\007RunTurn\022\026.voice.v1.AgentReques"
+    "t\032\024.voice.v1.AgentEvent0\001\022>\n\016ReportPlayb"
+    "ack\022\030.voice.v1.PlaybackReport\032\022.voice.v1"
+    ".AgentAck\022>\n\022ReportCallAnswered\022\024.voice."
+    "v1.CallAnswer\032\022.voice.v1.AgentAck\0220\n\007End"
+    "Call\022\021.voice.v1.CallEnd\032\022.voice.v1.Agent"
+    "Ack2\330\001\n\021GenerationControl\022B\n\020CancelGener"
+    "ation\022\027.voice.v1.CancelRequest\032\025.voice.v"
+    "1.CancelReply\022@\n\010OpenCall\022\032.voice.v1.Cal"
+    "lLeaseRequest\032\030.voice.v1.CallLeaseReply\022"
+    "=\n\013ReleaseCall\022\032.voice.v1.CallLeaseReque"
+    "st\032\022.voice.v1.AgentAckb\006proto3"
 };
 static ::absl::once_flag descriptor_table_voice_2fv1_2fvoice_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_voice_2fv1_2fvoice_2eproto = {
     false,
     false,
-    1475,
+    4550,
     descriptor_table_protodef_voice_2fv1_2fvoice_2eproto,
     "voice/v1/voice.proto",
     &descriptor_table_voice_2fv1_2fvoice_2eproto_once,
     nullptr,
     0,
-    11,
+    27,
     schemas,
     file_default_instances,
     TableStruct_voice_2fv1_2fvoice_2eproto::offsets,
@@ -651,9 +1497,9 @@ AudioFrame::AudioFrame(
                offsetof(Impl_, sequence_),
            reinterpret_cast<const char *>(&from._impl_) +
                offsetof(Impl_, sequence_),
-           offsetof(Impl_, channels_) -
+           offsetof(Impl_, partial_hint_) -
                offsetof(Impl_, sequence_) +
-               sizeof(Impl_::channels_));
+               sizeof(Impl_::partial_hint_));
 
   // @@protoc_insertion_point(copy_constructor:voice.v1.AudioFrame)
 }
@@ -671,9 +1517,9 @@ inline void AudioFrame::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   ::memset(reinterpret_cast<char *>(&_impl_) +
                offsetof(Impl_, sequence_),
            0,
-           offsetof(Impl_, channels_) -
+           offsetof(Impl_, partial_hint_) -
                offsetof(Impl_, sequence_) +
-               sizeof(Impl_::channels_));
+               sizeof(Impl_::partial_hint_));
 }
 AudioFrame::~AudioFrame() {
   // @@protoc_insertion_point(destructor:voice.v1.AudioFrame)
@@ -733,16 +1579,16 @@ AudioFrame::GetClassData() const {
   return AudioFrame_class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<3, 8, 0, 62, 2>
+const ::_pbi::TcParseTable<4, 9, 0, 62, 2>
 AudioFrame::_table_ = {
   {
     PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_._has_bits_),
     0, // no _extensions_
-    8, 56,  // max_field_number, fast_idx_mask
+    9, 120,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967040,  // skipmap
+    4294966784,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    8,  // num_field_entries
+    9,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     AudioFrame_class_data_.base(),
@@ -752,9 +1598,7 @@ AudioFrame::_table_ = {
     ::_pbi::TcParser::GetTable<::voice::v1::AudioFrame>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    // string generation_id = 8;
-    {::_pbi::TcParser::FastUS1,
-     {66, 3, 0, PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.generation_id_)}},
+    {::_pbi::TcParser::MiniParse, {}},
     // string call_id = 1;
     {::_pbi::TcParser::FastUS1,
      {10, 0, 0, PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.call_id_)}},
@@ -776,6 +1620,18 @@ AudioFrame::_table_ = {
     // bytes audio = 7;
     {::_pbi::TcParser::FastBS1,
      {58, 2, 0, PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.audio_)}},
+    // string generation_id = 8;
+    {::_pbi::TcParser::FastUS1,
+     {66, 3, 0, PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.generation_id_)}},
+    // bool partial_hint = 9;
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(AudioFrame, _impl_.partial_hint_), 8>(),
+     {72, 8, 0, PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.partial_hint_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
   }}, {{
     65535, 65535
   }}, {{
@@ -803,6 +1659,9 @@ AudioFrame::_table_ = {
     // string generation_id = 8;
     {PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.generation_id_), _Internal::kHasBitsOffset + 3, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // bool partial_hint = 9;
+    {PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.partial_hint_), _Internal::kHasBitsOffset + 8, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kBool)},
   }},
   // no aux_entries
   {{
@@ -840,6 +1699,7 @@ PROTOBUF_NOINLINE void AudioFrame::Clear() {
         reinterpret_cast<char*>(&_impl_.channels_) -
         reinterpret_cast<char*>(&_impl_.sequence_)) + sizeof(_impl_.channels_));
   }
+  _impl_.partial_hint_ = false;
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -933,6 +1793,15 @@ PROTOBUF_NOINLINE void AudioFrame::Clear() {
     }
   }
 
+  // bool partial_hint = 9;
+  if ((this_._impl_._has_bits_[0] & 0x00000100u) != 0) {
+    if (this_._internal_partial_hint() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteBoolToArray(
+          9, this_._internal_partial_hint(), target);
+    }
+  }
+
   if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
     target =
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -1016,6 +1885,14 @@ PROTOBUF_NOINLINE void AudioFrame::Clear() {
       }
     }
   }
+   {
+    // bool partial_hint = 9;
+    if ((cached_has_bits & 0x00000100u) != 0) {
+      if (this_._internal_partial_hint() != 0) {
+        total_size += 2;
+      }
+    }
+  }
   return this_.MaybeComputeUnknownFieldsSize(total_size,
                                              &this_._impl_._cached_size_);
 }
@@ -1087,6 +1964,11 @@ void AudioFrame::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::goog
       }
     }
   }
+  if ((cached_has_bits & 0x00000100u) != 0) {
+    if (from._internal_partial_hint() != 0) {
+      _this->_impl_.partial_hint_ = from._impl_.partial_hint_;
+    }
+  }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -1110,8 +1992,8 @@ void AudioFrame::InternalSwap(AudioFrame* PROTOBUF_RESTRICT PROTOBUF_NONNULL oth
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.audio_, &other->_impl_.audio_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.generation_id_, &other->_impl_.generation_id_, arena);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.channels_)
-      + sizeof(AudioFrame::_impl_.channels_)
+      PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.partial_hint_)
+      + sizeof(AudioFrame::_impl_.partial_hint_)
       - PROTOBUF_FIELD_OFFSET(AudioFrame, _impl_.sequence_)>(
           reinterpret_cast<char*>(&_impl_.sequence_),
           reinterpret_cast<char*>(&other->_impl_.sequence_));
@@ -3721,6 +4603,1698 @@ void CancelReply::InternalSwap(CancelReply* PROTOBUF_RESTRICT PROTOBUF_NONNULL o
 }
 // ===================================================================
 
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+RecognitionConfiguration_ReplacementsEntry_DoNotUse::RecognitionConfiguration_ReplacementsEntry_DoNotUse()
+    : SuperType(RecognitionConfiguration_ReplacementsEntry_DoNotUse_class_data_.base()) {}
+RecognitionConfiguration_ReplacementsEntry_DoNotUse::RecognitionConfiguration_ReplacementsEntry_DoNotUse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+    : SuperType(arena, RecognitionConfiguration_ReplacementsEntry_DoNotUse_class_data_.base()) {}
+#else   // PROTOBUF_CUSTOM_VTABLE
+RecognitionConfiguration_ReplacementsEntry_DoNotUse::RecognitionConfiguration_ReplacementsEntry_DoNotUse() : SuperType() {}
+RecognitionConfiguration_ReplacementsEntry_DoNotUse::RecognitionConfiguration_ReplacementsEntry_DoNotUse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena) : SuperType(arena) {}
+#endif  // PROTOBUF_CUSTOM_VTABLE
+inline void* PROTOBUF_NONNULL RecognitionConfiguration_ReplacementsEntry_DoNotUse::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) RecognitionConfiguration_ReplacementsEntry_DoNotUse(arena);
+}
+constexpr auto RecognitionConfiguration_ReplacementsEntry_DoNotUse::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(RecognitionConfiguration_ReplacementsEntry_DoNotUse),
+                                            alignof(RecognitionConfiguration_ReplacementsEntry_DoNotUse));
+}
+constexpr auto RecognitionConfiguration_ReplacementsEntry_DoNotUse::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_RecognitionConfiguration_ReplacementsEntry_DoNotUse_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // OnDemandRegisterArenaDtor
+          nullptr,  // IsInitialized
+          &RecognitionConfiguration_ReplacementsEntry_DoNotUse::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<RecognitionConfiguration_ReplacementsEntry_DoNotUse>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &RecognitionConfiguration_ReplacementsEntry_DoNotUse::SharedDtor,
+          static_cast<void (::google::protobuf::MessageLite::*)()>(&RecognitionConfiguration_ReplacementsEntry_DoNotUse::ClearImpl),
+              ::google::protobuf::Message::ByteSizeLongImpl, ::google::protobuf::Message::_InternalSerializeImpl
+              ,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(RecognitionConfiguration_ReplacementsEntry_DoNotUse, _impl_._cached_size_),
+          false,
+      },
+      &RecognitionConfiguration_ReplacementsEntry_DoNotUse::kDescriptorMethods,
+      &descriptor_table_voice_2fv1_2fvoice_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull RecognitionConfiguration_ReplacementsEntry_DoNotUse_class_data_ =
+        RecognitionConfiguration_ReplacementsEntry_DoNotUse::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+RecognitionConfiguration_ReplacementsEntry_DoNotUse::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&RecognitionConfiguration_ReplacementsEntry_DoNotUse_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(RecognitionConfiguration_ReplacementsEntry_DoNotUse_class_data_.tc_table);
+  return RecognitionConfiguration_ReplacementsEntry_DoNotUse_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<1, 2, 0, 68, 2>
+RecognitionConfiguration_ReplacementsEntry_DoNotUse::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(RecognitionConfiguration_ReplacementsEntry_DoNotUse, _impl_._has_bits_),
+    0, // no _extensions_
+    2, 8,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967292,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    2,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    RecognitionConfiguration_ReplacementsEntry_DoNotUse_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::DiscardEverythingFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::voice::v1::RecognitionConfiguration_ReplacementsEntry_DoNotUse>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // string value = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 1, 0, PROTOBUF_FIELD_OFFSET(RecognitionConfiguration_ReplacementsEntry_DoNotUse, _impl_.value_)}},
+    // string key = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 0, 0, PROTOBUF_FIELD_OFFSET(RecognitionConfiguration_ReplacementsEntry_DoNotUse, _impl_.key_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string key = 1;
+    {PROTOBUF_FIELD_OFFSET(RecognitionConfiguration_ReplacementsEntry_DoNotUse, _impl_.key_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string value = 2;
+    {PROTOBUF_FIELD_OFFSET(RecognitionConfiguration_ReplacementsEntry_DoNotUse, _impl_.value_), _Internal::kHasBitsOffset + 1, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }},
+  // no aux_entries
+  {{
+    "\63\3\5\0\0\0\0\0"
+    "voice.v1.RecognitionConfiguration.ReplacementsEntry"
+    "key"
+    "value"
+  }},
+};
+// ===================================================================
+
+class RecognitionConfiguration::_Internal {
+ public:
+  using HasBits =
+      decltype(::std::declval<RecognitionConfiguration>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(RecognitionConfiguration, _impl_._has_bits_);
+};
+
+RecognitionConfiguration::RecognitionConfiguration(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, RecognitionConfiguration_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:voice.v1.RecognitionConfiguration)
+}
+PROTOBUF_NDEBUG_INLINE RecognitionConfiguration::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    const ::voice::v1::RecognitionConfiguration& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        replacements_{visibility, arena, from.replacements_} {}
+
+RecognitionConfiguration::RecognitionConfiguration(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const RecognitionConfiguration& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, RecognitionConfiguration_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  RecognitionConfiguration* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  _impl_.schema_version_ = from._impl_.schema_version_;
+
+  // @@protoc_insertion_point(copy_constructor:voice.v1.RecognitionConfiguration)
+}
+PROTOBUF_NDEBUG_INLINE RecognitionConfiguration::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        replacements_{visibility, arena} {}
+
+inline void RecognitionConfiguration::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.schema_version_ = {};
+}
+RecognitionConfiguration::~RecognitionConfiguration() {
+  // @@protoc_insertion_point(destructor:voice.v1.RecognitionConfiguration)
+  SharedDtor(*this);
+}
+inline void RecognitionConfiguration::SharedDtor(MessageLite& self) {
+  RecognitionConfiguration& this_ = static_cast<RecognitionConfiguration&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* PROTOBUF_NONNULL RecognitionConfiguration::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) RecognitionConfiguration(arena);
+}
+constexpr auto RecognitionConfiguration::InternalNewImpl_() {
+  constexpr auto arena_bits = ::google::protobuf::internal::EncodePlacementArenaOffsets({
+      PROTOBUF_FIELD_OFFSET(RecognitionConfiguration, _impl_.replacements_) +
+          decltype(RecognitionConfiguration::_impl_.replacements_)::
+              InternalGetArenaOffset(
+                  ::google::protobuf::Message::internal_visibility()),
+      PROTOBUF_FIELD_OFFSET(RecognitionConfiguration, _impl_.replacements_) +
+          decltype(RecognitionConfiguration::_impl_.replacements_)::
+              InternalGetArenaOffsetAlt(
+                  ::google::protobuf::Message::internal_visibility()),
+  });
+  if (arena_bits.has_value()) {
+    return ::google::protobuf::internal::MessageCreator::CopyInit(
+        sizeof(RecognitionConfiguration), alignof(RecognitionConfiguration), *arena_bits);
+  } else {
+    return ::google::protobuf::internal::MessageCreator(&RecognitionConfiguration::PlacementNew_,
+                                 sizeof(RecognitionConfiguration),
+                                 alignof(RecognitionConfiguration));
+  }
+}
+constexpr auto RecognitionConfiguration::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_RecognitionConfiguration_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // OnDemandRegisterArenaDtor
+          nullptr,  // IsInitialized
+          &RecognitionConfiguration::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<RecognitionConfiguration>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &RecognitionConfiguration::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<RecognitionConfiguration>(), &RecognitionConfiguration::ByteSizeLong,
+              &RecognitionConfiguration::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(RecognitionConfiguration, _impl_._cached_size_),
+          false,
+      },
+      &RecognitionConfiguration::kDescriptorMethods,
+      &descriptor_table_voice_2fv1_2fvoice_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull RecognitionConfiguration_class_data_ =
+        RecognitionConfiguration::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+RecognitionConfiguration::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&RecognitionConfiguration_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(RecognitionConfiguration_class_data_.tc_table);
+  return RecognitionConfiguration_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<0, 2, 1, 54, 2>
+RecognitionConfiguration::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(RecognitionConfiguration, _impl_._has_bits_),
+    0, // no _extensions_
+    2, 0,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967292,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    2,  // num_field_entries
+    1,  // num_aux_entries
+    offsetof(decltype(_table_), aux_entries),
+    RecognitionConfiguration_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::voice::v1::RecognitionConfiguration>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // uint32 schema_version = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(RecognitionConfiguration, _impl_.schema_version_), 0>(),
+     {8, 0, 0, PROTOBUF_FIELD_OFFSET(RecognitionConfiguration, _impl_.schema_version_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint32 schema_version = 1;
+    {PROTOBUF_FIELD_OFFSET(RecognitionConfiguration, _impl_.schema_version_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // map<string, string> replacements = 2;
+    {PROTOBUF_FIELD_OFFSET(RecognitionConfiguration, _impl_.replacements_), -1, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kMap)},
+  }},
+  {{
+      {::_pbi::TcParser::GetMapAuxInfo(1, 0, 0,
+                                       9, 9,
+                                       0)},
+  }},
+  {{
+    "\41\0\14\0\0\0\0\0"
+    "voice.v1.RecognitionConfiguration"
+    "replacements"
+  }},
+};
+PROTOBUF_NOINLINE void RecognitionConfiguration::Clear() {
+// @@protoc_insertion_point(message_clear_start:voice.v1.RecognitionConfiguration)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.replacements_.Clear();
+  _impl_.schema_version_ = 0u;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL RecognitionConfiguration::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const RecognitionConfiguration& this_ = static_cast<const RecognitionConfiguration&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL RecognitionConfiguration::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const RecognitionConfiguration& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(serialize_to_array_start:voice.v1.RecognitionConfiguration)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  // uint32 schema_version = 1;
+  if ((this_._impl_._has_bits_[0] & 0x00000001u) != 0) {
+    if (this_._internal_schema_version() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          1, this_._internal_schema_version(), target);
+    }
+  }
+
+  // map<string, string> replacements = 2;
+  if (!this_._internal_replacements().empty()) {
+    using MapType = ::google::protobuf::Map<std::string, std::string>;
+    using WireHelper = _pbi::MapEntryFuncs<std::string, std::string,
+                                   _pbi::WireFormatLite::TYPE_STRING,
+                                   _pbi::WireFormatLite::TYPE_STRING>;
+    const auto& field = this_._internal_replacements();
+
+    if (stream->IsSerializationDeterministic() && field.size() > 1) {
+      for (const auto& entry : ::google::protobuf::internal::MapSorterPtr<MapType>(field)) {
+        target = WireHelper::InternalSerialize(
+            2, entry.first, entry.second, target, stream);
+        ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            entry.first.data(), static_cast<int>(entry.first.length()),
+ ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.RecognitionConfiguration.replacements");
+        ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            entry.second.data(), static_cast<int>(entry.second.length()),
+ ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.RecognitionConfiguration.replacements");
+      }
+    } else {
+      for (const auto& entry : field) {
+        target = WireHelper::InternalSerialize(
+            2, entry.first, entry.second, target, stream);
+        ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            entry.first.data(), static_cast<int>(entry.first.length()),
+ ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.RecognitionConfiguration.replacements");
+        ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            entry.second.data(), static_cast<int>(entry.second.length()),
+ ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.RecognitionConfiguration.replacements");
+      }
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:voice.v1.RecognitionConfiguration)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t RecognitionConfiguration::ByteSizeLong(const MessageLite& base) {
+  const RecognitionConfiguration& this_ = static_cast<const RecognitionConfiguration&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t RecognitionConfiguration::ByteSizeLong() const {
+  const RecognitionConfiguration& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:voice.v1.RecognitionConfiguration)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+   {
+    // map<string, string> replacements = 2;
+    {
+      total_size +=
+          1 * ::google::protobuf::internal::FromIntSize(this_._internal_replacements_size());
+      for (const auto& entry : this_._internal_replacements()) {
+        total_size += _pbi::MapEntryFuncs<std::string, std::string,
+                                       _pbi::WireFormatLite::TYPE_STRING,
+                                       _pbi::WireFormatLite::TYPE_STRING>::ByteSizeLong(entry.first, entry.second);
+      }
+    }
+  }
+   {
+    // uint32 schema_version = 1;
+    cached_has_bits = this_._impl_._has_bits_[0];
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (this_._internal_schema_version() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_schema_version());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void RecognitionConfiguration::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<RecognitionConfiguration*>(&to_msg);
+  auto& from = static_cast<const RecognitionConfiguration&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:voice.v1.RecognitionConfiguration)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  _this->_impl_.replacements_.MergeFrom(from._impl_.replacements_);
+  cached_has_bits = from._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x00000001u) != 0) {
+    if (from._internal_schema_version() != 0) {
+      _this->_impl_.schema_version_ = from._impl_.schema_version_;
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void RecognitionConfiguration::CopyFrom(const RecognitionConfiguration& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:voice.v1.RecognitionConfiguration)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void RecognitionConfiguration::InternalSwap(RecognitionConfiguration* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  _impl_.replacements_.InternalSwap(&other->_impl_.replacements_);
+  swap(_impl_.schema_version_, other->_impl_.schema_version_);
+}
+
+::google::protobuf::Metadata RecognitionConfiguration::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class RecognitionCallConfiguration::_Internal {
+ public:
+  using HasBits =
+      decltype(::std::declval<RecognitionCallConfiguration>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(RecognitionCallConfiguration, _impl_._has_bits_);
+};
+
+RecognitionCallConfiguration::RecognitionCallConfiguration(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, RecognitionCallConfiguration_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:voice.v1.RecognitionCallConfiguration)
+}
+PROTOBUF_NDEBUG_INLINE RecognitionCallConfiguration::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    const ::voice::v1::RecognitionCallConfiguration& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        call_id_(arena, from.call_id_),
+        release_id_(arena, from.release_id_),
+        manifest_digest_(arena, from.manifest_digest_) {}
+
+RecognitionCallConfiguration::RecognitionCallConfiguration(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const RecognitionCallConfiguration& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, RecognitionCallConfiguration_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  RecognitionCallConfiguration* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::uint32_t cached_has_bits = _impl_._has_bits_[0];
+  _impl_.configuration_ = ((cached_has_bits & 0x00000008u) != 0)
+                ? ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.configuration_)
+                : nullptr;
+
+  // @@protoc_insertion_point(copy_constructor:voice.v1.RecognitionCallConfiguration)
+}
+PROTOBUF_NDEBUG_INLINE RecognitionCallConfiguration::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        call_id_(arena),
+        release_id_(arena),
+        manifest_digest_(arena) {}
+
+inline void RecognitionCallConfiguration::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.configuration_ = {};
+}
+RecognitionCallConfiguration::~RecognitionCallConfiguration() {
+  // @@protoc_insertion_point(destructor:voice.v1.RecognitionCallConfiguration)
+  SharedDtor(*this);
+}
+inline void RecognitionCallConfiguration::SharedDtor(MessageLite& self) {
+  RecognitionCallConfiguration& this_ = static_cast<RecognitionCallConfiguration&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.call_id_.Destroy();
+  this_._impl_.release_id_.Destroy();
+  this_._impl_.manifest_digest_.Destroy();
+  delete this_._impl_.configuration_;
+  this_._impl_.~Impl_();
+}
+
+inline void* PROTOBUF_NONNULL RecognitionCallConfiguration::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) RecognitionCallConfiguration(arena);
+}
+constexpr auto RecognitionCallConfiguration::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(RecognitionCallConfiguration),
+                                            alignof(RecognitionCallConfiguration));
+}
+constexpr auto RecognitionCallConfiguration::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_RecognitionCallConfiguration_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // OnDemandRegisterArenaDtor
+          nullptr,  // IsInitialized
+          &RecognitionCallConfiguration::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<RecognitionCallConfiguration>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &RecognitionCallConfiguration::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<RecognitionCallConfiguration>(), &RecognitionCallConfiguration::ByteSizeLong,
+              &RecognitionCallConfiguration::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(RecognitionCallConfiguration, _impl_._cached_size_),
+          false,
+      },
+      &RecognitionCallConfiguration::kDescriptorMethods,
+      &descriptor_table_voice_2fv1_2fvoice_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull RecognitionCallConfiguration_class_data_ =
+        RecognitionCallConfiguration::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+RecognitionCallConfiguration::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&RecognitionCallConfiguration_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(RecognitionCallConfiguration_class_data_.tc_table);
+  return RecognitionCallConfiguration_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<2, 4, 1, 78, 2>
+RecognitionCallConfiguration::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(RecognitionCallConfiguration, _impl_._has_bits_),
+    0, // no _extensions_
+    4, 24,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967280,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    4,  // num_field_entries
+    1,  // num_aux_entries
+    offsetof(decltype(_table_), aux_entries),
+    RecognitionCallConfiguration_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::voice::v1::RecognitionCallConfiguration>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // .voice.v1.RecognitionConfiguration configuration = 4;
+    {::_pbi::TcParser::FastMtS1,
+     {34, 3, 0, PROTOBUF_FIELD_OFFSET(RecognitionCallConfiguration, _impl_.configuration_)}},
+    // string call_id = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 0, 0, PROTOBUF_FIELD_OFFSET(RecognitionCallConfiguration, _impl_.call_id_)}},
+    // string release_id = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 1, 0, PROTOBUF_FIELD_OFFSET(RecognitionCallConfiguration, _impl_.release_id_)}},
+    // string manifest_digest = 3;
+    {::_pbi::TcParser::FastUS1,
+     {26, 2, 0, PROTOBUF_FIELD_OFFSET(RecognitionCallConfiguration, _impl_.manifest_digest_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string call_id = 1;
+    {PROTOBUF_FIELD_OFFSET(RecognitionCallConfiguration, _impl_.call_id_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string release_id = 2;
+    {PROTOBUF_FIELD_OFFSET(RecognitionCallConfiguration, _impl_.release_id_), _Internal::kHasBitsOffset + 1, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string manifest_digest = 3;
+    {PROTOBUF_FIELD_OFFSET(RecognitionCallConfiguration, _impl_.manifest_digest_), _Internal::kHasBitsOffset + 2, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // .voice.v1.RecognitionConfiguration configuration = 4;
+    {PROTOBUF_FIELD_OFFSET(RecognitionCallConfiguration, _impl_.configuration_), _Internal::kHasBitsOffset + 3, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+  }},
+  {{
+      {::_pbi::TcParser::GetTable<::voice::v1::RecognitionConfiguration>()},
+  }},
+  {{
+    "\45\7\12\17\0\0\0\0"
+    "voice.v1.RecognitionCallConfiguration"
+    "call_id"
+    "release_id"
+    "manifest_digest"
+  }},
+};
+PROTOBUF_NOINLINE void RecognitionCallConfiguration::Clear() {
+// @@protoc_insertion_point(message_clear_start:voice.v1.RecognitionCallConfiguration)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000000fu) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      _impl_.call_id_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      _impl_.release_id_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      _impl_.manifest_digest_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      ABSL_DCHECK(_impl_.configuration_ != nullptr);
+      _impl_.configuration_->Clear();
+    }
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL RecognitionCallConfiguration::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const RecognitionCallConfiguration& this_ = static_cast<const RecognitionCallConfiguration&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL RecognitionCallConfiguration::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const RecognitionCallConfiguration& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(serialize_to_array_start:voice.v1.RecognitionCallConfiguration)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  // string call_id = 1;
+  if ((this_._impl_._has_bits_[0] & 0x00000001u) != 0) {
+    if (!this_._internal_call_id().empty()) {
+      const ::std::string& _s = this_._internal_call_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.RecognitionCallConfiguration.call_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string release_id = 2;
+  if ((this_._impl_._has_bits_[0] & 0x00000002u) != 0) {
+    if (!this_._internal_release_id().empty()) {
+      const ::std::string& _s = this_._internal_release_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.RecognitionCallConfiguration.release_id");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  // string manifest_digest = 3;
+  if ((this_._impl_._has_bits_[0] & 0x00000004u) != 0) {
+    if (!this_._internal_manifest_digest().empty()) {
+      const ::std::string& _s = this_._internal_manifest_digest();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.RecognitionCallConfiguration.manifest_digest");
+      target = stream->WriteStringMaybeAliased(3, _s, target);
+    }
+  }
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // .voice.v1.RecognitionConfiguration configuration = 4;
+  if ((cached_has_bits & 0x00000008u) != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+        4, *this_._impl_.configuration_, this_._impl_.configuration_->GetCachedSize(), target,
+        stream);
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:voice.v1.RecognitionCallConfiguration)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t RecognitionCallConfiguration::ByteSizeLong(const MessageLite& base) {
+  const RecognitionCallConfiguration& this_ = static_cast<const RecognitionCallConfiguration&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t RecognitionCallConfiguration::ByteSizeLong() const {
+  const RecognitionCallConfiguration& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:voice.v1.RecognitionCallConfiguration)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000000fu) != 0) {
+    // string call_id = 1;
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!this_._internal_call_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_call_id());
+      }
+    }
+    // string release_id = 2;
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (!this_._internal_release_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_release_id());
+      }
+    }
+    // string manifest_digest = 3;
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (!this_._internal_manifest_digest().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_manifest_digest());
+      }
+    }
+    // .voice.v1.RecognitionConfiguration configuration = 4;
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      total_size += 1 +
+                    ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.configuration_);
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void RecognitionCallConfiguration::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<RecognitionCallConfiguration*>(&to_msg);
+  auto& from = static_cast<const RecognitionCallConfiguration&>(from_msg);
+  ::google::protobuf::Arena* arena = _this->GetArena();
+  // @@protoc_insertion_point(class_specific_merge_from_start:voice.v1.RecognitionCallConfiguration)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000000fu) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!from._internal_call_id().empty()) {
+        _this->_internal_set_call_id(from._internal_call_id());
+      } else {
+        if (_this->_impl_.call_id_.IsDefault()) {
+          _this->_internal_set_call_id("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (!from._internal_release_id().empty()) {
+        _this->_internal_set_release_id(from._internal_release_id());
+      } else {
+        if (_this->_impl_.release_id_.IsDefault()) {
+          _this->_internal_set_release_id("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (!from._internal_manifest_digest().empty()) {
+        _this->_internal_set_manifest_digest(from._internal_manifest_digest());
+      } else {
+        if (_this->_impl_.manifest_digest_.IsDefault()) {
+          _this->_internal_set_manifest_digest("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      ABSL_DCHECK(from._impl_.configuration_ != nullptr);
+      if (_this->_impl_.configuration_ == nullptr) {
+        _this->_impl_.configuration_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.configuration_);
+      } else {
+        _this->_impl_.configuration_->MergeFrom(*from._impl_.configuration_);
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void RecognitionCallConfiguration::CopyFrom(const RecognitionCallConfiguration& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:voice.v1.RecognitionCallConfiguration)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void RecognitionCallConfiguration::InternalSwap(RecognitionCallConfiguration* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.call_id_, &other->_impl_.call_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.release_id_, &other->_impl_.release_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.manifest_digest_, &other->_impl_.manifest_digest_, arena);
+  swap(_impl_.configuration_, other->_impl_.configuration_);
+}
+
+::google::protobuf::Metadata RecognitionCallConfiguration::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class SynthesisConfiguration::_Internal {
+ public:
+  using HasBits =
+      decltype(::std::declval<SynthesisConfiguration>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(SynthesisConfiguration, _impl_._has_bits_);
+};
+
+SynthesisConfiguration::SynthesisConfiguration(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, SynthesisConfiguration_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:voice.v1.SynthesisConfiguration)
+}
+PROTOBUF_NDEBUG_INLINE SynthesisConfiguration::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    const ::voice::v1::SynthesisConfiguration& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        model_(arena, from.model_),
+        model_revision_(arena, from.model_revision_),
+        voice_(arena, from.voice_),
+        format_(arena, from.format_) {}
+
+SynthesisConfiguration::SynthesisConfiguration(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const SynthesisConfiguration& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, SynthesisConfiguration_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SynthesisConfiguration* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, schema_version_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, schema_version_),
+           offsetof(Impl_, channels_) -
+               offsetof(Impl_, schema_version_) +
+               sizeof(Impl_::channels_));
+
+  // @@protoc_insertion_point(copy_constructor:voice.v1.SynthesisConfiguration)
+}
+PROTOBUF_NDEBUG_INLINE SynthesisConfiguration::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        model_(arena),
+        model_revision_(arena),
+        voice_(arena),
+        format_(arena) {}
+
+inline void SynthesisConfiguration::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, schema_version_),
+           0,
+           offsetof(Impl_, channels_) -
+               offsetof(Impl_, schema_version_) +
+               sizeof(Impl_::channels_));
+}
+SynthesisConfiguration::~SynthesisConfiguration() {
+  // @@protoc_insertion_point(destructor:voice.v1.SynthesisConfiguration)
+  SharedDtor(*this);
+}
+inline void SynthesisConfiguration::SharedDtor(MessageLite& self) {
+  SynthesisConfiguration& this_ = static_cast<SynthesisConfiguration&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.model_.Destroy();
+  this_._impl_.model_revision_.Destroy();
+  this_._impl_.voice_.Destroy();
+  this_._impl_.format_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+inline void* PROTOBUF_NONNULL SynthesisConfiguration::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) SynthesisConfiguration(arena);
+}
+constexpr auto SynthesisConfiguration::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(SynthesisConfiguration),
+                                            alignof(SynthesisConfiguration));
+}
+constexpr auto SynthesisConfiguration::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_SynthesisConfiguration_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // OnDemandRegisterArenaDtor
+          nullptr,  // IsInitialized
+          &SynthesisConfiguration::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<SynthesisConfiguration>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &SynthesisConfiguration::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<SynthesisConfiguration>(), &SynthesisConfiguration::ByteSizeLong,
+              &SynthesisConfiguration::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(SynthesisConfiguration, _impl_._cached_size_),
+          false,
+      },
+      &SynthesisConfiguration::kDescriptorMethods,
+      &descriptor_table_voice_2fv1_2fvoice_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull SynthesisConfiguration_class_data_ =
+        SynthesisConfiguration::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+SynthesisConfiguration::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&SynthesisConfiguration_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(SynthesisConfiguration_class_data_.tc_table);
+  return SynthesisConfiguration_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<3, 7, 0, 70, 2>
+SynthesisConfiguration::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(SynthesisConfiguration, _impl_._has_bits_),
+    0, // no _extensions_
+    7, 56,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967168,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    7,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    SynthesisConfiguration_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::voice::v1::SynthesisConfiguration>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // uint32 schema_version = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SynthesisConfiguration, _impl_.schema_version_), 4>(),
+     {8, 4, 0, PROTOBUF_FIELD_OFFSET(SynthesisConfiguration, _impl_.schema_version_)}},
+    // string model = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 0, 0, PROTOBUF_FIELD_OFFSET(SynthesisConfiguration, _impl_.model_)}},
+    // string model_revision = 3;
+    {::_pbi::TcParser::FastUS1,
+     {26, 1, 0, PROTOBUF_FIELD_OFFSET(SynthesisConfiguration, _impl_.model_revision_)}},
+    // string voice = 4;
+    {::_pbi::TcParser::FastUS1,
+     {34, 2, 0, PROTOBUF_FIELD_OFFSET(SynthesisConfiguration, _impl_.voice_)}},
+    // uint32 sample_rate_hz = 5;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SynthesisConfiguration, _impl_.sample_rate_hz_), 5>(),
+     {40, 5, 0, PROTOBUF_FIELD_OFFSET(SynthesisConfiguration, _impl_.sample_rate_hz_)}},
+    // uint32 channels = 6;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SynthesisConfiguration, _impl_.channels_), 6>(),
+     {48, 6, 0, PROTOBUF_FIELD_OFFSET(SynthesisConfiguration, _impl_.channels_)}},
+    // string format = 7;
+    {::_pbi::TcParser::FastUS1,
+     {58, 3, 0, PROTOBUF_FIELD_OFFSET(SynthesisConfiguration, _impl_.format_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint32 schema_version = 1;
+    {PROTOBUF_FIELD_OFFSET(SynthesisConfiguration, _impl_.schema_version_), _Internal::kHasBitsOffset + 4, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // string model = 2;
+    {PROTOBUF_FIELD_OFFSET(SynthesisConfiguration, _impl_.model_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string model_revision = 3;
+    {PROTOBUF_FIELD_OFFSET(SynthesisConfiguration, _impl_.model_revision_), _Internal::kHasBitsOffset + 1, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string voice = 4;
+    {PROTOBUF_FIELD_OFFSET(SynthesisConfiguration, _impl_.voice_), _Internal::kHasBitsOffset + 2, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // uint32 sample_rate_hz = 5;
+    {PROTOBUF_FIELD_OFFSET(SynthesisConfiguration, _impl_.sample_rate_hz_), _Internal::kHasBitsOffset + 5, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 channels = 6;
+    {PROTOBUF_FIELD_OFFSET(SynthesisConfiguration, _impl_.channels_), _Internal::kHasBitsOffset + 6, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // string format = 7;
+    {PROTOBUF_FIELD_OFFSET(SynthesisConfiguration, _impl_.format_), _Internal::kHasBitsOffset + 3, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }},
+  // no aux_entries
+  {{
+    "\37\0\5\16\5\0\0\6"
+    "voice.v1.SynthesisConfiguration"
+    "model"
+    "model_revision"
+    "voice"
+    "format"
+  }},
+};
+PROTOBUF_NOINLINE void SynthesisConfiguration::Clear() {
+// @@protoc_insertion_point(message_clear_start:voice.v1.SynthesisConfiguration)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000000fu) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      _impl_.model_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      _impl_.model_revision_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      _impl_.voice_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      _impl_.format_.ClearNonDefaultToEmpty();
+    }
+  }
+  if ((cached_has_bits & 0x00000070u) != 0) {
+    ::memset(&_impl_.schema_version_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.channels_) -
+        reinterpret_cast<char*>(&_impl_.schema_version_)) + sizeof(_impl_.channels_));
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL SynthesisConfiguration::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const SynthesisConfiguration& this_ = static_cast<const SynthesisConfiguration&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL SynthesisConfiguration::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const SynthesisConfiguration& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(serialize_to_array_start:voice.v1.SynthesisConfiguration)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  // uint32 schema_version = 1;
+  if ((this_._impl_._has_bits_[0] & 0x00000010u) != 0) {
+    if (this_._internal_schema_version() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          1, this_._internal_schema_version(), target);
+    }
+  }
+
+  // string model = 2;
+  if ((this_._impl_._has_bits_[0] & 0x00000001u) != 0) {
+    if (!this_._internal_model().empty()) {
+      const ::std::string& _s = this_._internal_model();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.SynthesisConfiguration.model");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  // string model_revision = 3;
+  if ((this_._impl_._has_bits_[0] & 0x00000002u) != 0) {
+    if (!this_._internal_model_revision().empty()) {
+      const ::std::string& _s = this_._internal_model_revision();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.SynthesisConfiguration.model_revision");
+      target = stream->WriteStringMaybeAliased(3, _s, target);
+    }
+  }
+
+  // string voice = 4;
+  if ((this_._impl_._has_bits_[0] & 0x00000004u) != 0) {
+    if (!this_._internal_voice().empty()) {
+      const ::std::string& _s = this_._internal_voice();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.SynthesisConfiguration.voice");
+      target = stream->WriteStringMaybeAliased(4, _s, target);
+    }
+  }
+
+  // uint32 sample_rate_hz = 5;
+  if ((this_._impl_._has_bits_[0] & 0x00000020u) != 0) {
+    if (this_._internal_sample_rate_hz() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          5, this_._internal_sample_rate_hz(), target);
+    }
+  }
+
+  // uint32 channels = 6;
+  if ((this_._impl_._has_bits_[0] & 0x00000040u) != 0) {
+    if (this_._internal_channels() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          6, this_._internal_channels(), target);
+    }
+  }
+
+  // string format = 7;
+  if ((this_._impl_._has_bits_[0] & 0x00000008u) != 0) {
+    if (!this_._internal_format().empty()) {
+      const ::std::string& _s = this_._internal_format();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.SynthesisConfiguration.format");
+      target = stream->WriteStringMaybeAliased(7, _s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:voice.v1.SynthesisConfiguration)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t SynthesisConfiguration::ByteSizeLong(const MessageLite& base) {
+  const SynthesisConfiguration& this_ = static_cast<const SynthesisConfiguration&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t SynthesisConfiguration::ByteSizeLong() const {
+  const SynthesisConfiguration& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:voice.v1.SynthesisConfiguration)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000007fu) != 0) {
+    // string model = 2;
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!this_._internal_model().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_model());
+      }
+    }
+    // string model_revision = 3;
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (!this_._internal_model_revision().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_model_revision());
+      }
+    }
+    // string voice = 4;
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (!this_._internal_voice().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_voice());
+      }
+    }
+    // string format = 7;
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      if (!this_._internal_format().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_format());
+      }
+    }
+    // uint32 schema_version = 1;
+    if ((cached_has_bits & 0x00000010u) != 0) {
+      if (this_._internal_schema_version() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_schema_version());
+      }
+    }
+    // uint32 sample_rate_hz = 5;
+    if ((cached_has_bits & 0x00000020u) != 0) {
+      if (this_._internal_sample_rate_hz() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_sample_rate_hz());
+      }
+    }
+    // uint32 channels = 6;
+    if ((cached_has_bits & 0x00000040u) != 0) {
+      if (this_._internal_channels() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_channels());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void SynthesisConfiguration::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<SynthesisConfiguration*>(&to_msg);
+  auto& from = static_cast<const SynthesisConfiguration&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:voice.v1.SynthesisConfiguration)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000007fu) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!from._internal_model().empty()) {
+        _this->_internal_set_model(from._internal_model());
+      } else {
+        if (_this->_impl_.model_.IsDefault()) {
+          _this->_internal_set_model("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (!from._internal_model_revision().empty()) {
+        _this->_internal_set_model_revision(from._internal_model_revision());
+      } else {
+        if (_this->_impl_.model_revision_.IsDefault()) {
+          _this->_internal_set_model_revision("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (!from._internal_voice().empty()) {
+        _this->_internal_set_voice(from._internal_voice());
+      } else {
+        if (_this->_impl_.voice_.IsDefault()) {
+          _this->_internal_set_voice("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      if (!from._internal_format().empty()) {
+        _this->_internal_set_format(from._internal_format());
+      } else {
+        if (_this->_impl_.format_.IsDefault()) {
+          _this->_internal_set_format("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000010u) != 0) {
+      if (from._internal_schema_version() != 0) {
+        _this->_impl_.schema_version_ = from._impl_.schema_version_;
+      }
+    }
+    if ((cached_has_bits & 0x00000020u) != 0) {
+      if (from._internal_sample_rate_hz() != 0) {
+        _this->_impl_.sample_rate_hz_ = from._impl_.sample_rate_hz_;
+      }
+    }
+    if ((cached_has_bits & 0x00000040u) != 0) {
+      if (from._internal_channels() != 0) {
+        _this->_impl_.channels_ = from._impl_.channels_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SynthesisConfiguration::CopyFrom(const SynthesisConfiguration& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:voice.v1.SynthesisConfiguration)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SynthesisConfiguration::InternalSwap(SynthesisConfiguration* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.model_, &other->_impl_.model_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.model_revision_, &other->_impl_.model_revision_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.voice_, &other->_impl_.voice_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.format_, &other->_impl_.format_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(SynthesisConfiguration, _impl_.channels_)
+      + sizeof(SynthesisConfiguration::_impl_.channels_)
+      - PROTOBUF_FIELD_OFFSET(SynthesisConfiguration, _impl_.schema_version_)>(
+          reinterpret_cast<char*>(&_impl_.schema_version_),
+          reinterpret_cast<char*>(&other->_impl_.schema_version_));
+}
+
+::google::protobuf::Metadata SynthesisConfiguration::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class SynthesisCallConfiguration::_Internal {
+ public:
+  using HasBits =
+      decltype(::std::declval<SynthesisCallConfiguration>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(SynthesisCallConfiguration, _impl_._has_bits_);
+};
+
+SynthesisCallConfiguration::SynthesisCallConfiguration(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, SynthesisCallConfiguration_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:voice.v1.SynthesisCallConfiguration)
+}
+PROTOBUF_NDEBUG_INLINE SynthesisCallConfiguration::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    const ::voice::v1::SynthesisCallConfiguration& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        call_id_(arena, from.call_id_),
+        release_id_(arena, from.release_id_),
+        manifest_digest_(arena, from.manifest_digest_) {}
+
+SynthesisCallConfiguration::SynthesisCallConfiguration(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const SynthesisCallConfiguration& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, SynthesisCallConfiguration_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SynthesisCallConfiguration* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::uint32_t cached_has_bits = _impl_._has_bits_[0];
+  _impl_.configuration_ = ((cached_has_bits & 0x00000008u) != 0)
+                ? ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.configuration_)
+                : nullptr;
+
+  // @@protoc_insertion_point(copy_constructor:voice.v1.SynthesisCallConfiguration)
+}
+PROTOBUF_NDEBUG_INLINE SynthesisCallConfiguration::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        call_id_(arena),
+        release_id_(arena),
+        manifest_digest_(arena) {}
+
+inline void SynthesisCallConfiguration::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.configuration_ = {};
+}
+SynthesisCallConfiguration::~SynthesisCallConfiguration() {
+  // @@protoc_insertion_point(destructor:voice.v1.SynthesisCallConfiguration)
+  SharedDtor(*this);
+}
+inline void SynthesisCallConfiguration::SharedDtor(MessageLite& self) {
+  SynthesisCallConfiguration& this_ = static_cast<SynthesisCallConfiguration&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.call_id_.Destroy();
+  this_._impl_.release_id_.Destroy();
+  this_._impl_.manifest_digest_.Destroy();
+  delete this_._impl_.configuration_;
+  this_._impl_.~Impl_();
+}
+
+inline void* PROTOBUF_NONNULL SynthesisCallConfiguration::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) SynthesisCallConfiguration(arena);
+}
+constexpr auto SynthesisCallConfiguration::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(SynthesisCallConfiguration),
+                                            alignof(SynthesisCallConfiguration));
+}
+constexpr auto SynthesisCallConfiguration::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_SynthesisCallConfiguration_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // OnDemandRegisterArenaDtor
+          nullptr,  // IsInitialized
+          &SynthesisCallConfiguration::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<SynthesisCallConfiguration>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &SynthesisCallConfiguration::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<SynthesisCallConfiguration>(), &SynthesisCallConfiguration::ByteSizeLong,
+              &SynthesisCallConfiguration::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(SynthesisCallConfiguration, _impl_._cached_size_),
+          false,
+      },
+      &SynthesisCallConfiguration::kDescriptorMethods,
+      &descriptor_table_voice_2fv1_2fvoice_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull SynthesisCallConfiguration_class_data_ =
+        SynthesisCallConfiguration::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+SynthesisCallConfiguration::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&SynthesisCallConfiguration_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(SynthesisCallConfiguration_class_data_.tc_table);
+  return SynthesisCallConfiguration_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<2, 4, 1, 76, 2>
+SynthesisCallConfiguration::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(SynthesisCallConfiguration, _impl_._has_bits_),
+    0, // no _extensions_
+    4, 24,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967280,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    4,  // num_field_entries
+    1,  // num_aux_entries
+    offsetof(decltype(_table_), aux_entries),
+    SynthesisCallConfiguration_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::voice::v1::SynthesisCallConfiguration>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // .voice.v1.SynthesisConfiguration configuration = 4;
+    {::_pbi::TcParser::FastMtS1,
+     {34, 3, 0, PROTOBUF_FIELD_OFFSET(SynthesisCallConfiguration, _impl_.configuration_)}},
+    // string call_id = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 0, 0, PROTOBUF_FIELD_OFFSET(SynthesisCallConfiguration, _impl_.call_id_)}},
+    // string release_id = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 1, 0, PROTOBUF_FIELD_OFFSET(SynthesisCallConfiguration, _impl_.release_id_)}},
+    // string manifest_digest = 3;
+    {::_pbi::TcParser::FastUS1,
+     {26, 2, 0, PROTOBUF_FIELD_OFFSET(SynthesisCallConfiguration, _impl_.manifest_digest_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string call_id = 1;
+    {PROTOBUF_FIELD_OFFSET(SynthesisCallConfiguration, _impl_.call_id_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string release_id = 2;
+    {PROTOBUF_FIELD_OFFSET(SynthesisCallConfiguration, _impl_.release_id_), _Internal::kHasBitsOffset + 1, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string manifest_digest = 3;
+    {PROTOBUF_FIELD_OFFSET(SynthesisCallConfiguration, _impl_.manifest_digest_), _Internal::kHasBitsOffset + 2, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // .voice.v1.SynthesisConfiguration configuration = 4;
+    {PROTOBUF_FIELD_OFFSET(SynthesisCallConfiguration, _impl_.configuration_), _Internal::kHasBitsOffset + 3, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+  }},
+  {{
+      {::_pbi::TcParser::GetTable<::voice::v1::SynthesisConfiguration>()},
+  }},
+  {{
+    "\43\7\12\17\0\0\0\0"
+    "voice.v1.SynthesisCallConfiguration"
+    "call_id"
+    "release_id"
+    "manifest_digest"
+  }},
+};
+PROTOBUF_NOINLINE void SynthesisCallConfiguration::Clear() {
+// @@protoc_insertion_point(message_clear_start:voice.v1.SynthesisCallConfiguration)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000000fu) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      _impl_.call_id_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      _impl_.release_id_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      _impl_.manifest_digest_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      ABSL_DCHECK(_impl_.configuration_ != nullptr);
+      _impl_.configuration_->Clear();
+    }
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL SynthesisCallConfiguration::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const SynthesisCallConfiguration& this_ = static_cast<const SynthesisCallConfiguration&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL SynthesisCallConfiguration::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const SynthesisCallConfiguration& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(serialize_to_array_start:voice.v1.SynthesisCallConfiguration)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  // string call_id = 1;
+  if ((this_._impl_._has_bits_[0] & 0x00000001u) != 0) {
+    if (!this_._internal_call_id().empty()) {
+      const ::std::string& _s = this_._internal_call_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.SynthesisCallConfiguration.call_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string release_id = 2;
+  if ((this_._impl_._has_bits_[0] & 0x00000002u) != 0) {
+    if (!this_._internal_release_id().empty()) {
+      const ::std::string& _s = this_._internal_release_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.SynthesisCallConfiguration.release_id");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  // string manifest_digest = 3;
+  if ((this_._impl_._has_bits_[0] & 0x00000004u) != 0) {
+    if (!this_._internal_manifest_digest().empty()) {
+      const ::std::string& _s = this_._internal_manifest_digest();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.SynthesisCallConfiguration.manifest_digest");
+      target = stream->WriteStringMaybeAliased(3, _s, target);
+    }
+  }
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // .voice.v1.SynthesisConfiguration configuration = 4;
+  if ((cached_has_bits & 0x00000008u) != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+        4, *this_._impl_.configuration_, this_._impl_.configuration_->GetCachedSize(), target,
+        stream);
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:voice.v1.SynthesisCallConfiguration)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t SynthesisCallConfiguration::ByteSizeLong(const MessageLite& base) {
+  const SynthesisCallConfiguration& this_ = static_cast<const SynthesisCallConfiguration&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t SynthesisCallConfiguration::ByteSizeLong() const {
+  const SynthesisCallConfiguration& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:voice.v1.SynthesisCallConfiguration)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000000fu) != 0) {
+    // string call_id = 1;
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!this_._internal_call_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_call_id());
+      }
+    }
+    // string release_id = 2;
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (!this_._internal_release_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_release_id());
+      }
+    }
+    // string manifest_digest = 3;
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (!this_._internal_manifest_digest().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_manifest_digest());
+      }
+    }
+    // .voice.v1.SynthesisConfiguration configuration = 4;
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      total_size += 1 +
+                    ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.configuration_);
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void SynthesisCallConfiguration::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<SynthesisCallConfiguration*>(&to_msg);
+  auto& from = static_cast<const SynthesisCallConfiguration&>(from_msg);
+  ::google::protobuf::Arena* arena = _this->GetArena();
+  // @@protoc_insertion_point(class_specific_merge_from_start:voice.v1.SynthesisCallConfiguration)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000000fu) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!from._internal_call_id().empty()) {
+        _this->_internal_set_call_id(from._internal_call_id());
+      } else {
+        if (_this->_impl_.call_id_.IsDefault()) {
+          _this->_internal_set_call_id("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (!from._internal_release_id().empty()) {
+        _this->_internal_set_release_id(from._internal_release_id());
+      } else {
+        if (_this->_impl_.release_id_.IsDefault()) {
+          _this->_internal_set_release_id("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (!from._internal_manifest_digest().empty()) {
+        _this->_internal_set_manifest_digest(from._internal_manifest_digest());
+      } else {
+        if (_this->_impl_.manifest_digest_.IsDefault()) {
+          _this->_internal_set_manifest_digest("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      ABSL_DCHECK(from._impl_.configuration_ != nullptr);
+      if (_this->_impl_.configuration_ == nullptr) {
+        _this->_impl_.configuration_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.configuration_);
+      } else {
+        _this->_impl_.configuration_->MergeFrom(*from._impl_.configuration_);
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SynthesisCallConfiguration::CopyFrom(const SynthesisCallConfiguration& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:voice.v1.SynthesisCallConfiguration)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SynthesisCallConfiguration::InternalSwap(SynthesisCallConfiguration* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.call_id_, &other->_impl_.call_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.release_id_, &other->_impl_.release_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.manifest_digest_, &other->_impl_.manifest_digest_, arena);
+  swap(_impl_.configuration_, other->_impl_.configuration_);
+}
+
+::google::protobuf::Metadata SynthesisCallConfiguration::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
 class PlaybackReport::_Internal {
  public:
   using HasBits =
@@ -4159,7 +6733,9 @@ PROTOBUF_NDEBUG_INLINE CallEnd::Impl_::Impl_(
       : _has_bits_{from._has_bits_},
         _cached_size_{0},
         call_id_(arena, from.call_id_),
-        reason_(arena, from.reason_) {}
+        reason_(arena, from.reason_),
+        release_id_(arena, from.release_id_),
+        manifest_digest_(arena, from.manifest_digest_) {}
 
 CallEnd::CallEnd(
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
@@ -4174,6 +6750,13 @@ CallEnd::CallEnd(
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, answered_at_unix_ms_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, answered_at_unix_ms_),
+           offsetof(Impl_, ended_at_unix_ms_) -
+               offsetof(Impl_, answered_at_unix_ms_) +
+               sizeof(Impl_::ended_at_unix_ms_));
 
   // @@protoc_insertion_point(copy_constructor:voice.v1.CallEnd)
 }
@@ -4182,10 +6765,18 @@ PROTOBUF_NDEBUG_INLINE CallEnd::Impl_::Impl_(
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
       : _cached_size_{0},
         call_id_(arena),
-        reason_(arena) {}
+        reason_(arena),
+        release_id_(arena),
+        manifest_digest_(arena) {}
 
 inline void CallEnd::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, answered_at_unix_ms_),
+           0,
+           offsetof(Impl_, ended_at_unix_ms_) -
+               offsetof(Impl_, answered_at_unix_ms_) +
+               sizeof(Impl_::ended_at_unix_ms_));
 }
 CallEnd::~CallEnd() {
   // @@protoc_insertion_point(destructor:voice.v1.CallEnd)
@@ -4197,6 +6788,8 @@ inline void CallEnd::SharedDtor(MessageLite& self) {
   ABSL_DCHECK(this_.GetArena() == nullptr);
   this_._impl_.call_id_.Destroy();
   this_._impl_.reason_.Destroy();
+  this_._impl_.release_id_.Destroy();
+  this_._impl_.manifest_digest_.Destroy();
   this_._impl_.~Impl_();
 }
 
@@ -4243,16 +6836,16 @@ CallEnd::GetClassData() const {
   return CallEnd_class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<1, 2, 0, 38, 2>
+const ::_pbi::TcParseTable<3, 6, 0, 63, 2>
 CallEnd::_table_ = {
   {
     PROTOBUF_FIELD_OFFSET(CallEnd, _impl_._has_bits_),
     0, // no _extensions_
-    2, 8,  // max_field_number, fast_idx_mask
+    6, 56,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967292,  // skipmap
+    4294967232,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    2,  // num_field_entries
+    6,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     CallEnd_class_data_.base(),
@@ -4262,12 +6855,26 @@ CallEnd::_table_ = {
     ::_pbi::TcParser::GetTable<::voice::v1::CallEnd>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    // string reason = 2;
-    {::_pbi::TcParser::FastUS1,
-     {18, 1, 0, PROTOBUF_FIELD_OFFSET(CallEnd, _impl_.reason_)}},
+    {::_pbi::TcParser::MiniParse, {}},
     // string call_id = 1;
     {::_pbi::TcParser::FastUS1,
      {10, 0, 0, PROTOBUF_FIELD_OFFSET(CallEnd, _impl_.call_id_)}},
+    // string reason = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 1, 0, PROTOBUF_FIELD_OFFSET(CallEnd, _impl_.reason_)}},
+    // int64 answered_at_unix_ms = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(CallEnd, _impl_.answered_at_unix_ms_), 4>(),
+     {24, 4, 0, PROTOBUF_FIELD_OFFSET(CallEnd, _impl_.answered_at_unix_ms_)}},
+    // int64 ended_at_unix_ms = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(CallEnd, _impl_.ended_at_unix_ms_), 5>(),
+     {32, 5, 0, PROTOBUF_FIELD_OFFSET(CallEnd, _impl_.ended_at_unix_ms_)}},
+    // string release_id = 5;
+    {::_pbi::TcParser::FastUS1,
+     {42, 2, 0, PROTOBUF_FIELD_OFFSET(CallEnd, _impl_.release_id_)}},
+    // string manifest_digest = 6;
+    {::_pbi::TcParser::FastUS1,
+     {50, 3, 0, PROTOBUF_FIELD_OFFSET(CallEnd, _impl_.manifest_digest_)}},
+    {::_pbi::TcParser::MiniParse, {}},
   }}, {{
     65535, 65535
   }}, {{
@@ -4277,13 +6884,27 @@ CallEnd::_table_ = {
     // string reason = 2;
     {PROTOBUF_FIELD_OFFSET(CallEnd, _impl_.reason_), _Internal::kHasBitsOffset + 1, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // int64 answered_at_unix_ms = 3;
+    {PROTOBUF_FIELD_OFFSET(CallEnd, _impl_.answered_at_unix_ms_), _Internal::kHasBitsOffset + 4, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+    // int64 ended_at_unix_ms = 4;
+    {PROTOBUF_FIELD_OFFSET(CallEnd, _impl_.ended_at_unix_ms_), _Internal::kHasBitsOffset + 5, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+    // string release_id = 5;
+    {PROTOBUF_FIELD_OFFSET(CallEnd, _impl_.release_id_), _Internal::kHasBitsOffset + 2, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string manifest_digest = 6;
+    {PROTOBUF_FIELD_OFFSET(CallEnd, _impl_.manifest_digest_), _Internal::kHasBitsOffset + 3, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
   }},
   // no aux_entries
   {{
-    "\20\7\6\0\0\0\0\0"
+    "\20\7\6\0\0\12\17\0"
     "voice.v1.CallEnd"
     "call_id"
     "reason"
+    "release_id"
+    "manifest_digest"
   }},
 };
 PROTOBUF_NOINLINE void CallEnd::Clear() {
@@ -4294,13 +6915,24 @@ PROTOBUF_NOINLINE void CallEnd::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if ((cached_has_bits & 0x00000003u) != 0) {
+  if ((cached_has_bits & 0x0000000fu) != 0) {
     if ((cached_has_bits & 0x00000001u) != 0) {
       _impl_.call_id_.ClearNonDefaultToEmpty();
     }
     if ((cached_has_bits & 0x00000002u) != 0) {
       _impl_.reason_.ClearNonDefaultToEmpty();
     }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      _impl_.release_id_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      _impl_.manifest_digest_.ClearNonDefaultToEmpty();
+    }
+  }
+  if ((cached_has_bits & 0x00000030u) != 0) {
+    ::memset(&_impl_.answered_at_unix_ms_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.ended_at_unix_ms_) -
+        reinterpret_cast<char*>(&_impl_.answered_at_unix_ms_)) + sizeof(_impl_.ended_at_unix_ms_));
   }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -4341,6 +6973,44 @@ PROTOBUF_NOINLINE void CallEnd::Clear() {
     }
   }
 
+  // int64 answered_at_unix_ms = 3;
+  if ((this_._impl_._has_bits_[0] & 0x00000010u) != 0) {
+    if (this_._internal_answered_at_unix_ms() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<3>(
+              stream, this_._internal_answered_at_unix_ms(), target);
+    }
+  }
+
+  // int64 ended_at_unix_ms = 4;
+  if ((this_._impl_._has_bits_[0] & 0x00000020u) != 0) {
+    if (this_._internal_ended_at_unix_ms() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<4>(
+              stream, this_._internal_ended_at_unix_ms(), target);
+    }
+  }
+
+  // string release_id = 5;
+  if ((this_._impl_._has_bits_[0] & 0x00000004u) != 0) {
+    if (!this_._internal_release_id().empty()) {
+      const ::std::string& _s = this_._internal_release_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.CallEnd.release_id");
+      target = stream->WriteStringMaybeAliased(5, _s, target);
+    }
+  }
+
+  // string manifest_digest = 6;
+  if ((this_._impl_._has_bits_[0] & 0x00000008u) != 0) {
+    if (!this_._internal_manifest_digest().empty()) {
+      const ::std::string& _s = this_._internal_manifest_digest();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.CallEnd.manifest_digest");
+      target = stream->WriteStringMaybeAliased(6, _s, target);
+    }
+  }
+
   if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
     target =
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -4366,7 +7036,7 @@ PROTOBUF_NOINLINE void CallEnd::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if ((cached_has_bits & 0x00000003u) != 0) {
+  if ((cached_has_bits & 0x0000003fu) != 0) {
     // string call_id = 1;
     if ((cached_has_bits & 0x00000001u) != 0) {
       if (!this_._internal_call_id().empty()) {
@@ -4379,6 +7049,34 @@ PROTOBUF_NOINLINE void CallEnd::Clear() {
       if (!this_._internal_reason().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                         this_._internal_reason());
+      }
+    }
+    // string release_id = 5;
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (!this_._internal_release_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_release_id());
+      }
+    }
+    // string manifest_digest = 6;
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      if (!this_._internal_manifest_digest().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_manifest_digest());
+      }
+    }
+    // int64 answered_at_unix_ms = 3;
+    if ((cached_has_bits & 0x00000010u) != 0) {
+      if (this_._internal_answered_at_unix_ms() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+            this_._internal_answered_at_unix_ms());
+      }
+    }
+    // int64 ended_at_unix_ms = 4;
+    if ((cached_has_bits & 0x00000020u) != 0) {
+      if (this_._internal_ended_at_unix_ms() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+            this_._internal_ended_at_unix_ms());
       }
     }
   }
@@ -4395,7 +7093,7 @@ void CallEnd::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google:
   (void) cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if ((cached_has_bits & 0x00000003u) != 0) {
+  if ((cached_has_bits & 0x0000003fu) != 0) {
     if ((cached_has_bits & 0x00000001u) != 0) {
       if (!from._internal_call_id().empty()) {
         _this->_internal_set_call_id(from._internal_call_id());
@@ -4412,6 +7110,34 @@ void CallEnd::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google:
         if (_this->_impl_.reason_.IsDefault()) {
           _this->_internal_set_reason("");
         }
+      }
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (!from._internal_release_id().empty()) {
+        _this->_internal_set_release_id(from._internal_release_id());
+      } else {
+        if (_this->_impl_.release_id_.IsDefault()) {
+          _this->_internal_set_release_id("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      if (!from._internal_manifest_digest().empty()) {
+        _this->_internal_set_manifest_digest(from._internal_manifest_digest());
+      } else {
+        if (_this->_impl_.manifest_digest_.IsDefault()) {
+          _this->_internal_set_manifest_digest("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000010u) != 0) {
+      if (from._internal_answered_at_unix_ms() != 0) {
+        _this->_impl_.answered_at_unix_ms_ = from._impl_.answered_at_unix_ms_;
+      }
+    }
+    if ((cached_has_bits & 0x00000020u) != 0) {
+      if (from._internal_ended_at_unix_ms() != 0) {
+        _this->_impl_.ended_at_unix_ms_ = from._impl_.ended_at_unix_ms_;
       }
     }
   }
@@ -4435,6 +7161,14 @@ void CallEnd::InternalSwap(CallEnd* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.call_id_, &other->_impl_.call_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.reason_, &other->_impl_.reason_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.release_id_, &other->_impl_.release_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.manifest_digest_, &other->_impl_.manifest_digest_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(CallEnd, _impl_.ended_at_unix_ms_)
+      + sizeof(CallEnd::_impl_.ended_at_unix_ms_)
+      - PROTOBUF_FIELD_OFFSET(CallEnd, _impl_.answered_at_unix_ms_)>(
+          reinterpret_cast<char*>(&_impl_.answered_at_unix_ms_),
+          reinterpret_cast<char*>(&other->_impl_.answered_at_unix_ms_));
 }
 
 ::google::protobuf::Metadata CallEnd::GetMetadata() const {
@@ -4672,6 +7406,4435 @@ void AgentAck::InternalSwap(AgentAck* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) 
 }
 
 ::google::protobuf::Metadata AgentAck::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class CallAnswer::_Internal {
+ public:
+  using HasBits =
+      decltype(::std::declval<CallAnswer>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(CallAnswer, _impl_._has_bits_);
+};
+
+CallAnswer::CallAnswer(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CallAnswer_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:voice.v1.CallAnswer)
+}
+PROTOBUF_NDEBUG_INLINE CallAnswer::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    const ::voice::v1::CallAnswer& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        call_id_(arena, from.call_id_),
+        release_id_(arena, from.release_id_),
+        manifest_digest_(arena, from.manifest_digest_) {}
+
+CallAnswer::CallAnswer(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const CallAnswer& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CallAnswer_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  CallAnswer* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  _impl_.answered_at_unix_ms_ = from._impl_.answered_at_unix_ms_;
+
+  // @@protoc_insertion_point(copy_constructor:voice.v1.CallAnswer)
+}
+PROTOBUF_NDEBUG_INLINE CallAnswer::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        call_id_(arena),
+        release_id_(arena),
+        manifest_digest_(arena) {}
+
+inline void CallAnswer::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.answered_at_unix_ms_ = {};
+}
+CallAnswer::~CallAnswer() {
+  // @@protoc_insertion_point(destructor:voice.v1.CallAnswer)
+  SharedDtor(*this);
+}
+inline void CallAnswer::SharedDtor(MessageLite& self) {
+  CallAnswer& this_ = static_cast<CallAnswer&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.call_id_.Destroy();
+  this_._impl_.release_id_.Destroy();
+  this_._impl_.manifest_digest_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+inline void* PROTOBUF_NONNULL CallAnswer::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) CallAnswer(arena);
+}
+constexpr auto CallAnswer::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(CallAnswer),
+                                            alignof(CallAnswer));
+}
+constexpr auto CallAnswer::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_CallAnswer_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // OnDemandRegisterArenaDtor
+          nullptr,  // IsInitialized
+          &CallAnswer::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<CallAnswer>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &CallAnswer::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<CallAnswer>(), &CallAnswer::ByteSizeLong,
+              &CallAnswer::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(CallAnswer, _impl_._cached_size_),
+          false,
+      },
+      &CallAnswer::kDescriptorMethods,
+      &descriptor_table_voice_2fv1_2fvoice_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull CallAnswer_class_data_ =
+        CallAnswer::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+CallAnswer::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&CallAnswer_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(CallAnswer_class_data_.tc_table);
+  return CallAnswer_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<2, 4, 0, 60, 2>
+CallAnswer::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(CallAnswer, _impl_._has_bits_),
+    0, // no _extensions_
+    4, 24,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967280,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    4,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    CallAnswer_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::voice::v1::CallAnswer>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // int64 answered_at_unix_ms = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(CallAnswer, _impl_.answered_at_unix_ms_), 3>(),
+     {32, 3, 0, PROTOBUF_FIELD_OFFSET(CallAnswer, _impl_.answered_at_unix_ms_)}},
+    // string call_id = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 0, 0, PROTOBUF_FIELD_OFFSET(CallAnswer, _impl_.call_id_)}},
+    // string release_id = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 1, 0, PROTOBUF_FIELD_OFFSET(CallAnswer, _impl_.release_id_)}},
+    // string manifest_digest = 3;
+    {::_pbi::TcParser::FastUS1,
+     {26, 2, 0, PROTOBUF_FIELD_OFFSET(CallAnswer, _impl_.manifest_digest_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string call_id = 1;
+    {PROTOBUF_FIELD_OFFSET(CallAnswer, _impl_.call_id_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string release_id = 2;
+    {PROTOBUF_FIELD_OFFSET(CallAnswer, _impl_.release_id_), _Internal::kHasBitsOffset + 1, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string manifest_digest = 3;
+    {PROTOBUF_FIELD_OFFSET(CallAnswer, _impl_.manifest_digest_), _Internal::kHasBitsOffset + 2, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // int64 answered_at_unix_ms = 4;
+    {PROTOBUF_FIELD_OFFSET(CallAnswer, _impl_.answered_at_unix_ms_), _Internal::kHasBitsOffset + 3, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+  }},
+  // no aux_entries
+  {{
+    "\23\7\12\17\0\0\0\0"
+    "voice.v1.CallAnswer"
+    "call_id"
+    "release_id"
+    "manifest_digest"
+  }},
+};
+PROTOBUF_NOINLINE void CallAnswer::Clear() {
+// @@protoc_insertion_point(message_clear_start:voice.v1.CallAnswer)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if ((cached_has_bits & 0x00000007u) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      _impl_.call_id_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      _impl_.release_id_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      _impl_.manifest_digest_.ClearNonDefaultToEmpty();
+    }
+  }
+  _impl_.answered_at_unix_ms_ = ::int64_t{0};
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL CallAnswer::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const CallAnswer& this_ = static_cast<const CallAnswer&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL CallAnswer::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const CallAnswer& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(serialize_to_array_start:voice.v1.CallAnswer)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  // string call_id = 1;
+  if ((this_._impl_._has_bits_[0] & 0x00000001u) != 0) {
+    if (!this_._internal_call_id().empty()) {
+      const ::std::string& _s = this_._internal_call_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.CallAnswer.call_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string release_id = 2;
+  if ((this_._impl_._has_bits_[0] & 0x00000002u) != 0) {
+    if (!this_._internal_release_id().empty()) {
+      const ::std::string& _s = this_._internal_release_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.CallAnswer.release_id");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  // string manifest_digest = 3;
+  if ((this_._impl_._has_bits_[0] & 0x00000004u) != 0) {
+    if (!this_._internal_manifest_digest().empty()) {
+      const ::std::string& _s = this_._internal_manifest_digest();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.CallAnswer.manifest_digest");
+      target = stream->WriteStringMaybeAliased(3, _s, target);
+    }
+  }
+
+  // int64 answered_at_unix_ms = 4;
+  if ((this_._impl_._has_bits_[0] & 0x00000008u) != 0) {
+    if (this_._internal_answered_at_unix_ms() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<4>(
+              stream, this_._internal_answered_at_unix_ms(), target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:voice.v1.CallAnswer)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t CallAnswer::ByteSizeLong(const MessageLite& base) {
+  const CallAnswer& this_ = static_cast<const CallAnswer&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t CallAnswer::ByteSizeLong() const {
+  const CallAnswer& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:voice.v1.CallAnswer)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000000fu) != 0) {
+    // string call_id = 1;
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!this_._internal_call_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_call_id());
+      }
+    }
+    // string release_id = 2;
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (!this_._internal_release_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_release_id());
+      }
+    }
+    // string manifest_digest = 3;
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (!this_._internal_manifest_digest().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_manifest_digest());
+      }
+    }
+    // int64 answered_at_unix_ms = 4;
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      if (this_._internal_answered_at_unix_ms() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+            this_._internal_answered_at_unix_ms());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void CallAnswer::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<CallAnswer*>(&to_msg);
+  auto& from = static_cast<const CallAnswer&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:voice.v1.CallAnswer)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000000fu) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!from._internal_call_id().empty()) {
+        _this->_internal_set_call_id(from._internal_call_id());
+      } else {
+        if (_this->_impl_.call_id_.IsDefault()) {
+          _this->_internal_set_call_id("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (!from._internal_release_id().empty()) {
+        _this->_internal_set_release_id(from._internal_release_id());
+      } else {
+        if (_this->_impl_.release_id_.IsDefault()) {
+          _this->_internal_set_release_id("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (!from._internal_manifest_digest().empty()) {
+        _this->_internal_set_manifest_digest(from._internal_manifest_digest());
+      } else {
+        if (_this->_impl_.manifest_digest_.IsDefault()) {
+          _this->_internal_set_manifest_digest("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      if (from._internal_answered_at_unix_ms() != 0) {
+        _this->_impl_.answered_at_unix_ms_ = from._impl_.answered_at_unix_ms_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void CallAnswer::CopyFrom(const CallAnswer& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:voice.v1.CallAnswer)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void CallAnswer::InternalSwap(CallAnswer* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.call_id_, &other->_impl_.call_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.release_id_, &other->_impl_.release_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.manifest_digest_, &other->_impl_.manifest_digest_, arena);
+  swap(_impl_.answered_at_unix_ms_, other->_impl_.answered_at_unix_ms_);
+}
+
+::google::protobuf::Metadata CallAnswer::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class CallInitializationRequest::_Internal {
+ public:
+  using HasBits =
+      decltype(::std::declval<CallInitializationRequest>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(CallInitializationRequest, _impl_._has_bits_);
+};
+
+CallInitializationRequest::CallInitializationRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CallInitializationRequest_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:voice.v1.CallInitializationRequest)
+}
+PROTOBUF_NDEBUG_INLINE CallInitializationRequest::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    const ::voice::v1::CallInitializationRequest& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        call_id_(arena, from.call_id_),
+        called_e164_(arena, from.called_e164_),
+        called_source_(arena, from.called_source_),
+        caller_e164_(arena, from.caller_e164_) {}
+
+CallInitializationRequest::CallInitializationRequest(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const CallInitializationRequest& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CallInitializationRequest_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  CallInitializationRequest* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+
+  // @@protoc_insertion_point(copy_constructor:voice.v1.CallInitializationRequest)
+}
+PROTOBUF_NDEBUG_INLINE CallInitializationRequest::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        call_id_(arena),
+        called_e164_(arena),
+        called_source_(arena),
+        caller_e164_(arena) {}
+
+inline void CallInitializationRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+}
+CallInitializationRequest::~CallInitializationRequest() {
+  // @@protoc_insertion_point(destructor:voice.v1.CallInitializationRequest)
+  SharedDtor(*this);
+}
+inline void CallInitializationRequest::SharedDtor(MessageLite& self) {
+  CallInitializationRequest& this_ = static_cast<CallInitializationRequest&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.call_id_.Destroy();
+  this_._impl_.called_e164_.Destroy();
+  this_._impl_.called_source_.Destroy();
+  this_._impl_.caller_e164_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+inline void* PROTOBUF_NONNULL CallInitializationRequest::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) CallInitializationRequest(arena);
+}
+constexpr auto CallInitializationRequest::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(CallInitializationRequest),
+                                            alignof(CallInitializationRequest));
+}
+constexpr auto CallInitializationRequest::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_CallInitializationRequest_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // OnDemandRegisterArenaDtor
+          nullptr,  // IsInitialized
+          &CallInitializationRequest::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<CallInitializationRequest>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &CallInitializationRequest::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<CallInitializationRequest>(), &CallInitializationRequest::ByteSizeLong,
+              &CallInitializationRequest::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(CallInitializationRequest, _impl_._cached_size_),
+          false,
+      },
+      &CallInitializationRequest::kDescriptorMethods,
+      &descriptor_table_voice_2fv1_2fvoice_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull CallInitializationRequest_class_data_ =
+        CallInitializationRequest::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+CallInitializationRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&CallInitializationRequest_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(CallInitializationRequest_class_data_.tc_table);
+  return CallInitializationRequest_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<2, 4, 0, 85, 2>
+CallInitializationRequest::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(CallInitializationRequest, _impl_._has_bits_),
+    0, // no _extensions_
+    4, 24,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967280,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    4,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    CallInitializationRequest_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::voice::v1::CallInitializationRequest>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // string caller_e164 = 4;
+    {::_pbi::TcParser::FastUS1,
+     {34, 3, 0, PROTOBUF_FIELD_OFFSET(CallInitializationRequest, _impl_.caller_e164_)}},
+    // string call_id = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 0, 0, PROTOBUF_FIELD_OFFSET(CallInitializationRequest, _impl_.call_id_)}},
+    // string called_e164 = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 1, 0, PROTOBUF_FIELD_OFFSET(CallInitializationRequest, _impl_.called_e164_)}},
+    // string called_source = 3;
+    {::_pbi::TcParser::FastUS1,
+     {26, 2, 0, PROTOBUF_FIELD_OFFSET(CallInitializationRequest, _impl_.called_source_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string call_id = 1;
+    {PROTOBUF_FIELD_OFFSET(CallInitializationRequest, _impl_.call_id_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string called_e164 = 2;
+    {PROTOBUF_FIELD_OFFSET(CallInitializationRequest, _impl_.called_e164_), _Internal::kHasBitsOffset + 1, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string called_source = 3;
+    {PROTOBUF_FIELD_OFFSET(CallInitializationRequest, _impl_.called_source_), _Internal::kHasBitsOffset + 2, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string caller_e164 = 4;
+    {PROTOBUF_FIELD_OFFSET(CallInitializationRequest, _impl_.caller_e164_), _Internal::kHasBitsOffset + 3, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }},
+  // no aux_entries
+  {{
+    "\42\7\13\15\13\0\0\0"
+    "voice.v1.CallInitializationRequest"
+    "call_id"
+    "called_e164"
+    "called_source"
+    "caller_e164"
+  }},
+};
+PROTOBUF_NOINLINE void CallInitializationRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:voice.v1.CallInitializationRequest)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000000fu) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      _impl_.call_id_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      _impl_.called_e164_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      _impl_.called_source_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      _impl_.caller_e164_.ClearNonDefaultToEmpty();
+    }
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL CallInitializationRequest::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const CallInitializationRequest& this_ = static_cast<const CallInitializationRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL CallInitializationRequest::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const CallInitializationRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(serialize_to_array_start:voice.v1.CallInitializationRequest)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  // string call_id = 1;
+  if ((this_._impl_._has_bits_[0] & 0x00000001u) != 0) {
+    if (!this_._internal_call_id().empty()) {
+      const ::std::string& _s = this_._internal_call_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.CallInitializationRequest.call_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string called_e164 = 2;
+  if ((this_._impl_._has_bits_[0] & 0x00000002u) != 0) {
+    if (!this_._internal_called_e164().empty()) {
+      const ::std::string& _s = this_._internal_called_e164();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.CallInitializationRequest.called_e164");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  // string called_source = 3;
+  if ((this_._impl_._has_bits_[0] & 0x00000004u) != 0) {
+    if (!this_._internal_called_source().empty()) {
+      const ::std::string& _s = this_._internal_called_source();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.CallInitializationRequest.called_source");
+      target = stream->WriteStringMaybeAliased(3, _s, target);
+    }
+  }
+
+  // string caller_e164 = 4;
+  if ((this_._impl_._has_bits_[0] & 0x00000008u) != 0) {
+    if (!this_._internal_caller_e164().empty()) {
+      const ::std::string& _s = this_._internal_caller_e164();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.CallInitializationRequest.caller_e164");
+      target = stream->WriteStringMaybeAliased(4, _s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:voice.v1.CallInitializationRequest)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t CallInitializationRequest::ByteSizeLong(const MessageLite& base) {
+  const CallInitializationRequest& this_ = static_cast<const CallInitializationRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t CallInitializationRequest::ByteSizeLong() const {
+  const CallInitializationRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:voice.v1.CallInitializationRequest)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000000fu) != 0) {
+    // string call_id = 1;
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!this_._internal_call_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_call_id());
+      }
+    }
+    // string called_e164 = 2;
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (!this_._internal_called_e164().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_called_e164());
+      }
+    }
+    // string called_source = 3;
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (!this_._internal_called_source().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_called_source());
+      }
+    }
+    // string caller_e164 = 4;
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      if (!this_._internal_caller_e164().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_caller_e164());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void CallInitializationRequest::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<CallInitializationRequest*>(&to_msg);
+  auto& from = static_cast<const CallInitializationRequest&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:voice.v1.CallInitializationRequest)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000000fu) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!from._internal_call_id().empty()) {
+        _this->_internal_set_call_id(from._internal_call_id());
+      } else {
+        if (_this->_impl_.call_id_.IsDefault()) {
+          _this->_internal_set_call_id("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (!from._internal_called_e164().empty()) {
+        _this->_internal_set_called_e164(from._internal_called_e164());
+      } else {
+        if (_this->_impl_.called_e164_.IsDefault()) {
+          _this->_internal_set_called_e164("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (!from._internal_called_source().empty()) {
+        _this->_internal_set_called_source(from._internal_called_source());
+      } else {
+        if (_this->_impl_.called_source_.IsDefault()) {
+          _this->_internal_set_called_source("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      if (!from._internal_caller_e164().empty()) {
+        _this->_internal_set_caller_e164(from._internal_caller_e164());
+      } else {
+        if (_this->_impl_.caller_e164_.IsDefault()) {
+          _this->_internal_set_caller_e164("");
+        }
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void CallInitializationRequest::CopyFrom(const CallInitializationRequest& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:voice.v1.CallInitializationRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void CallInitializationRequest::InternalSwap(CallInitializationRequest* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.call_id_, &other->_impl_.call_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.called_e164_, &other->_impl_.called_e164_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.called_source_, &other->_impl_.called_source_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.caller_e164_, &other->_impl_.caller_e164_, arena);
+}
+
+::google::protobuf::Metadata CallInitializationRequest::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class NativeCalibration::_Internal {
+ public:
+  using HasBits =
+      decltype(::std::declval<NativeCalibration>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_._has_bits_);
+};
+
+NativeCalibration::NativeCalibration(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, NativeCalibration_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:voice.v1.NativeCalibration)
+}
+NativeCalibration::NativeCalibration(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const NativeCalibration& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, NativeCalibration_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(from._impl_) {
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+PROTOBUF_NDEBUG_INLINE NativeCalibration::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0} {}
+
+inline void NativeCalibration::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, schema_version_),
+           0,
+           offsetof(Impl_, interrupt_sustained_quiet_ms_) -
+               offsetof(Impl_, schema_version_) +
+               sizeof(Impl_::interrupt_sustained_quiet_ms_));
+}
+NativeCalibration::~NativeCalibration() {
+  // @@protoc_insertion_point(destructor:voice.v1.NativeCalibration)
+  SharedDtor(*this);
+}
+inline void NativeCalibration::SharedDtor(MessageLite& self) {
+  NativeCalibration& this_ = static_cast<NativeCalibration&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* PROTOBUF_NONNULL NativeCalibration::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) NativeCalibration(arena);
+}
+constexpr auto NativeCalibration::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(NativeCalibration),
+                                            alignof(NativeCalibration));
+}
+constexpr auto NativeCalibration::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_NativeCalibration_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // OnDemandRegisterArenaDtor
+          nullptr,  // IsInitialized
+          &NativeCalibration::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<NativeCalibration>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &NativeCalibration::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<NativeCalibration>(), &NativeCalibration::ByteSizeLong,
+              &NativeCalibration::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_._cached_size_),
+          false,
+      },
+      &NativeCalibration::kDescriptorMethods,
+      &descriptor_table_voice_2fv1_2fvoice_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull NativeCalibration_class_data_ =
+        NativeCalibration::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+NativeCalibration::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&NativeCalibration_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(NativeCalibration_class_data_.tc_table);
+  return NativeCalibration_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<4, 14, 0, 0, 2>
+NativeCalibration::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_._has_bits_),
+    0, // no _extensions_
+    14, 120,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294950912,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    14,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    NativeCalibration_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::voice::v1::NativeCalibration>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // uint32 schema_version = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NativeCalibration, _impl_.schema_version_), 0>(),
+     {8, 0, 0, PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.schema_version_)}},
+    // bool partial_hint = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(NativeCalibration, _impl_.partial_hint_), 1>(),
+     {16, 1, 0, PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.partial_hint_)}},
+    // uint32 vad_percent = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NativeCalibration, _impl_.vad_percent_), 2>(),
+     {24, 2, 0, PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.vad_percent_)}},
+    // uint32 candidate_ms = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NativeCalibration, _impl_.candidate_ms_), 3>(),
+     {32, 3, 0, PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.candidate_ms_)}},
+    // uint32 yes_no_ms = 5;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NativeCalibration, _impl_.yes_no_ms_), 4>(),
+     {40, 4, 0, PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.yes_no_ms_)}},
+    // uint32 open_ms = 6;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NativeCalibration, _impl_.open_ms_), 5>(),
+     {48, 5, 0, PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.open_ms_)}},
+    // uint32 uncertain_ms = 7;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NativeCalibration, _impl_.uncertain_ms_), 6>(),
+     {56, 6, 0, PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.uncertain_ms_)}},
+    // uint32 incomplete_ms = 8;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NativeCalibration, _impl_.incomplete_ms_), 7>(),
+     {64, 7, 0, PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.incomplete_ms_)}},
+    // uint32 silence_reminder_ms = 9;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NativeCalibration, _impl_.silence_reminder_ms_), 8>(),
+     {72, 8, 0, PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.silence_reminder_ms_)}},
+    // uint32 interrupt_vad_percent = 10;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NativeCalibration, _impl_.interrupt_vad_percent_), 9>(),
+     {80, 9, 0, PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.interrupt_vad_percent_)}},
+    // uint32 interrupt_min_voice_ms = 11;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NativeCalibration, _impl_.interrupt_min_voice_ms_), 10>(),
+     {88, 10, 0, PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.interrupt_min_voice_ms_)}},
+    // uint32 interrupt_sustained_voice_ms = 12;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NativeCalibration, _impl_.interrupt_sustained_voice_ms_), 11>(),
+     {96, 11, 0, PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.interrupt_sustained_voice_ms_)}},
+    // uint32 interrupt_max_quiet_ms = 13;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NativeCalibration, _impl_.interrupt_max_quiet_ms_), 12>(),
+     {104, 12, 0, PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.interrupt_max_quiet_ms_)}},
+    // uint32 interrupt_sustained_quiet_ms = 14;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NativeCalibration, _impl_.interrupt_sustained_quiet_ms_), 13>(),
+     {112, 13, 0, PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.interrupt_sustained_quiet_ms_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint32 schema_version = 1;
+    {PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.schema_version_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // bool partial_hint = 2;
+    {PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.partial_hint_), _Internal::kHasBitsOffset + 1, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+    // uint32 vad_percent = 3;
+    {PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.vad_percent_), _Internal::kHasBitsOffset + 2, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 candidate_ms = 4;
+    {PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.candidate_ms_), _Internal::kHasBitsOffset + 3, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 yes_no_ms = 5;
+    {PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.yes_no_ms_), _Internal::kHasBitsOffset + 4, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 open_ms = 6;
+    {PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.open_ms_), _Internal::kHasBitsOffset + 5, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 uncertain_ms = 7;
+    {PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.uncertain_ms_), _Internal::kHasBitsOffset + 6, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 incomplete_ms = 8;
+    {PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.incomplete_ms_), _Internal::kHasBitsOffset + 7, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 silence_reminder_ms = 9;
+    {PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.silence_reminder_ms_), _Internal::kHasBitsOffset + 8, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 interrupt_vad_percent = 10;
+    {PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.interrupt_vad_percent_), _Internal::kHasBitsOffset + 9, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 interrupt_min_voice_ms = 11;
+    {PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.interrupt_min_voice_ms_), _Internal::kHasBitsOffset + 10, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 interrupt_sustained_voice_ms = 12;
+    {PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.interrupt_sustained_voice_ms_), _Internal::kHasBitsOffset + 11, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 interrupt_max_quiet_ms = 13;
+    {PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.interrupt_max_quiet_ms_), _Internal::kHasBitsOffset + 12, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 interrupt_sustained_quiet_ms = 14;
+    {PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.interrupt_sustained_quiet_ms_), _Internal::kHasBitsOffset + 13, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+PROTOBUF_NOINLINE void NativeCalibration::Clear() {
+// @@protoc_insertion_point(message_clear_start:voice.v1.NativeCalibration)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if ((cached_has_bits & 0x000000ffu) != 0) {
+    ::memset(&_impl_.schema_version_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.incomplete_ms_) -
+        reinterpret_cast<char*>(&_impl_.schema_version_)) + sizeof(_impl_.incomplete_ms_));
+  }
+  if ((cached_has_bits & 0x00003f00u) != 0) {
+    ::memset(&_impl_.silence_reminder_ms_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.interrupt_sustained_quiet_ms_) -
+        reinterpret_cast<char*>(&_impl_.silence_reminder_ms_)) + sizeof(_impl_.interrupt_sustained_quiet_ms_));
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL NativeCalibration::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const NativeCalibration& this_ = static_cast<const NativeCalibration&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL NativeCalibration::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const NativeCalibration& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(serialize_to_array_start:voice.v1.NativeCalibration)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  // uint32 schema_version = 1;
+  if ((this_._impl_._has_bits_[0] & 0x00000001u) != 0) {
+    if (this_._internal_schema_version() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          1, this_._internal_schema_version(), target);
+    }
+  }
+
+  // bool partial_hint = 2;
+  if ((this_._impl_._has_bits_[0] & 0x00000002u) != 0) {
+    if (this_._internal_partial_hint() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteBoolToArray(
+          2, this_._internal_partial_hint(), target);
+    }
+  }
+
+  // uint32 vad_percent = 3;
+  if ((this_._impl_._has_bits_[0] & 0x00000004u) != 0) {
+    if (this_._internal_vad_percent() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          3, this_._internal_vad_percent(), target);
+    }
+  }
+
+  // uint32 candidate_ms = 4;
+  if ((this_._impl_._has_bits_[0] & 0x00000008u) != 0) {
+    if (this_._internal_candidate_ms() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          4, this_._internal_candidate_ms(), target);
+    }
+  }
+
+  // uint32 yes_no_ms = 5;
+  if ((this_._impl_._has_bits_[0] & 0x00000010u) != 0) {
+    if (this_._internal_yes_no_ms() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          5, this_._internal_yes_no_ms(), target);
+    }
+  }
+
+  // uint32 open_ms = 6;
+  if ((this_._impl_._has_bits_[0] & 0x00000020u) != 0) {
+    if (this_._internal_open_ms() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          6, this_._internal_open_ms(), target);
+    }
+  }
+
+  // uint32 uncertain_ms = 7;
+  if ((this_._impl_._has_bits_[0] & 0x00000040u) != 0) {
+    if (this_._internal_uncertain_ms() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          7, this_._internal_uncertain_ms(), target);
+    }
+  }
+
+  // uint32 incomplete_ms = 8;
+  if ((this_._impl_._has_bits_[0] & 0x00000080u) != 0) {
+    if (this_._internal_incomplete_ms() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          8, this_._internal_incomplete_ms(), target);
+    }
+  }
+
+  // uint32 silence_reminder_ms = 9;
+  if ((this_._impl_._has_bits_[0] & 0x00000100u) != 0) {
+    if (this_._internal_silence_reminder_ms() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          9, this_._internal_silence_reminder_ms(), target);
+    }
+  }
+
+  // uint32 interrupt_vad_percent = 10;
+  if ((this_._impl_._has_bits_[0] & 0x00000200u) != 0) {
+    if (this_._internal_interrupt_vad_percent() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          10, this_._internal_interrupt_vad_percent(), target);
+    }
+  }
+
+  // uint32 interrupt_min_voice_ms = 11;
+  if ((this_._impl_._has_bits_[0] & 0x00000400u) != 0) {
+    if (this_._internal_interrupt_min_voice_ms() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          11, this_._internal_interrupt_min_voice_ms(), target);
+    }
+  }
+
+  // uint32 interrupt_sustained_voice_ms = 12;
+  if ((this_._impl_._has_bits_[0] & 0x00000800u) != 0) {
+    if (this_._internal_interrupt_sustained_voice_ms() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          12, this_._internal_interrupt_sustained_voice_ms(), target);
+    }
+  }
+
+  // uint32 interrupt_max_quiet_ms = 13;
+  if ((this_._impl_._has_bits_[0] & 0x00001000u) != 0) {
+    if (this_._internal_interrupt_max_quiet_ms() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          13, this_._internal_interrupt_max_quiet_ms(), target);
+    }
+  }
+
+  // uint32 interrupt_sustained_quiet_ms = 14;
+  if ((this_._impl_._has_bits_[0] & 0x00002000u) != 0) {
+    if (this_._internal_interrupt_sustained_quiet_ms() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          14, this_._internal_interrupt_sustained_quiet_ms(), target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:voice.v1.NativeCalibration)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t NativeCalibration::ByteSizeLong(const MessageLite& base) {
+  const NativeCalibration& this_ = static_cast<const NativeCalibration&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t NativeCalibration::ByteSizeLong() const {
+  const NativeCalibration& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:voice.v1.NativeCalibration)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x000000ffu) != 0) {
+    // uint32 schema_version = 1;
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (this_._internal_schema_version() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_schema_version());
+      }
+    }
+    // bool partial_hint = 2;
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (this_._internal_partial_hint() != 0) {
+        total_size += 2;
+      }
+    }
+    // uint32 vad_percent = 3;
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (this_._internal_vad_percent() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_vad_percent());
+      }
+    }
+    // uint32 candidate_ms = 4;
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      if (this_._internal_candidate_ms() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_candidate_ms());
+      }
+    }
+    // uint32 yes_no_ms = 5;
+    if ((cached_has_bits & 0x00000010u) != 0) {
+      if (this_._internal_yes_no_ms() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_yes_no_ms());
+      }
+    }
+    // uint32 open_ms = 6;
+    if ((cached_has_bits & 0x00000020u) != 0) {
+      if (this_._internal_open_ms() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_open_ms());
+      }
+    }
+    // uint32 uncertain_ms = 7;
+    if ((cached_has_bits & 0x00000040u) != 0) {
+      if (this_._internal_uncertain_ms() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_uncertain_ms());
+      }
+    }
+    // uint32 incomplete_ms = 8;
+    if ((cached_has_bits & 0x00000080u) != 0) {
+      if (this_._internal_incomplete_ms() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_incomplete_ms());
+      }
+    }
+  }
+  if ((cached_has_bits & 0x00003f00u) != 0) {
+    // uint32 silence_reminder_ms = 9;
+    if ((cached_has_bits & 0x00000100u) != 0) {
+      if (this_._internal_silence_reminder_ms() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_silence_reminder_ms());
+      }
+    }
+    // uint32 interrupt_vad_percent = 10;
+    if ((cached_has_bits & 0x00000200u) != 0) {
+      if (this_._internal_interrupt_vad_percent() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_interrupt_vad_percent());
+      }
+    }
+    // uint32 interrupt_min_voice_ms = 11;
+    if ((cached_has_bits & 0x00000400u) != 0) {
+      if (this_._internal_interrupt_min_voice_ms() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_interrupt_min_voice_ms());
+      }
+    }
+    // uint32 interrupt_sustained_voice_ms = 12;
+    if ((cached_has_bits & 0x00000800u) != 0) {
+      if (this_._internal_interrupt_sustained_voice_ms() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_interrupt_sustained_voice_ms());
+      }
+    }
+    // uint32 interrupt_max_quiet_ms = 13;
+    if ((cached_has_bits & 0x00001000u) != 0) {
+      if (this_._internal_interrupt_max_quiet_ms() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_interrupt_max_quiet_ms());
+      }
+    }
+    // uint32 interrupt_sustained_quiet_ms = 14;
+    if ((cached_has_bits & 0x00002000u) != 0) {
+      if (this_._internal_interrupt_sustained_quiet_ms() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_interrupt_sustained_quiet_ms());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void NativeCalibration::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<NativeCalibration*>(&to_msg);
+  auto& from = static_cast<const NativeCalibration&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:voice.v1.NativeCalibration)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x000000ffu) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (from._internal_schema_version() != 0) {
+        _this->_impl_.schema_version_ = from._impl_.schema_version_;
+      }
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (from._internal_partial_hint() != 0) {
+        _this->_impl_.partial_hint_ = from._impl_.partial_hint_;
+      }
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (from._internal_vad_percent() != 0) {
+        _this->_impl_.vad_percent_ = from._impl_.vad_percent_;
+      }
+    }
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      if (from._internal_candidate_ms() != 0) {
+        _this->_impl_.candidate_ms_ = from._impl_.candidate_ms_;
+      }
+    }
+    if ((cached_has_bits & 0x00000010u) != 0) {
+      if (from._internal_yes_no_ms() != 0) {
+        _this->_impl_.yes_no_ms_ = from._impl_.yes_no_ms_;
+      }
+    }
+    if ((cached_has_bits & 0x00000020u) != 0) {
+      if (from._internal_open_ms() != 0) {
+        _this->_impl_.open_ms_ = from._impl_.open_ms_;
+      }
+    }
+    if ((cached_has_bits & 0x00000040u) != 0) {
+      if (from._internal_uncertain_ms() != 0) {
+        _this->_impl_.uncertain_ms_ = from._impl_.uncertain_ms_;
+      }
+    }
+    if ((cached_has_bits & 0x00000080u) != 0) {
+      if (from._internal_incomplete_ms() != 0) {
+        _this->_impl_.incomplete_ms_ = from._impl_.incomplete_ms_;
+      }
+    }
+  }
+  if ((cached_has_bits & 0x00003f00u) != 0) {
+    if ((cached_has_bits & 0x00000100u) != 0) {
+      if (from._internal_silence_reminder_ms() != 0) {
+        _this->_impl_.silence_reminder_ms_ = from._impl_.silence_reminder_ms_;
+      }
+    }
+    if ((cached_has_bits & 0x00000200u) != 0) {
+      if (from._internal_interrupt_vad_percent() != 0) {
+        _this->_impl_.interrupt_vad_percent_ = from._impl_.interrupt_vad_percent_;
+      }
+    }
+    if ((cached_has_bits & 0x00000400u) != 0) {
+      if (from._internal_interrupt_min_voice_ms() != 0) {
+        _this->_impl_.interrupt_min_voice_ms_ = from._impl_.interrupt_min_voice_ms_;
+      }
+    }
+    if ((cached_has_bits & 0x00000800u) != 0) {
+      if (from._internal_interrupt_sustained_voice_ms() != 0) {
+        _this->_impl_.interrupt_sustained_voice_ms_ = from._impl_.interrupt_sustained_voice_ms_;
+      }
+    }
+    if ((cached_has_bits & 0x00001000u) != 0) {
+      if (from._internal_interrupt_max_quiet_ms() != 0) {
+        _this->_impl_.interrupt_max_quiet_ms_ = from._impl_.interrupt_max_quiet_ms_;
+      }
+    }
+    if ((cached_has_bits & 0x00002000u) != 0) {
+      if (from._internal_interrupt_sustained_quiet_ms() != 0) {
+        _this->_impl_.interrupt_sustained_quiet_ms_ = from._impl_.interrupt_sustained_quiet_ms_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void NativeCalibration::CopyFrom(const NativeCalibration& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:voice.v1.NativeCalibration)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void NativeCalibration::InternalSwap(NativeCalibration* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.interrupt_sustained_quiet_ms_)
+      + sizeof(NativeCalibration::_impl_.interrupt_sustained_quiet_ms_)
+      - PROTOBUF_FIELD_OFFSET(NativeCalibration, _impl_.schema_version_)>(
+          reinterpret_cast<char*>(&_impl_.schema_version_),
+          reinterpret_cast<char*>(&other->_impl_.schema_version_));
+}
+
+::google::protobuf::Metadata NativeCalibration::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class OutputBudget::_Internal {
+ public:
+  using HasBits =
+      decltype(::std::declval<OutputBudget>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(OutputBudget, _impl_._has_bits_);
+};
+
+OutputBudget::OutputBudget(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, OutputBudget_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:voice.v1.OutputBudget)
+}
+OutputBudget::OutputBudget(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const OutputBudget& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, OutputBudget_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(from._impl_) {
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+PROTOBUF_NDEBUG_INLINE OutputBudget::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0} {}
+
+inline void OutputBudget::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, schema_version_),
+           0,
+           offsetof(Impl_, turn_max_bytes_) -
+               offsetof(Impl_, schema_version_) +
+               sizeof(Impl_::turn_max_bytes_));
+}
+OutputBudget::~OutputBudget() {
+  // @@protoc_insertion_point(destructor:voice.v1.OutputBudget)
+  SharedDtor(*this);
+}
+inline void OutputBudget::SharedDtor(MessageLite& self) {
+  OutputBudget& this_ = static_cast<OutputBudget&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* PROTOBUF_NONNULL OutputBudget::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) OutputBudget(arena);
+}
+constexpr auto OutputBudget::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(OutputBudget),
+                                            alignof(OutputBudget));
+}
+constexpr auto OutputBudget::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_OutputBudget_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // OnDemandRegisterArenaDtor
+          nullptr,  // IsInitialized
+          &OutputBudget::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<OutputBudget>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &OutputBudget::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<OutputBudget>(), &OutputBudget::ByteSizeLong,
+              &OutputBudget::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(OutputBudget, _impl_._cached_size_),
+          false,
+      },
+      &OutputBudget::kDescriptorMethods,
+      &descriptor_table_voice_2fv1_2fvoice_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull OutputBudget_class_data_ =
+        OutputBudget::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+OutputBudget::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&OutputBudget_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(OutputBudget_class_data_.tc_table);
+  return OutputBudget_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<3, 5, 0, 0, 2>
+OutputBudget::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(OutputBudget, _impl_._has_bits_),
+    0, // no _extensions_
+    5, 56,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967264,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    5,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    OutputBudget_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::voice::v1::OutputBudget>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // uint32 schema_version = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(OutputBudget, _impl_.schema_version_), 0>(),
+     {8, 0, 0, PROTOBUF_FIELD_OFFSET(OutputBudget, _impl_.schema_version_)}},
+    // uint32 phrase_max_chars = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(OutputBudget, _impl_.phrase_max_chars_), 1>(),
+     {16, 1, 0, PROTOBUF_FIELD_OFFSET(OutputBudget, _impl_.phrase_max_chars_)}},
+    // uint32 phrase_max_bytes = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(OutputBudget, _impl_.phrase_max_bytes_), 2>(),
+     {24, 2, 0, PROTOBUF_FIELD_OFFSET(OutputBudget, _impl_.phrase_max_bytes_)}},
+    // uint32 max_phrases = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(OutputBudget, _impl_.max_phrases_), 3>(),
+     {32, 3, 0, PROTOBUF_FIELD_OFFSET(OutputBudget, _impl_.max_phrases_)}},
+    // uint32 turn_max_bytes = 5;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(OutputBudget, _impl_.turn_max_bytes_), 4>(),
+     {40, 4, 0, PROTOBUF_FIELD_OFFSET(OutputBudget, _impl_.turn_max_bytes_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint32 schema_version = 1;
+    {PROTOBUF_FIELD_OFFSET(OutputBudget, _impl_.schema_version_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 phrase_max_chars = 2;
+    {PROTOBUF_FIELD_OFFSET(OutputBudget, _impl_.phrase_max_chars_), _Internal::kHasBitsOffset + 1, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 phrase_max_bytes = 3;
+    {PROTOBUF_FIELD_OFFSET(OutputBudget, _impl_.phrase_max_bytes_), _Internal::kHasBitsOffset + 2, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 max_phrases = 4;
+    {PROTOBUF_FIELD_OFFSET(OutputBudget, _impl_.max_phrases_), _Internal::kHasBitsOffset + 3, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 turn_max_bytes = 5;
+    {PROTOBUF_FIELD_OFFSET(OutputBudget, _impl_.turn_max_bytes_), _Internal::kHasBitsOffset + 4, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+PROTOBUF_NOINLINE void OutputBudget::Clear() {
+// @@protoc_insertion_point(message_clear_start:voice.v1.OutputBudget)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000001fu) != 0) {
+    ::memset(&_impl_.schema_version_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.turn_max_bytes_) -
+        reinterpret_cast<char*>(&_impl_.schema_version_)) + sizeof(_impl_.turn_max_bytes_));
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL OutputBudget::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const OutputBudget& this_ = static_cast<const OutputBudget&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL OutputBudget::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const OutputBudget& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(serialize_to_array_start:voice.v1.OutputBudget)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  // uint32 schema_version = 1;
+  if ((this_._impl_._has_bits_[0] & 0x00000001u) != 0) {
+    if (this_._internal_schema_version() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          1, this_._internal_schema_version(), target);
+    }
+  }
+
+  // uint32 phrase_max_chars = 2;
+  if ((this_._impl_._has_bits_[0] & 0x00000002u) != 0) {
+    if (this_._internal_phrase_max_chars() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          2, this_._internal_phrase_max_chars(), target);
+    }
+  }
+
+  // uint32 phrase_max_bytes = 3;
+  if ((this_._impl_._has_bits_[0] & 0x00000004u) != 0) {
+    if (this_._internal_phrase_max_bytes() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          3, this_._internal_phrase_max_bytes(), target);
+    }
+  }
+
+  // uint32 max_phrases = 4;
+  if ((this_._impl_._has_bits_[0] & 0x00000008u) != 0) {
+    if (this_._internal_max_phrases() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          4, this_._internal_max_phrases(), target);
+    }
+  }
+
+  // uint32 turn_max_bytes = 5;
+  if ((this_._impl_._has_bits_[0] & 0x00000010u) != 0) {
+    if (this_._internal_turn_max_bytes() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          5, this_._internal_turn_max_bytes(), target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:voice.v1.OutputBudget)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t OutputBudget::ByteSizeLong(const MessageLite& base) {
+  const OutputBudget& this_ = static_cast<const OutputBudget&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t OutputBudget::ByteSizeLong() const {
+  const OutputBudget& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:voice.v1.OutputBudget)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000001fu) != 0) {
+    // uint32 schema_version = 1;
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (this_._internal_schema_version() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_schema_version());
+      }
+    }
+    // uint32 phrase_max_chars = 2;
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (this_._internal_phrase_max_chars() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_phrase_max_chars());
+      }
+    }
+    // uint32 phrase_max_bytes = 3;
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (this_._internal_phrase_max_bytes() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_phrase_max_bytes());
+      }
+    }
+    // uint32 max_phrases = 4;
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      if (this_._internal_max_phrases() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_max_phrases());
+      }
+    }
+    // uint32 turn_max_bytes = 5;
+    if ((cached_has_bits & 0x00000010u) != 0) {
+      if (this_._internal_turn_max_bytes() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_turn_max_bytes());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void OutputBudget::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<OutputBudget*>(&to_msg);
+  auto& from = static_cast<const OutputBudget&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:voice.v1.OutputBudget)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000001fu) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (from._internal_schema_version() != 0) {
+        _this->_impl_.schema_version_ = from._impl_.schema_version_;
+      }
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (from._internal_phrase_max_chars() != 0) {
+        _this->_impl_.phrase_max_chars_ = from._impl_.phrase_max_chars_;
+      }
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (from._internal_phrase_max_bytes() != 0) {
+        _this->_impl_.phrase_max_bytes_ = from._impl_.phrase_max_bytes_;
+      }
+    }
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      if (from._internal_max_phrases() != 0) {
+        _this->_impl_.max_phrases_ = from._impl_.max_phrases_;
+      }
+    }
+    if ((cached_has_bits & 0x00000010u) != 0) {
+      if (from._internal_turn_max_bytes() != 0) {
+        _this->_impl_.turn_max_bytes_ = from._impl_.turn_max_bytes_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void OutputBudget::CopyFrom(const OutputBudget& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:voice.v1.OutputBudget)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void OutputBudget::InternalSwap(OutputBudget* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(OutputBudget, _impl_.turn_max_bytes_)
+      + sizeof(OutputBudget::_impl_.turn_max_bytes_)
+      - PROTOBUF_FIELD_OFFSET(OutputBudget, _impl_.schema_version_)>(
+          reinterpret_cast<char*>(&_impl_.schema_version_),
+          reinterpret_cast<char*>(&other->_impl_.schema_version_));
+}
+
+::google::protobuf::Metadata OutputBudget::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class GatewayConfiguration::_Internal {
+ public:
+  using HasBits =
+      decltype(::std::declval<GatewayConfiguration>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_._has_bits_);
+};
+
+GatewayConfiguration::GatewayConfiguration(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, GatewayConfiguration_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:voice.v1.GatewayConfiguration)
+}
+PROTOBUF_NDEBUG_INLINE GatewayConfiguration::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    const ::voice::v1::GatewayConfiguration& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0} {}
+
+GatewayConfiguration::GatewayConfiguration(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const GatewayConfiguration& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, GatewayConfiguration_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  GatewayConfiguration* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::uint32_t cached_has_bits = _impl_._has_bits_[0];
+  _impl_.calibration_ = ((cached_has_bits & 0x00000001u) != 0)
+                ? ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.calibration_)
+                : nullptr;
+  _impl_.output_ = ((cached_has_bits & 0x00000002u) != 0)
+                ? ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.output_)
+                : nullptr;
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, schema_version_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, schema_version_),
+           offsetof(Impl_, turn_timeout_seconds_) -
+               offsetof(Impl_, schema_version_) +
+               sizeof(Impl_::turn_timeout_seconds_));
+
+  // @@protoc_insertion_point(copy_constructor:voice.v1.GatewayConfiguration)
+}
+PROTOBUF_NDEBUG_INLINE GatewayConfiguration::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0} {}
+
+inline void GatewayConfiguration::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, calibration_),
+           0,
+           offsetof(Impl_, turn_timeout_seconds_) -
+               offsetof(Impl_, calibration_) +
+               sizeof(Impl_::turn_timeout_seconds_));
+}
+GatewayConfiguration::~GatewayConfiguration() {
+  // @@protoc_insertion_point(destructor:voice.v1.GatewayConfiguration)
+  SharedDtor(*this);
+}
+inline void GatewayConfiguration::SharedDtor(MessageLite& self) {
+  GatewayConfiguration& this_ = static_cast<GatewayConfiguration&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  delete this_._impl_.calibration_;
+  delete this_._impl_.output_;
+  this_._impl_.~Impl_();
+}
+
+inline void* PROTOBUF_NONNULL GatewayConfiguration::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) GatewayConfiguration(arena);
+}
+constexpr auto GatewayConfiguration::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(GatewayConfiguration),
+                                            alignof(GatewayConfiguration));
+}
+constexpr auto GatewayConfiguration::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_GatewayConfiguration_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // OnDemandRegisterArenaDtor
+          nullptr,  // IsInitialized
+          &GatewayConfiguration::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<GatewayConfiguration>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &GatewayConfiguration::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<GatewayConfiguration>(), &GatewayConfiguration::ByteSizeLong,
+              &GatewayConfiguration::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_._cached_size_),
+          false,
+      },
+      &GatewayConfiguration::kDescriptorMethods,
+      &descriptor_table_voice_2fv1_2fvoice_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull GatewayConfiguration_class_data_ =
+        GatewayConfiguration::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+GatewayConfiguration::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&GatewayConfiguration_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(GatewayConfiguration_class_data_.tc_table);
+  return GatewayConfiguration_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<4, 9, 2, 0, 2>
+GatewayConfiguration::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_._has_bits_),
+    0, // no _extensions_
+    9, 120,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294966784,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    9,  // num_field_entries
+    2,  // num_aux_entries
+    offsetof(decltype(_table_), aux_entries),
+    GatewayConfiguration_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::voice::v1::GatewayConfiguration>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // uint32 schema_version = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(GatewayConfiguration, _impl_.schema_version_), 2>(),
+     {8, 2, 0, PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.schema_version_)}},
+    // uint32 max_call_seconds = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(GatewayConfiguration, _impl_.max_call_seconds_), 3>(),
+     {16, 3, 0, PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.max_call_seconds_)}},
+    // uint32 answer_delay_ms = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(GatewayConfiguration, _impl_.answer_delay_ms_), 4>(),
+     {24, 4, 0, PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.answer_delay_ms_)}},
+    // uint32 closing_delay_ms = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(GatewayConfiguration, _impl_.closing_delay_ms_), 5>(),
+     {32, 5, 0, PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.closing_delay_ms_)}},
+    // uint32 media_drain_ms = 5;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(GatewayConfiguration, _impl_.media_drain_ms_), 6>(),
+     {40, 6, 0, PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.media_drain_ms_)}},
+    // uint32 max_call_turns = 6;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(GatewayConfiguration, _impl_.max_call_turns_), 7>(),
+     {48, 7, 0, PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.max_call_turns_)}},
+    // uint32 turn_timeout_seconds = 7;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(GatewayConfiguration, _impl_.turn_timeout_seconds_), 8>(),
+     {56, 8, 0, PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.turn_timeout_seconds_)}},
+    // .voice.v1.NativeCalibration calibration = 8;
+    {::_pbi::TcParser::FastMtS1,
+     {66, 0, 0, PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.calibration_)}},
+    // .voice.v1.OutputBudget output = 9;
+    {::_pbi::TcParser::FastMtS1,
+     {74, 1, 1, PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.output_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint32 schema_version = 1;
+    {PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.schema_version_), _Internal::kHasBitsOffset + 2, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 max_call_seconds = 2;
+    {PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.max_call_seconds_), _Internal::kHasBitsOffset + 3, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 answer_delay_ms = 3;
+    {PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.answer_delay_ms_), _Internal::kHasBitsOffset + 4, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 closing_delay_ms = 4;
+    {PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.closing_delay_ms_), _Internal::kHasBitsOffset + 5, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 media_drain_ms = 5;
+    {PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.media_drain_ms_), _Internal::kHasBitsOffset + 6, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 max_call_turns = 6;
+    {PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.max_call_turns_), _Internal::kHasBitsOffset + 7, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // uint32 turn_timeout_seconds = 7;
+    {PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.turn_timeout_seconds_), _Internal::kHasBitsOffset + 8, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // .voice.v1.NativeCalibration calibration = 8;
+    {PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.calibration_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+    // .voice.v1.OutputBudget output = 9;
+    {PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.output_), _Internal::kHasBitsOffset + 1, 1,
+    (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+  }},
+  {{
+      {::_pbi::TcParser::GetTable<::voice::v1::NativeCalibration>()},
+      {::_pbi::TcParser::GetTable<::voice::v1::OutputBudget>()},
+  }},
+  {{
+  }},
+};
+PROTOBUF_NOINLINE void GatewayConfiguration::Clear() {
+// @@protoc_insertion_point(message_clear_start:voice.v1.GatewayConfiguration)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if ((cached_has_bits & 0x00000003u) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      ABSL_DCHECK(_impl_.calibration_ != nullptr);
+      _impl_.calibration_->Clear();
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      ABSL_DCHECK(_impl_.output_ != nullptr);
+      _impl_.output_->Clear();
+    }
+  }
+  if ((cached_has_bits & 0x000000fcu) != 0) {
+    ::memset(&_impl_.schema_version_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.max_call_turns_) -
+        reinterpret_cast<char*>(&_impl_.schema_version_)) + sizeof(_impl_.max_call_turns_));
+  }
+  _impl_.turn_timeout_seconds_ = 0u;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL GatewayConfiguration::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const GatewayConfiguration& this_ = static_cast<const GatewayConfiguration&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL GatewayConfiguration::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const GatewayConfiguration& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(serialize_to_array_start:voice.v1.GatewayConfiguration)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  // uint32 schema_version = 1;
+  if ((this_._impl_._has_bits_[0] & 0x00000004u) != 0) {
+    if (this_._internal_schema_version() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          1, this_._internal_schema_version(), target);
+    }
+  }
+
+  // uint32 max_call_seconds = 2;
+  if ((this_._impl_._has_bits_[0] & 0x00000008u) != 0) {
+    if (this_._internal_max_call_seconds() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          2, this_._internal_max_call_seconds(), target);
+    }
+  }
+
+  // uint32 answer_delay_ms = 3;
+  if ((this_._impl_._has_bits_[0] & 0x00000010u) != 0) {
+    if (this_._internal_answer_delay_ms() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          3, this_._internal_answer_delay_ms(), target);
+    }
+  }
+
+  // uint32 closing_delay_ms = 4;
+  if ((this_._impl_._has_bits_[0] & 0x00000020u) != 0) {
+    if (this_._internal_closing_delay_ms() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          4, this_._internal_closing_delay_ms(), target);
+    }
+  }
+
+  // uint32 media_drain_ms = 5;
+  if ((this_._impl_._has_bits_[0] & 0x00000040u) != 0) {
+    if (this_._internal_media_drain_ms() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          5, this_._internal_media_drain_ms(), target);
+    }
+  }
+
+  // uint32 max_call_turns = 6;
+  if ((this_._impl_._has_bits_[0] & 0x00000080u) != 0) {
+    if (this_._internal_max_call_turns() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          6, this_._internal_max_call_turns(), target);
+    }
+  }
+
+  // uint32 turn_timeout_seconds = 7;
+  if ((this_._impl_._has_bits_[0] & 0x00000100u) != 0) {
+    if (this_._internal_turn_timeout_seconds() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          7, this_._internal_turn_timeout_seconds(), target);
+    }
+  }
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // .voice.v1.NativeCalibration calibration = 8;
+  if ((cached_has_bits & 0x00000001u) != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+        8, *this_._impl_.calibration_, this_._impl_.calibration_->GetCachedSize(), target,
+        stream);
+  }
+
+  // .voice.v1.OutputBudget output = 9;
+  if ((cached_has_bits & 0x00000002u) != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+        9, *this_._impl_.output_, this_._impl_.output_->GetCachedSize(), target,
+        stream);
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:voice.v1.GatewayConfiguration)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t GatewayConfiguration::ByteSizeLong(const MessageLite& base) {
+  const GatewayConfiguration& this_ = static_cast<const GatewayConfiguration&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t GatewayConfiguration::ByteSizeLong() const {
+  const GatewayConfiguration& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:voice.v1.GatewayConfiguration)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x000000ffu) != 0) {
+    // .voice.v1.NativeCalibration calibration = 8;
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      total_size += 1 +
+                    ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.calibration_);
+    }
+    // .voice.v1.OutputBudget output = 9;
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      total_size += 1 +
+                    ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.output_);
+    }
+    // uint32 schema_version = 1;
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (this_._internal_schema_version() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_schema_version());
+      }
+    }
+    // uint32 max_call_seconds = 2;
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      if (this_._internal_max_call_seconds() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_max_call_seconds());
+      }
+    }
+    // uint32 answer_delay_ms = 3;
+    if ((cached_has_bits & 0x00000010u) != 0) {
+      if (this_._internal_answer_delay_ms() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_answer_delay_ms());
+      }
+    }
+    // uint32 closing_delay_ms = 4;
+    if ((cached_has_bits & 0x00000020u) != 0) {
+      if (this_._internal_closing_delay_ms() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_closing_delay_ms());
+      }
+    }
+    // uint32 media_drain_ms = 5;
+    if ((cached_has_bits & 0x00000040u) != 0) {
+      if (this_._internal_media_drain_ms() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_media_drain_ms());
+      }
+    }
+    // uint32 max_call_turns = 6;
+    if ((cached_has_bits & 0x00000080u) != 0) {
+      if (this_._internal_max_call_turns() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_max_call_turns());
+      }
+    }
+  }
+   {
+    // uint32 turn_timeout_seconds = 7;
+    if ((cached_has_bits & 0x00000100u) != 0) {
+      if (this_._internal_turn_timeout_seconds() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_turn_timeout_seconds());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void GatewayConfiguration::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<GatewayConfiguration*>(&to_msg);
+  auto& from = static_cast<const GatewayConfiguration&>(from_msg);
+  ::google::protobuf::Arena* arena = _this->GetArena();
+  // @@protoc_insertion_point(class_specific_merge_from_start:voice.v1.GatewayConfiguration)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x000000ffu) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      ABSL_DCHECK(from._impl_.calibration_ != nullptr);
+      if (_this->_impl_.calibration_ == nullptr) {
+        _this->_impl_.calibration_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.calibration_);
+      } else {
+        _this->_impl_.calibration_->MergeFrom(*from._impl_.calibration_);
+      }
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      ABSL_DCHECK(from._impl_.output_ != nullptr);
+      if (_this->_impl_.output_ == nullptr) {
+        _this->_impl_.output_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.output_);
+      } else {
+        _this->_impl_.output_->MergeFrom(*from._impl_.output_);
+      }
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (from._internal_schema_version() != 0) {
+        _this->_impl_.schema_version_ = from._impl_.schema_version_;
+      }
+    }
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      if (from._internal_max_call_seconds() != 0) {
+        _this->_impl_.max_call_seconds_ = from._impl_.max_call_seconds_;
+      }
+    }
+    if ((cached_has_bits & 0x00000010u) != 0) {
+      if (from._internal_answer_delay_ms() != 0) {
+        _this->_impl_.answer_delay_ms_ = from._impl_.answer_delay_ms_;
+      }
+    }
+    if ((cached_has_bits & 0x00000020u) != 0) {
+      if (from._internal_closing_delay_ms() != 0) {
+        _this->_impl_.closing_delay_ms_ = from._impl_.closing_delay_ms_;
+      }
+    }
+    if ((cached_has_bits & 0x00000040u) != 0) {
+      if (from._internal_media_drain_ms() != 0) {
+        _this->_impl_.media_drain_ms_ = from._impl_.media_drain_ms_;
+      }
+    }
+    if ((cached_has_bits & 0x00000080u) != 0) {
+      if (from._internal_max_call_turns() != 0) {
+        _this->_impl_.max_call_turns_ = from._impl_.max_call_turns_;
+      }
+    }
+  }
+  if ((cached_has_bits & 0x00000100u) != 0) {
+    if (from._internal_turn_timeout_seconds() != 0) {
+      _this->_impl_.turn_timeout_seconds_ = from._impl_.turn_timeout_seconds_;
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void GatewayConfiguration::CopyFrom(const GatewayConfiguration& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:voice.v1.GatewayConfiguration)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void GatewayConfiguration::InternalSwap(GatewayConfiguration* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.turn_timeout_seconds_)
+      + sizeof(GatewayConfiguration::_impl_.turn_timeout_seconds_)
+      - PROTOBUF_FIELD_OFFSET(GatewayConfiguration, _impl_.calibration_)>(
+          reinterpret_cast<char*>(&_impl_.calibration_),
+          reinterpret_cast<char*>(&other->_impl_.calibration_));
+}
+
+::google::protobuf::Metadata GatewayConfiguration::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class CallInitializationReply::_Internal {
+ public:
+  using HasBits =
+      decltype(::std::declval<CallInitializationReply>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(CallInitializationReply, _impl_._has_bits_);
+};
+
+CallInitializationReply::CallInitializationReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CallInitializationReply_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:voice.v1.CallInitializationReply)
+}
+PROTOBUF_NDEBUG_INLINE CallInitializationReply::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    const ::voice::v1::CallInitializationReply& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        release_id_(arena, from.release_id_),
+        manifest_digest_(arena, from.manifest_digest_) {}
+
+CallInitializationReply::CallInitializationReply(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const CallInitializationReply& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CallInitializationReply_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  CallInitializationReply* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::uint32_t cached_has_bits = _impl_._has_bits_[0];
+  _impl_.recognition_ = ((cached_has_bits & 0x00000004u) != 0)
+                ? ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.recognition_)
+                : nullptr;
+  _impl_.synthesis_ = ((cached_has_bits & 0x00000008u) != 0)
+                ? ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.synthesis_)
+                : nullptr;
+  _impl_.gateway_ = ((cached_has_bits & 0x00000010u) != 0)
+                ? ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.gateway_)
+                : nullptr;
+  _impl_.ready_for_answer_ = from._impl_.ready_for_answer_;
+
+  // @@protoc_insertion_point(copy_constructor:voice.v1.CallInitializationReply)
+}
+PROTOBUF_NDEBUG_INLINE CallInitializationReply::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        release_id_(arena),
+        manifest_digest_(arena) {}
+
+inline void CallInitializationReply::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, recognition_),
+           0,
+           offsetof(Impl_, ready_for_answer_) -
+               offsetof(Impl_, recognition_) +
+               sizeof(Impl_::ready_for_answer_));
+}
+CallInitializationReply::~CallInitializationReply() {
+  // @@protoc_insertion_point(destructor:voice.v1.CallInitializationReply)
+  SharedDtor(*this);
+}
+inline void CallInitializationReply::SharedDtor(MessageLite& self) {
+  CallInitializationReply& this_ = static_cast<CallInitializationReply&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.release_id_.Destroy();
+  this_._impl_.manifest_digest_.Destroy();
+  delete this_._impl_.recognition_;
+  delete this_._impl_.synthesis_;
+  delete this_._impl_.gateway_;
+  this_._impl_.~Impl_();
+}
+
+inline void* PROTOBUF_NONNULL CallInitializationReply::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) CallInitializationReply(arena);
+}
+constexpr auto CallInitializationReply::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(CallInitializationReply),
+                                            alignof(CallInitializationReply));
+}
+constexpr auto CallInitializationReply::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_CallInitializationReply_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // OnDemandRegisterArenaDtor
+          nullptr,  // IsInitialized
+          &CallInitializationReply::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<CallInitializationReply>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &CallInitializationReply::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<CallInitializationReply>(), &CallInitializationReply::ByteSizeLong,
+              &CallInitializationReply::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(CallInitializationReply, _impl_._cached_size_),
+          false,
+      },
+      &CallInitializationReply::kDescriptorMethods,
+      &descriptor_table_voice_2fv1_2fvoice_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull CallInitializationReply_class_data_ =
+        CallInitializationReply::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+CallInitializationReply::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&CallInitializationReply_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(CallInitializationReply_class_data_.tc_table);
+  return CallInitializationReply_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<3, 6, 3, 66, 2>
+CallInitializationReply::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(CallInitializationReply, _impl_._has_bits_),
+    0, // no _extensions_
+    6, 56,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967232,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    6,  // num_field_entries
+    3,  // num_aux_entries
+    offsetof(decltype(_table_), aux_entries),
+    CallInitializationReply_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::voice::v1::CallInitializationReply>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // string release_id = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 0, 0, PROTOBUF_FIELD_OFFSET(CallInitializationReply, _impl_.release_id_)}},
+    // string manifest_digest = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 1, 0, PROTOBUF_FIELD_OFFSET(CallInitializationReply, _impl_.manifest_digest_)}},
+    // bool ready_for_answer = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(CallInitializationReply, _impl_.ready_for_answer_), 5>(),
+     {24, 5, 0, PROTOBUF_FIELD_OFFSET(CallInitializationReply, _impl_.ready_for_answer_)}},
+    // .voice.v1.RecognitionConfiguration recognition = 4;
+    {::_pbi::TcParser::FastMtS1,
+     {34, 2, 0, PROTOBUF_FIELD_OFFSET(CallInitializationReply, _impl_.recognition_)}},
+    // .voice.v1.SynthesisConfiguration synthesis = 5;
+    {::_pbi::TcParser::FastMtS1,
+     {42, 3, 1, PROTOBUF_FIELD_OFFSET(CallInitializationReply, _impl_.synthesis_)}},
+    // .voice.v1.GatewayConfiguration gateway = 6;
+    {::_pbi::TcParser::FastMtS1,
+     {50, 4, 2, PROTOBUF_FIELD_OFFSET(CallInitializationReply, _impl_.gateway_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string release_id = 1;
+    {PROTOBUF_FIELD_OFFSET(CallInitializationReply, _impl_.release_id_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string manifest_digest = 2;
+    {PROTOBUF_FIELD_OFFSET(CallInitializationReply, _impl_.manifest_digest_), _Internal::kHasBitsOffset + 1, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // bool ready_for_answer = 3;
+    {PROTOBUF_FIELD_OFFSET(CallInitializationReply, _impl_.ready_for_answer_), _Internal::kHasBitsOffset + 5, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+    // .voice.v1.RecognitionConfiguration recognition = 4;
+    {PROTOBUF_FIELD_OFFSET(CallInitializationReply, _impl_.recognition_), _Internal::kHasBitsOffset + 2, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+    // .voice.v1.SynthesisConfiguration synthesis = 5;
+    {PROTOBUF_FIELD_OFFSET(CallInitializationReply, _impl_.synthesis_), _Internal::kHasBitsOffset + 3, 1,
+    (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+    // .voice.v1.GatewayConfiguration gateway = 6;
+    {PROTOBUF_FIELD_OFFSET(CallInitializationReply, _impl_.gateway_), _Internal::kHasBitsOffset + 4, 2,
+    (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+  }},
+  {{
+      {::_pbi::TcParser::GetTable<::voice::v1::RecognitionConfiguration>()},
+      {::_pbi::TcParser::GetTable<::voice::v1::SynthesisConfiguration>()},
+      {::_pbi::TcParser::GetTable<::voice::v1::GatewayConfiguration>()},
+  }},
+  {{
+    "\40\12\17\0\0\0\0\0"
+    "voice.v1.CallInitializationReply"
+    "release_id"
+    "manifest_digest"
+  }},
+};
+PROTOBUF_NOINLINE void CallInitializationReply::Clear() {
+// @@protoc_insertion_point(message_clear_start:voice.v1.CallInitializationReply)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000001fu) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      _impl_.release_id_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      _impl_.manifest_digest_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      ABSL_DCHECK(_impl_.recognition_ != nullptr);
+      _impl_.recognition_->Clear();
+    }
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      ABSL_DCHECK(_impl_.synthesis_ != nullptr);
+      _impl_.synthesis_->Clear();
+    }
+    if ((cached_has_bits & 0x00000010u) != 0) {
+      ABSL_DCHECK(_impl_.gateway_ != nullptr);
+      _impl_.gateway_->Clear();
+    }
+  }
+  _impl_.ready_for_answer_ = false;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL CallInitializationReply::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const CallInitializationReply& this_ = static_cast<const CallInitializationReply&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL CallInitializationReply::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const CallInitializationReply& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(serialize_to_array_start:voice.v1.CallInitializationReply)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  // string release_id = 1;
+  if ((this_._impl_._has_bits_[0] & 0x00000001u) != 0) {
+    if (!this_._internal_release_id().empty()) {
+      const ::std::string& _s = this_._internal_release_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.CallInitializationReply.release_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string manifest_digest = 2;
+  if ((this_._impl_._has_bits_[0] & 0x00000002u) != 0) {
+    if (!this_._internal_manifest_digest().empty()) {
+      const ::std::string& _s = this_._internal_manifest_digest();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.CallInitializationReply.manifest_digest");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  // bool ready_for_answer = 3;
+  if ((this_._impl_._has_bits_[0] & 0x00000020u) != 0) {
+    if (this_._internal_ready_for_answer() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteBoolToArray(
+          3, this_._internal_ready_for_answer(), target);
+    }
+  }
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // .voice.v1.RecognitionConfiguration recognition = 4;
+  if ((cached_has_bits & 0x00000004u) != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+        4, *this_._impl_.recognition_, this_._impl_.recognition_->GetCachedSize(), target,
+        stream);
+  }
+
+  // .voice.v1.SynthesisConfiguration synthesis = 5;
+  if ((cached_has_bits & 0x00000008u) != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+        5, *this_._impl_.synthesis_, this_._impl_.synthesis_->GetCachedSize(), target,
+        stream);
+  }
+
+  // .voice.v1.GatewayConfiguration gateway = 6;
+  if ((cached_has_bits & 0x00000010u) != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+        6, *this_._impl_.gateway_, this_._impl_.gateway_->GetCachedSize(), target,
+        stream);
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:voice.v1.CallInitializationReply)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t CallInitializationReply::ByteSizeLong(const MessageLite& base) {
+  const CallInitializationReply& this_ = static_cast<const CallInitializationReply&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t CallInitializationReply::ByteSizeLong() const {
+  const CallInitializationReply& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:voice.v1.CallInitializationReply)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000003fu) != 0) {
+    // string release_id = 1;
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!this_._internal_release_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_release_id());
+      }
+    }
+    // string manifest_digest = 2;
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (!this_._internal_manifest_digest().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_manifest_digest());
+      }
+    }
+    // .voice.v1.RecognitionConfiguration recognition = 4;
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      total_size += 1 +
+                    ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.recognition_);
+    }
+    // .voice.v1.SynthesisConfiguration synthesis = 5;
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      total_size += 1 +
+                    ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.synthesis_);
+    }
+    // .voice.v1.GatewayConfiguration gateway = 6;
+    if ((cached_has_bits & 0x00000010u) != 0) {
+      total_size += 1 +
+                    ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.gateway_);
+    }
+    // bool ready_for_answer = 3;
+    if ((cached_has_bits & 0x00000020u) != 0) {
+      if (this_._internal_ready_for_answer() != 0) {
+        total_size += 2;
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void CallInitializationReply::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<CallInitializationReply*>(&to_msg);
+  auto& from = static_cast<const CallInitializationReply&>(from_msg);
+  ::google::protobuf::Arena* arena = _this->GetArena();
+  // @@protoc_insertion_point(class_specific_merge_from_start:voice.v1.CallInitializationReply)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000003fu) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!from._internal_release_id().empty()) {
+        _this->_internal_set_release_id(from._internal_release_id());
+      } else {
+        if (_this->_impl_.release_id_.IsDefault()) {
+          _this->_internal_set_release_id("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (!from._internal_manifest_digest().empty()) {
+        _this->_internal_set_manifest_digest(from._internal_manifest_digest());
+      } else {
+        if (_this->_impl_.manifest_digest_.IsDefault()) {
+          _this->_internal_set_manifest_digest("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      ABSL_DCHECK(from._impl_.recognition_ != nullptr);
+      if (_this->_impl_.recognition_ == nullptr) {
+        _this->_impl_.recognition_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.recognition_);
+      } else {
+        _this->_impl_.recognition_->MergeFrom(*from._impl_.recognition_);
+      }
+    }
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      ABSL_DCHECK(from._impl_.synthesis_ != nullptr);
+      if (_this->_impl_.synthesis_ == nullptr) {
+        _this->_impl_.synthesis_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.synthesis_);
+      } else {
+        _this->_impl_.synthesis_->MergeFrom(*from._impl_.synthesis_);
+      }
+    }
+    if ((cached_has_bits & 0x00000010u) != 0) {
+      ABSL_DCHECK(from._impl_.gateway_ != nullptr);
+      if (_this->_impl_.gateway_ == nullptr) {
+        _this->_impl_.gateway_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.gateway_);
+      } else {
+        _this->_impl_.gateway_->MergeFrom(*from._impl_.gateway_);
+      }
+    }
+    if ((cached_has_bits & 0x00000020u) != 0) {
+      if (from._internal_ready_for_answer() != 0) {
+        _this->_impl_.ready_for_answer_ = from._impl_.ready_for_answer_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void CallInitializationReply::CopyFrom(const CallInitializationReply& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:voice.v1.CallInitializationReply)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void CallInitializationReply::InternalSwap(CallInitializationReply* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.release_id_, &other->_impl_.release_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.manifest_digest_, &other->_impl_.manifest_digest_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(CallInitializationReply, _impl_.ready_for_answer_)
+      + sizeof(CallInitializationReply::_impl_.ready_for_answer_)
+      - PROTOBUF_FIELD_OFFSET(CallInitializationReply, _impl_.recognition_)>(
+          reinterpret_cast<char*>(&_impl_.recognition_),
+          reinterpret_cast<char*>(&other->_impl_.recognition_));
+}
+
+::google::protobuf::Metadata CallInitializationReply::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class CallSetupCancellation::_Internal {
+ public:
+  using HasBits =
+      decltype(::std::declval<CallSetupCancellation>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(CallSetupCancellation, _impl_._has_bits_);
+};
+
+CallSetupCancellation::CallSetupCancellation(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CallSetupCancellation_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:voice.v1.CallSetupCancellation)
+}
+PROTOBUF_NDEBUG_INLINE CallSetupCancellation::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    const ::voice::v1::CallSetupCancellation& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        call_id_(arena, from.call_id_) {}
+
+CallSetupCancellation::CallSetupCancellation(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const CallSetupCancellation& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CallSetupCancellation_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  CallSetupCancellation* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+
+  // @@protoc_insertion_point(copy_constructor:voice.v1.CallSetupCancellation)
+}
+PROTOBUF_NDEBUG_INLINE CallSetupCancellation::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        call_id_(arena) {}
+
+inline void CallSetupCancellation::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+}
+CallSetupCancellation::~CallSetupCancellation() {
+  // @@protoc_insertion_point(destructor:voice.v1.CallSetupCancellation)
+  SharedDtor(*this);
+}
+inline void CallSetupCancellation::SharedDtor(MessageLite& self) {
+  CallSetupCancellation& this_ = static_cast<CallSetupCancellation&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.call_id_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+inline void* PROTOBUF_NONNULL CallSetupCancellation::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) CallSetupCancellation(arena);
+}
+constexpr auto CallSetupCancellation::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(CallSetupCancellation),
+                                            alignof(CallSetupCancellation));
+}
+constexpr auto CallSetupCancellation::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_CallSetupCancellation_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // OnDemandRegisterArenaDtor
+          nullptr,  // IsInitialized
+          &CallSetupCancellation::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<CallSetupCancellation>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &CallSetupCancellation::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<CallSetupCancellation>(), &CallSetupCancellation::ByteSizeLong,
+              &CallSetupCancellation::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(CallSetupCancellation, _impl_._cached_size_),
+          false,
+      },
+      &CallSetupCancellation::kDescriptorMethods,
+      &descriptor_table_voice_2fv1_2fvoice_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull CallSetupCancellation_class_data_ =
+        CallSetupCancellation::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+CallSetupCancellation::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&CallSetupCancellation_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(CallSetupCancellation_class_data_.tc_table);
+  return CallSetupCancellation_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<0, 1, 0, 46, 2>
+CallSetupCancellation::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(CallSetupCancellation, _impl_._has_bits_),
+    0, // no _extensions_
+    1, 0,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967294,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    1,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    CallSetupCancellation_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::voice::v1::CallSetupCancellation>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // string call_id = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 0, 0, PROTOBUF_FIELD_OFFSET(CallSetupCancellation, _impl_.call_id_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string call_id = 1;
+    {PROTOBUF_FIELD_OFFSET(CallSetupCancellation, _impl_.call_id_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }},
+  // no aux_entries
+  {{
+    "\36\7\0\0\0\0\0\0"
+    "voice.v1.CallSetupCancellation"
+    "call_id"
+  }},
+};
+PROTOBUF_NOINLINE void CallSetupCancellation::Clear() {
+// @@protoc_insertion_point(message_clear_start:voice.v1.CallSetupCancellation)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if ((cached_has_bits & 0x00000001u) != 0) {
+    _impl_.call_id_.ClearNonDefaultToEmpty();
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL CallSetupCancellation::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const CallSetupCancellation& this_ = static_cast<const CallSetupCancellation&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL CallSetupCancellation::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const CallSetupCancellation& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(serialize_to_array_start:voice.v1.CallSetupCancellation)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  // string call_id = 1;
+  if ((this_._impl_._has_bits_[0] & 0x00000001u) != 0) {
+    if (!this_._internal_call_id().empty()) {
+      const ::std::string& _s = this_._internal_call_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.CallSetupCancellation.call_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:voice.v1.CallSetupCancellation)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t CallSetupCancellation::ByteSizeLong(const MessageLite& base) {
+  const CallSetupCancellation& this_ = static_cast<const CallSetupCancellation&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t CallSetupCancellation::ByteSizeLong() const {
+  const CallSetupCancellation& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:voice.v1.CallSetupCancellation)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+   {
+    // string call_id = 1;
+    cached_has_bits = this_._impl_._has_bits_[0];
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!this_._internal_call_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_call_id());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void CallSetupCancellation::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<CallSetupCancellation*>(&to_msg);
+  auto& from = static_cast<const CallSetupCancellation&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:voice.v1.CallSetupCancellation)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x00000001u) != 0) {
+    if (!from._internal_call_id().empty()) {
+      _this->_internal_set_call_id(from._internal_call_id());
+    } else {
+      if (_this->_impl_.call_id_.IsDefault()) {
+        _this->_internal_set_call_id("");
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void CallSetupCancellation::CopyFrom(const CallSetupCancellation& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:voice.v1.CallSetupCancellation)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void CallSetupCancellation::InternalSwap(CallSetupCancellation* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.call_id_, &other->_impl_.call_id_, arena);
+}
+
+::google::protobuf::Metadata CallSetupCancellation::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class PreparedAudioRequest::_Internal {
+ public:
+  using HasBits =
+      decltype(::std::declval<PreparedAudioRequest>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(PreparedAudioRequest, _impl_._has_bits_);
+};
+
+PreparedAudioRequest::PreparedAudioRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, PreparedAudioRequest_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:voice.v1.PreparedAudioRequest)
+}
+PROTOBUF_NDEBUG_INLINE PreparedAudioRequest::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    const ::voice::v1::PreparedAudioRequest& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        call_id_(arena, from.call_id_),
+        release_id_(arena, from.release_id_),
+        manifest_digest_(arena, from.manifest_digest_) {}
+
+PreparedAudioRequest::PreparedAudioRequest(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const PreparedAudioRequest& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, PreparedAudioRequest_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  PreparedAudioRequest* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+
+  // @@protoc_insertion_point(copy_constructor:voice.v1.PreparedAudioRequest)
+}
+PROTOBUF_NDEBUG_INLINE PreparedAudioRequest::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        call_id_(arena),
+        release_id_(arena),
+        manifest_digest_(arena) {}
+
+inline void PreparedAudioRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+}
+PreparedAudioRequest::~PreparedAudioRequest() {
+  // @@protoc_insertion_point(destructor:voice.v1.PreparedAudioRequest)
+  SharedDtor(*this);
+}
+inline void PreparedAudioRequest::SharedDtor(MessageLite& self) {
+  PreparedAudioRequest& this_ = static_cast<PreparedAudioRequest&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.call_id_.Destroy();
+  this_._impl_.release_id_.Destroy();
+  this_._impl_.manifest_digest_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+inline void* PROTOBUF_NONNULL PreparedAudioRequest::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) PreparedAudioRequest(arena);
+}
+constexpr auto PreparedAudioRequest::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(PreparedAudioRequest),
+                                            alignof(PreparedAudioRequest));
+}
+constexpr auto PreparedAudioRequest::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_PreparedAudioRequest_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // OnDemandRegisterArenaDtor
+          nullptr,  // IsInitialized
+          &PreparedAudioRequest::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<PreparedAudioRequest>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &PreparedAudioRequest::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<PreparedAudioRequest>(), &PreparedAudioRequest::ByteSizeLong,
+              &PreparedAudioRequest::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(PreparedAudioRequest, _impl_._cached_size_),
+          false,
+      },
+      &PreparedAudioRequest::kDescriptorMethods,
+      &descriptor_table_voice_2fv1_2fvoice_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull PreparedAudioRequest_class_data_ =
+        PreparedAudioRequest::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+PreparedAudioRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&PreparedAudioRequest_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(PreparedAudioRequest_class_data_.tc_table);
+  return PreparedAudioRequest_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<2, 3, 0, 70, 2>
+PreparedAudioRequest::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(PreparedAudioRequest, _impl_._has_bits_),
+    0, // no _extensions_
+    3, 24,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967288,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    3,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    PreparedAudioRequest_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::voice::v1::PreparedAudioRequest>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // string call_id = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 0, 0, PROTOBUF_FIELD_OFFSET(PreparedAudioRequest, _impl_.call_id_)}},
+    // string release_id = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 1, 0, PROTOBUF_FIELD_OFFSET(PreparedAudioRequest, _impl_.release_id_)}},
+    // string manifest_digest = 3;
+    {::_pbi::TcParser::FastUS1,
+     {26, 2, 0, PROTOBUF_FIELD_OFFSET(PreparedAudioRequest, _impl_.manifest_digest_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string call_id = 1;
+    {PROTOBUF_FIELD_OFFSET(PreparedAudioRequest, _impl_.call_id_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string release_id = 2;
+    {PROTOBUF_FIELD_OFFSET(PreparedAudioRequest, _impl_.release_id_), _Internal::kHasBitsOffset + 1, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string manifest_digest = 3;
+    {PROTOBUF_FIELD_OFFSET(PreparedAudioRequest, _impl_.manifest_digest_), _Internal::kHasBitsOffset + 2, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }},
+  // no aux_entries
+  {{
+    "\35\7\12\17\0\0\0\0"
+    "voice.v1.PreparedAudioRequest"
+    "call_id"
+    "release_id"
+    "manifest_digest"
+  }},
+};
+PROTOBUF_NOINLINE void PreparedAudioRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:voice.v1.PreparedAudioRequest)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if ((cached_has_bits & 0x00000007u) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      _impl_.call_id_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      _impl_.release_id_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      _impl_.manifest_digest_.ClearNonDefaultToEmpty();
+    }
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL PreparedAudioRequest::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const PreparedAudioRequest& this_ = static_cast<const PreparedAudioRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL PreparedAudioRequest::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const PreparedAudioRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(serialize_to_array_start:voice.v1.PreparedAudioRequest)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  // string call_id = 1;
+  if ((this_._impl_._has_bits_[0] & 0x00000001u) != 0) {
+    if (!this_._internal_call_id().empty()) {
+      const ::std::string& _s = this_._internal_call_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.PreparedAudioRequest.call_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string release_id = 2;
+  if ((this_._impl_._has_bits_[0] & 0x00000002u) != 0) {
+    if (!this_._internal_release_id().empty()) {
+      const ::std::string& _s = this_._internal_release_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.PreparedAudioRequest.release_id");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  // string manifest_digest = 3;
+  if ((this_._impl_._has_bits_[0] & 0x00000004u) != 0) {
+    if (!this_._internal_manifest_digest().empty()) {
+      const ::std::string& _s = this_._internal_manifest_digest();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.PreparedAudioRequest.manifest_digest");
+      target = stream->WriteStringMaybeAliased(3, _s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:voice.v1.PreparedAudioRequest)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t PreparedAudioRequest::ByteSizeLong(const MessageLite& base) {
+  const PreparedAudioRequest& this_ = static_cast<const PreparedAudioRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t PreparedAudioRequest::ByteSizeLong() const {
+  const PreparedAudioRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:voice.v1.PreparedAudioRequest)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x00000007u) != 0) {
+    // string call_id = 1;
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!this_._internal_call_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_call_id());
+      }
+    }
+    // string release_id = 2;
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (!this_._internal_release_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_release_id());
+      }
+    }
+    // string manifest_digest = 3;
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (!this_._internal_manifest_digest().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_manifest_digest());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void PreparedAudioRequest::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<PreparedAudioRequest*>(&to_msg);
+  auto& from = static_cast<const PreparedAudioRequest&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:voice.v1.PreparedAudioRequest)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x00000007u) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!from._internal_call_id().empty()) {
+        _this->_internal_set_call_id(from._internal_call_id());
+      } else {
+        if (_this->_impl_.call_id_.IsDefault()) {
+          _this->_internal_set_call_id("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (!from._internal_release_id().empty()) {
+        _this->_internal_set_release_id(from._internal_release_id());
+      } else {
+        if (_this->_impl_.release_id_.IsDefault()) {
+          _this->_internal_set_release_id("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (!from._internal_manifest_digest().empty()) {
+        _this->_internal_set_manifest_digest(from._internal_manifest_digest());
+      } else {
+        if (_this->_impl_.manifest_digest_.IsDefault()) {
+          _this->_internal_set_manifest_digest("");
+        }
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void PreparedAudioRequest::CopyFrom(const PreparedAudioRequest& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:voice.v1.PreparedAudioRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void PreparedAudioRequest::InternalSwap(PreparedAudioRequest* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.call_id_, &other->_impl_.call_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.release_id_, &other->_impl_.release_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.manifest_digest_, &other->_impl_.manifest_digest_, arena);
+}
+
+::google::protobuf::Metadata PreparedAudioRequest::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class PreparedAudioReply::_Internal {
+ public:
+  using HasBits =
+      decltype(::std::declval<PreparedAudioReply>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(PreparedAudioReply, _impl_._has_bits_);
+};
+
+PreparedAudioReply::PreparedAudioReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, PreparedAudioReply_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:voice.v1.PreparedAudioReply)
+}
+PROTOBUF_NDEBUG_INLINE PreparedAudioReply::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    const ::voice::v1::PreparedAudioReply& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        call_id_(arena, from.call_id_),
+        release_id_(arena, from.release_id_),
+        manifest_digest_(arena, from.manifest_digest_),
+        greeting_pcm_(arena, from.greeting_pcm_),
+        unavailable_pcm_(arena, from.unavailable_pcm_),
+        waiting_pcm_(arena, from.waiting_pcm_),
+        waiting_text_(arena, from.waiting_text_) {}
+
+PreparedAudioReply::PreparedAudioReply(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const PreparedAudioReply& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, PreparedAudioReply_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  PreparedAudioReply* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  _impl_.greeting_pad_ms_ = from._impl_.greeting_pad_ms_;
+
+  // @@protoc_insertion_point(copy_constructor:voice.v1.PreparedAudioReply)
+}
+PROTOBUF_NDEBUG_INLINE PreparedAudioReply::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        call_id_(arena),
+        release_id_(arena),
+        manifest_digest_(arena),
+        greeting_pcm_(arena),
+        unavailable_pcm_(arena),
+        waiting_pcm_(arena),
+        waiting_text_(arena) {}
+
+inline void PreparedAudioReply::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.greeting_pad_ms_ = {};
+}
+PreparedAudioReply::~PreparedAudioReply() {
+  // @@protoc_insertion_point(destructor:voice.v1.PreparedAudioReply)
+  SharedDtor(*this);
+}
+inline void PreparedAudioReply::SharedDtor(MessageLite& self) {
+  PreparedAudioReply& this_ = static_cast<PreparedAudioReply&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.call_id_.Destroy();
+  this_._impl_.release_id_.Destroy();
+  this_._impl_.manifest_digest_.Destroy();
+  this_._impl_.greeting_pcm_.Destroy();
+  this_._impl_.unavailable_pcm_.Destroy();
+  this_._impl_.waiting_pcm_.Destroy();
+  this_._impl_.waiting_text_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+inline void* PROTOBUF_NONNULL PreparedAudioReply::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) PreparedAudioReply(arena);
+}
+constexpr auto PreparedAudioReply::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(PreparedAudioReply),
+                                            alignof(PreparedAudioReply));
+}
+constexpr auto PreparedAudioReply::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_PreparedAudioReply_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // OnDemandRegisterArenaDtor
+          nullptr,  // IsInitialized
+          &PreparedAudioReply::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<PreparedAudioReply>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &PreparedAudioReply::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<PreparedAudioReply>(), &PreparedAudioReply::ByteSizeLong,
+              &PreparedAudioReply::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(PreparedAudioReply, _impl_._cached_size_),
+          false,
+      },
+      &PreparedAudioReply::kDescriptorMethods,
+      &descriptor_table_voice_2fv1_2fvoice_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull PreparedAudioReply_class_data_ =
+        PreparedAudioReply::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+PreparedAudioReply::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&PreparedAudioReply_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(PreparedAudioReply_class_data_.tc_table);
+  return PreparedAudioReply_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<3, 8, 0, 88, 2>
+PreparedAudioReply::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(PreparedAudioReply, _impl_._has_bits_),
+    0, // no _extensions_
+    8, 56,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967040,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    8,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    PreparedAudioReply_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::voice::v1::PreparedAudioReply>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // string waiting_text = 8;
+    {::_pbi::TcParser::FastUS1,
+     {66, 6, 0, PROTOBUF_FIELD_OFFSET(PreparedAudioReply, _impl_.waiting_text_)}},
+    // string call_id = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 0, 0, PROTOBUF_FIELD_OFFSET(PreparedAudioReply, _impl_.call_id_)}},
+    // string release_id = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 1, 0, PROTOBUF_FIELD_OFFSET(PreparedAudioReply, _impl_.release_id_)}},
+    // string manifest_digest = 3;
+    {::_pbi::TcParser::FastUS1,
+     {26, 2, 0, PROTOBUF_FIELD_OFFSET(PreparedAudioReply, _impl_.manifest_digest_)}},
+    // bytes greeting_pcm = 4;
+    {::_pbi::TcParser::FastBS1,
+     {34, 3, 0, PROTOBUF_FIELD_OFFSET(PreparedAudioReply, _impl_.greeting_pcm_)}},
+    // bytes unavailable_pcm = 5;
+    {::_pbi::TcParser::FastBS1,
+     {42, 4, 0, PROTOBUF_FIELD_OFFSET(PreparedAudioReply, _impl_.unavailable_pcm_)}},
+    // uint32 greeting_pad_ms = 6;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(PreparedAudioReply, _impl_.greeting_pad_ms_), 7>(),
+     {48, 7, 0, PROTOBUF_FIELD_OFFSET(PreparedAudioReply, _impl_.greeting_pad_ms_)}},
+    // bytes waiting_pcm = 7;
+    {::_pbi::TcParser::FastBS1,
+     {58, 5, 0, PROTOBUF_FIELD_OFFSET(PreparedAudioReply, _impl_.waiting_pcm_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string call_id = 1;
+    {PROTOBUF_FIELD_OFFSET(PreparedAudioReply, _impl_.call_id_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string release_id = 2;
+    {PROTOBUF_FIELD_OFFSET(PreparedAudioReply, _impl_.release_id_), _Internal::kHasBitsOffset + 1, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string manifest_digest = 3;
+    {PROTOBUF_FIELD_OFFSET(PreparedAudioReply, _impl_.manifest_digest_), _Internal::kHasBitsOffset + 2, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // bytes greeting_pcm = 4;
+    {PROTOBUF_FIELD_OFFSET(PreparedAudioReply, _impl_.greeting_pcm_), _Internal::kHasBitsOffset + 3, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kBytes | ::_fl::kRepAString)},
+    // bytes unavailable_pcm = 5;
+    {PROTOBUF_FIELD_OFFSET(PreparedAudioReply, _impl_.unavailable_pcm_), _Internal::kHasBitsOffset + 4, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kBytes | ::_fl::kRepAString)},
+    // uint32 greeting_pad_ms = 6;
+    {PROTOBUF_FIELD_OFFSET(PreparedAudioReply, _impl_.greeting_pad_ms_), _Internal::kHasBitsOffset + 7, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+    // bytes waiting_pcm = 7;
+    {PROTOBUF_FIELD_OFFSET(PreparedAudioReply, _impl_.waiting_pcm_), _Internal::kHasBitsOffset + 5, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kBytes | ::_fl::kRepAString)},
+    // string waiting_text = 8;
+    {PROTOBUF_FIELD_OFFSET(PreparedAudioReply, _impl_.waiting_text_), _Internal::kHasBitsOffset + 6, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }},
+  // no aux_entries
+  {{
+    "\33\7\12\17\0\0\0\0\14\0\0\0\0\0\0\0"
+    "voice.v1.PreparedAudioReply"
+    "call_id"
+    "release_id"
+    "manifest_digest"
+    "waiting_text"
+  }},
+};
+PROTOBUF_NOINLINE void PreparedAudioReply::Clear() {
+// @@protoc_insertion_point(message_clear_start:voice.v1.PreparedAudioReply)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if ((cached_has_bits & 0x0000007fu) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      _impl_.call_id_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      _impl_.release_id_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      _impl_.manifest_digest_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      _impl_.greeting_pcm_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000010u) != 0) {
+      _impl_.unavailable_pcm_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000020u) != 0) {
+      _impl_.waiting_pcm_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000040u) != 0) {
+      _impl_.waiting_text_.ClearNonDefaultToEmpty();
+    }
+  }
+  _impl_.greeting_pad_ms_ = 0u;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL PreparedAudioReply::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const PreparedAudioReply& this_ = static_cast<const PreparedAudioReply&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL PreparedAudioReply::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const PreparedAudioReply& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(serialize_to_array_start:voice.v1.PreparedAudioReply)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  // string call_id = 1;
+  if ((this_._impl_._has_bits_[0] & 0x00000001u) != 0) {
+    if (!this_._internal_call_id().empty()) {
+      const ::std::string& _s = this_._internal_call_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.PreparedAudioReply.call_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string release_id = 2;
+  if ((this_._impl_._has_bits_[0] & 0x00000002u) != 0) {
+    if (!this_._internal_release_id().empty()) {
+      const ::std::string& _s = this_._internal_release_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.PreparedAudioReply.release_id");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  // string manifest_digest = 3;
+  if ((this_._impl_._has_bits_[0] & 0x00000004u) != 0) {
+    if (!this_._internal_manifest_digest().empty()) {
+      const ::std::string& _s = this_._internal_manifest_digest();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.PreparedAudioReply.manifest_digest");
+      target = stream->WriteStringMaybeAliased(3, _s, target);
+    }
+  }
+
+  // bytes greeting_pcm = 4;
+  if ((this_._impl_._has_bits_[0] & 0x00000008u) != 0) {
+    if (!this_._internal_greeting_pcm().empty()) {
+      const ::std::string& _s = this_._internal_greeting_pcm();
+      target = stream->WriteBytesMaybeAliased(4, _s, target);
+    }
+  }
+
+  // bytes unavailable_pcm = 5;
+  if ((this_._impl_._has_bits_[0] & 0x00000010u) != 0) {
+    if (!this_._internal_unavailable_pcm().empty()) {
+      const ::std::string& _s = this_._internal_unavailable_pcm();
+      target = stream->WriteBytesMaybeAliased(5, _s, target);
+    }
+  }
+
+  // uint32 greeting_pad_ms = 6;
+  if ((this_._impl_._has_bits_[0] & 0x00000080u) != 0) {
+    if (this_._internal_greeting_pad_ms() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          6, this_._internal_greeting_pad_ms(), target);
+    }
+  }
+
+  // bytes waiting_pcm = 7;
+  if ((this_._impl_._has_bits_[0] & 0x00000020u) != 0) {
+    if (!this_._internal_waiting_pcm().empty()) {
+      const ::std::string& _s = this_._internal_waiting_pcm();
+      target = stream->WriteBytesMaybeAliased(7, _s, target);
+    }
+  }
+
+  // string waiting_text = 8;
+  if ((this_._impl_._has_bits_[0] & 0x00000040u) != 0) {
+    if (!this_._internal_waiting_text().empty()) {
+      const ::std::string& _s = this_._internal_waiting_text();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.PreparedAudioReply.waiting_text");
+      target = stream->WriteStringMaybeAliased(8, _s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:voice.v1.PreparedAudioReply)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t PreparedAudioReply::ByteSizeLong(const MessageLite& base) {
+  const PreparedAudioReply& this_ = static_cast<const PreparedAudioReply&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t PreparedAudioReply::ByteSizeLong() const {
+  const PreparedAudioReply& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:voice.v1.PreparedAudioReply)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x000000ffu) != 0) {
+    // string call_id = 1;
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!this_._internal_call_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_call_id());
+      }
+    }
+    // string release_id = 2;
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (!this_._internal_release_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_release_id());
+      }
+    }
+    // string manifest_digest = 3;
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (!this_._internal_manifest_digest().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_manifest_digest());
+      }
+    }
+    // bytes greeting_pcm = 4;
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      if (!this_._internal_greeting_pcm().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::BytesSize(
+                                        this_._internal_greeting_pcm());
+      }
+    }
+    // bytes unavailable_pcm = 5;
+    if ((cached_has_bits & 0x00000010u) != 0) {
+      if (!this_._internal_unavailable_pcm().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::BytesSize(
+                                        this_._internal_unavailable_pcm());
+      }
+    }
+    // bytes waiting_pcm = 7;
+    if ((cached_has_bits & 0x00000020u) != 0) {
+      if (!this_._internal_waiting_pcm().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::BytesSize(
+                                        this_._internal_waiting_pcm());
+      }
+    }
+    // string waiting_text = 8;
+    if ((cached_has_bits & 0x00000040u) != 0) {
+      if (!this_._internal_waiting_text().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_waiting_text());
+      }
+    }
+    // uint32 greeting_pad_ms = 6;
+    if ((cached_has_bits & 0x00000080u) != 0) {
+      if (this_._internal_greeting_pad_ms() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_greeting_pad_ms());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void PreparedAudioReply::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<PreparedAudioReply*>(&to_msg);
+  auto& from = static_cast<const PreparedAudioReply&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:voice.v1.PreparedAudioReply)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x000000ffu) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!from._internal_call_id().empty()) {
+        _this->_internal_set_call_id(from._internal_call_id());
+      } else {
+        if (_this->_impl_.call_id_.IsDefault()) {
+          _this->_internal_set_call_id("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (!from._internal_release_id().empty()) {
+        _this->_internal_set_release_id(from._internal_release_id());
+      } else {
+        if (_this->_impl_.release_id_.IsDefault()) {
+          _this->_internal_set_release_id("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000004u) != 0) {
+      if (!from._internal_manifest_digest().empty()) {
+        _this->_internal_set_manifest_digest(from._internal_manifest_digest());
+      } else {
+        if (_this->_impl_.manifest_digest_.IsDefault()) {
+          _this->_internal_set_manifest_digest("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000008u) != 0) {
+      if (!from._internal_greeting_pcm().empty()) {
+        _this->_internal_set_greeting_pcm(from._internal_greeting_pcm());
+      } else {
+        if (_this->_impl_.greeting_pcm_.IsDefault()) {
+          _this->_internal_set_greeting_pcm("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000010u) != 0) {
+      if (!from._internal_unavailable_pcm().empty()) {
+        _this->_internal_set_unavailable_pcm(from._internal_unavailable_pcm());
+      } else {
+        if (_this->_impl_.unavailable_pcm_.IsDefault()) {
+          _this->_internal_set_unavailable_pcm("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000020u) != 0) {
+      if (!from._internal_waiting_pcm().empty()) {
+        _this->_internal_set_waiting_pcm(from._internal_waiting_pcm());
+      } else {
+        if (_this->_impl_.waiting_pcm_.IsDefault()) {
+          _this->_internal_set_waiting_pcm("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000040u) != 0) {
+      if (!from._internal_waiting_text().empty()) {
+        _this->_internal_set_waiting_text(from._internal_waiting_text());
+      } else {
+        if (_this->_impl_.waiting_text_.IsDefault()) {
+          _this->_internal_set_waiting_text("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000080u) != 0) {
+      if (from._internal_greeting_pad_ms() != 0) {
+        _this->_impl_.greeting_pad_ms_ = from._impl_.greeting_pad_ms_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void PreparedAudioReply::CopyFrom(const PreparedAudioReply& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:voice.v1.PreparedAudioReply)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void PreparedAudioReply::InternalSwap(PreparedAudioReply* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.call_id_, &other->_impl_.call_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.release_id_, &other->_impl_.release_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.manifest_digest_, &other->_impl_.manifest_digest_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.greeting_pcm_, &other->_impl_.greeting_pcm_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.unavailable_pcm_, &other->_impl_.unavailable_pcm_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.waiting_pcm_, &other->_impl_.waiting_pcm_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.waiting_text_, &other->_impl_.waiting_text_, arena);
+  swap(_impl_.greeting_pad_ms_, other->_impl_.greeting_pad_ms_);
+}
+
+::google::protobuf::Metadata PreparedAudioReply::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class CallLeaseRequest::_Internal {
+ public:
+  using HasBits =
+      decltype(::std::declval<CallLeaseRequest>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(CallLeaseRequest, _impl_._has_bits_);
+};
+
+CallLeaseRequest::CallLeaseRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CallLeaseRequest_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:voice.v1.CallLeaseRequest)
+}
+PROTOBUF_NDEBUG_INLINE CallLeaseRequest::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    const ::voice::v1::CallLeaseRequest& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        call_id_(arena, from.call_id_),
+        lease_(arena, from.lease_) {}
+
+CallLeaseRequest::CallLeaseRequest(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const CallLeaseRequest& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CallLeaseRequest_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  CallLeaseRequest* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+
+  // @@protoc_insertion_point(copy_constructor:voice.v1.CallLeaseRequest)
+}
+PROTOBUF_NDEBUG_INLINE CallLeaseRequest::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        call_id_(arena),
+        lease_(arena) {}
+
+inline void CallLeaseRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+}
+CallLeaseRequest::~CallLeaseRequest() {
+  // @@protoc_insertion_point(destructor:voice.v1.CallLeaseRequest)
+  SharedDtor(*this);
+}
+inline void CallLeaseRequest::SharedDtor(MessageLite& self) {
+  CallLeaseRequest& this_ = static_cast<CallLeaseRequest&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.call_id_.Destroy();
+  this_._impl_.lease_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+inline void* PROTOBUF_NONNULL CallLeaseRequest::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) CallLeaseRequest(arena);
+}
+constexpr auto CallLeaseRequest::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(CallLeaseRequest),
+                                            alignof(CallLeaseRequest));
+}
+constexpr auto CallLeaseRequest::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_CallLeaseRequest_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // OnDemandRegisterArenaDtor
+          nullptr,  // IsInitialized
+          &CallLeaseRequest::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<CallLeaseRequest>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &CallLeaseRequest::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<CallLeaseRequest>(), &CallLeaseRequest::ByteSizeLong,
+              &CallLeaseRequest::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(CallLeaseRequest, _impl_._cached_size_),
+          false,
+      },
+      &CallLeaseRequest::kDescriptorMethods,
+      &descriptor_table_voice_2fv1_2fvoice_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull CallLeaseRequest_class_data_ =
+        CallLeaseRequest::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+CallLeaseRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&CallLeaseRequest_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(CallLeaseRequest_class_data_.tc_table);
+  return CallLeaseRequest_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<1, 2, 0, 46, 2>
+CallLeaseRequest::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(CallLeaseRequest, _impl_._has_bits_),
+    0, // no _extensions_
+    2, 8,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967292,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    2,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    CallLeaseRequest_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::voice::v1::CallLeaseRequest>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // string lease = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 1, 0, PROTOBUF_FIELD_OFFSET(CallLeaseRequest, _impl_.lease_)}},
+    // string call_id = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 0, 0, PROTOBUF_FIELD_OFFSET(CallLeaseRequest, _impl_.call_id_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string call_id = 1;
+    {PROTOBUF_FIELD_OFFSET(CallLeaseRequest, _impl_.call_id_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string lease = 2;
+    {PROTOBUF_FIELD_OFFSET(CallLeaseRequest, _impl_.lease_), _Internal::kHasBitsOffset + 1, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }},
+  // no aux_entries
+  {{
+    "\31\7\5\0\0\0\0\0"
+    "voice.v1.CallLeaseRequest"
+    "call_id"
+    "lease"
+  }},
+};
+PROTOBUF_NOINLINE void CallLeaseRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:voice.v1.CallLeaseRequest)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if ((cached_has_bits & 0x00000003u) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      _impl_.call_id_.ClearNonDefaultToEmpty();
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      _impl_.lease_.ClearNonDefaultToEmpty();
+    }
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL CallLeaseRequest::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const CallLeaseRequest& this_ = static_cast<const CallLeaseRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL CallLeaseRequest::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const CallLeaseRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(serialize_to_array_start:voice.v1.CallLeaseRequest)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  // string call_id = 1;
+  if ((this_._impl_._has_bits_[0] & 0x00000001u) != 0) {
+    if (!this_._internal_call_id().empty()) {
+      const ::std::string& _s = this_._internal_call_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.CallLeaseRequest.call_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string lease = 2;
+  if ((this_._impl_._has_bits_[0] & 0x00000002u) != 0) {
+    if (!this_._internal_lease().empty()) {
+      const ::std::string& _s = this_._internal_lease();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.CallLeaseRequest.lease");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:voice.v1.CallLeaseRequest)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t CallLeaseRequest::ByteSizeLong(const MessageLite& base) {
+  const CallLeaseRequest& this_ = static_cast<const CallLeaseRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t CallLeaseRequest::ByteSizeLong() const {
+  const CallLeaseRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:voice.v1.CallLeaseRequest)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x00000003u) != 0) {
+    // string call_id = 1;
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!this_._internal_call_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_call_id());
+      }
+    }
+    // string lease = 2;
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (!this_._internal_lease().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_lease());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void CallLeaseRequest::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<CallLeaseRequest*>(&to_msg);
+  auto& from = static_cast<const CallLeaseRequest&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:voice.v1.CallLeaseRequest)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x00000003u) != 0) {
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!from._internal_call_id().empty()) {
+        _this->_internal_set_call_id(from._internal_call_id());
+      } else {
+        if (_this->_impl_.call_id_.IsDefault()) {
+          _this->_internal_set_call_id("");
+        }
+      }
+    }
+    if ((cached_has_bits & 0x00000002u) != 0) {
+      if (!from._internal_lease().empty()) {
+        _this->_internal_set_lease(from._internal_lease());
+      } else {
+        if (_this->_impl_.lease_.IsDefault()) {
+          _this->_internal_set_lease("");
+        }
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void CallLeaseRequest::CopyFrom(const CallLeaseRequest& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:voice.v1.CallLeaseRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void CallLeaseRequest::InternalSwap(CallLeaseRequest* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.call_id_, &other->_impl_.call_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.lease_, &other->_impl_.lease_, arena);
+}
+
+::google::protobuf::Metadata CallLeaseRequest::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class CallLeaseReply::_Internal {
+ public:
+  using HasBits =
+      decltype(::std::declval<CallLeaseReply>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(CallLeaseReply, _impl_._has_bits_);
+};
+
+CallLeaseReply::CallLeaseReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CallLeaseReply_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:voice.v1.CallLeaseReply)
+}
+PROTOBUF_NDEBUG_INLINE CallLeaseReply::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    const ::voice::v1::CallLeaseReply& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        lease_(arena, from.lease_) {}
+
+CallLeaseReply::CallLeaseReply(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const CallLeaseReply& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CallLeaseReply_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  CallLeaseReply* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+
+  // @@protoc_insertion_point(copy_constructor:voice.v1.CallLeaseReply)
+}
+PROTOBUF_NDEBUG_INLINE CallLeaseReply::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        lease_(arena) {}
+
+inline void CallLeaseReply::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+}
+CallLeaseReply::~CallLeaseReply() {
+  // @@protoc_insertion_point(destructor:voice.v1.CallLeaseReply)
+  SharedDtor(*this);
+}
+inline void CallLeaseReply::SharedDtor(MessageLite& self) {
+  CallLeaseReply& this_ = static_cast<CallLeaseReply&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.lease_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+inline void* PROTOBUF_NONNULL CallLeaseReply::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) CallLeaseReply(arena);
+}
+constexpr auto CallLeaseReply::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(CallLeaseReply),
+                                            alignof(CallLeaseReply));
+}
+constexpr auto CallLeaseReply::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_CallLeaseReply_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // OnDemandRegisterArenaDtor
+          nullptr,  // IsInitialized
+          &CallLeaseReply::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<CallLeaseReply>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &CallLeaseReply::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<CallLeaseReply>(), &CallLeaseReply::ByteSizeLong,
+              &CallLeaseReply::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(CallLeaseReply, _impl_._cached_size_),
+          false,
+      },
+      &CallLeaseReply::kDescriptorMethods,
+      &descriptor_table_voice_2fv1_2fvoice_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull CallLeaseReply_class_data_ =
+        CallLeaseReply::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+CallLeaseReply::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&CallLeaseReply_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(CallLeaseReply_class_data_.tc_table);
+  return CallLeaseReply_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<0, 1, 0, 37, 2>
+CallLeaseReply::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(CallLeaseReply, _impl_._has_bits_),
+    0, // no _extensions_
+    1, 0,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967294,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    1,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    CallLeaseReply_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::voice::v1::CallLeaseReply>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // string lease = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 0, 0, PROTOBUF_FIELD_OFFSET(CallLeaseReply, _impl_.lease_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string lease = 1;
+    {PROTOBUF_FIELD_OFFSET(CallLeaseReply, _impl_.lease_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }},
+  // no aux_entries
+  {{
+    "\27\5\0\0\0\0\0\0"
+    "voice.v1.CallLeaseReply"
+    "lease"
+  }},
+};
+PROTOBUF_NOINLINE void CallLeaseReply::Clear() {
+// @@protoc_insertion_point(message_clear_start:voice.v1.CallLeaseReply)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if ((cached_has_bits & 0x00000001u) != 0) {
+    _impl_.lease_.ClearNonDefaultToEmpty();
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL CallLeaseReply::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const CallLeaseReply& this_ = static_cast<const CallLeaseReply&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL CallLeaseReply::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const CallLeaseReply& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(serialize_to_array_start:voice.v1.CallLeaseReply)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  // string lease = 1;
+  if ((this_._impl_._has_bits_[0] & 0x00000001u) != 0) {
+    if (!this_._internal_lease().empty()) {
+      const ::std::string& _s = this_._internal_lease();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "voice.v1.CallLeaseReply.lease");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:voice.v1.CallLeaseReply)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t CallLeaseReply::ByteSizeLong(const MessageLite& base) {
+  const CallLeaseReply& this_ = static_cast<const CallLeaseReply&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t CallLeaseReply::ByteSizeLong() const {
+  const CallLeaseReply& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:voice.v1.CallLeaseReply)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+   {
+    // string lease = 1;
+    cached_has_bits = this_._impl_._has_bits_[0];
+    if ((cached_has_bits & 0x00000001u) != 0) {
+      if (!this_._internal_lease().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_lease());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void CallLeaseReply::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<CallLeaseReply*>(&to_msg);
+  auto& from = static_cast<const CallLeaseReply&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:voice.v1.CallLeaseReply)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if ((cached_has_bits & 0x00000001u) != 0) {
+    if (!from._internal_lease().empty()) {
+      _this->_internal_set_lease(from._internal_lease());
+    } else {
+      if (_this->_impl_.lease_.IsDefault()) {
+        _this->_internal_set_lease("");
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void CallLeaseReply::CopyFrom(const CallLeaseReply& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:voice.v1.CallLeaseReply)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void CallLeaseReply::InternalSwap(CallLeaseReply* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.lease_, &other->_impl_.lease_, arena);
+}
+
+::google::protobuf::Metadata CallLeaseReply::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // @@protoc_insertion_point(namespace_scope)

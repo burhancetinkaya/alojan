@@ -1,0 +1,53 @@
+# Independent transport only: no database, provider secret or GPU access.
+services:
+  management-ingress:
+    profiles: [public]
+    image: nginx:1.28-alpine@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236
+    network_mode: host
+    user: "1000:1000"
+    entrypoint: [nginx]
+    command: ["-g", "daemon off;"]
+    read_only: true
+    tmpfs: ["/tmp:size=16m,mode=1777"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    cpus: 0.25
+    mem_limit: 64m
+    pids_limit: 32
+    restart: unless-stopped
+    volumes:
+      - ./examples/management-mcp.nginx.conf:/etc/nginx/nginx.conf:ro
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, "http://127.0.0.1:13080/giris"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+    logging:
+      driver: local
+      options: {max-size: 10m, max-file: '3'}
+  management-mcp:
+    image: ${ALOJAN_MCP_IMAGE:?Build and pin the management MCP image}
+    network_mode: host
+    user: "1000:1000"
+    init: true
+    read_only: true
+    tmpfs: ["/tmp:size=32m,mode=1777"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    cpus: 0.5
+    mem_limit: 384m
+    pids_limit: 64
+    restart: unless-stopped
+    environment:
+      ALOJAN_MANAGEMENT_URL: http://127.0.0.1:18081
+      ALOJAN_MCP_PUBLIC_URL: ${ALOJAN_MCP_PUBLIC_URL:?Set the public HTTPS /mcp URL}
+      ALOJAN_MCP_BIND: 127.0.0.1
+      ALOJAN_MCP_PORT: "18082"
+    healthcheck:
+      test: [CMD, /opt/alojan/services/management-mcp/.venv/bin/python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:18082/health/live', timeout=2).read()"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+    logging:
+      driver: local
+      options: {max-size: 10m, max-file: '3'}

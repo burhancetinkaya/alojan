@@ -1,0 +1,27 @@
+# Only reviewed management/worker sources enter build contexts; never local secrets or captures.
+**
+!infra/
+!infra/docker/
+!infra/docker/*.Dockerfile
+!infra/migrations/
+!infra/migrations/*.sql
+!services/
+!services/app-api/
+!services/app-api/pyproject.toml
+!services/app-api/uv.lock
+!services/app-api/alojan/
+!services/app-api/alojan/*.py
+!services/action-worker/
+!services/action-worker/pyproject.toml
+!services/action-worker/uv.lock
+!services/agent/
+!services/agent/alojan_agent/
+!services/agent/alojan_agent/*.py
+!services/voice-contracts/
+!services/voice-contracts/alojan_contracts/
+!services/voice-contracts/alojan_contracts/*.py
+!services/management-mcp/
+!services/management-mcp/pyproject.toml
+!services/management-mcp/uv.lock
+!services/management-mcp/alojan_management_mcp/
+!services/management-mcp/alojan_management_mcp/*.py

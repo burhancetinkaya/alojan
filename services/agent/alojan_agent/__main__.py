@@ -6,18 +6,40 @@ import os
 import signal
 
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
+from alojan_contracts.maintenance import WorkerMaintenance
 
 from .backend import Backend
 from .service import AgentService, create_server
 from .store import Store
 
 
+async def reconcile(store, age_seconds):
+    while True:
+        try:
+            count = await store.reconcile_stale(age_seconds)
+            if count:
+                print(f"event=calls_reconciled count={count}", flush=True)
+        except Exception:
+            print("event=call_reconciliation_unavailable", flush=True)
+        await asyncio.sleep(30)
+
+
 async def serve(port):
+    age = int(os.environ.get("ALOJAN_RECONCILE_AFTER_SECONDS", "0"))
+    if age and not 300 <= age <= 86400:
+        raise ValueError("invalid reconciliation age")
     backend = Backend()
     store = Store(os.environ["ALOJAN_DATABASE_URL"])
-    await store.run(lambda c: c.execute("SELECT call_id FROM summary_jobs LIMIT 0"))
+    # The current legacy consumer also excludes scoped jobs and routed calls.
+    await store.run(
+        lambda c: c.execute(
+            "SELECT j.call_id,j.scope_id,s.call_id FROM summary_jobs j "
+            "LEFT JOIN call_route_snapshots s ON s.call_id=j.call_id LIMIT 0"
+        )
+    )
     service = AgentService(backend, store)
-    server = create_server(service)
+    admission = WorkerMaintenance.from_environment(service)
+    server = create_server(service, maintenance=admission)
     readiness = health.aio.HealthServicer()
     health_pb2_grpc.add_HealthServicer_to_server(readiness, server)
     if not server.add_insecure_port(f"127.0.0.1:{port}"):
@@ -28,17 +50,26 @@ async def serve(port):
         loop.add_signal_handler(sig, stopping.set)
     await readiness.set("voice.v1.Agent", health_pb2.HealthCheckResponse.SERVING)
     await server.start()
+    if admission:
+        admission.start()
     summaries = asyncio.create_task(service.summaries())
+    maintenance = asyncio.create_task(reconcile(service, age)) if age else None
     print("event=agent_ready provider=openrouter api_access=separate_acceptance", flush=True)
     try:
         await stopping.wait()
     finally:
+        if admission:
+            await admission.stop()
         await readiness.enter_graceful_shutdown()
         for state in service.generations.values():
             state.cancelled.set()
         await server.stop(2)
         summaries.cancel()
         await asyncio.gather(summaries, return_exceptions=True)
+        if maintenance:
+            maintenance.cancel()
+            await asyncio.gather(maintenance, return_exceptions=True)
+        service.close_leases()
         await backend.close()
 
 

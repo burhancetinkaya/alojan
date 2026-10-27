@@ -2,6 +2,15 @@
 
 ## Current state
 
+2026-10-27 activation fix: apply migration 0026 and refresh management/readiness roles
+before starting the updated API/agent. Management `ALOJAN_VOICE_NODE_ID` assigns new
+publications to the matching node. Current publications and verified active bindings
+are discovered in the background; `managed-node.json` permits empty `targets`.
+Explicit legacy targets remain pinned until removed by the operator. Republish historical
+unbound releases through rollback before binding. Publishing never switches a number.
+Node health and per-release readiness remain separate.
+[Linux deployment and verification](validation/publication-activation-2026-10-27.md).
+
 The first local foundation is implemented: native loopback PJSIP gateway, a PostgreSQL
 schema/migration runner, API health endpoints, C++/Python protobuf bindings and automated
 tests. The default gateway plays a synthetic Turkish AI introduction and unavailable
@@ -305,6 +314,11 @@ weights are offline and checksummed. Model health is serving only after real
 CUDA warm-up. The M2-03 scripted gateway profile now connects this service.
 
 Use `scripts/run-asr.sh` from the project root after the documented preparation.
+The launcher limits its own OpenBLAS work to one thread. Optional exact spelling
+aliases are loaded from ignored `.local/asr.env` as `ALOJAN_ASR_REPLACEMENTS` JSON;
+see the ASR README for bounds and examples. Keep owner vocabulary private and
+validate phone/date/short-answer cases before activation. No audio denoiser or
+additional inference pass is installed. [Evidence](validation/asr-quality-2026-10-23.md).
 The current development worker stays loaded across requests, but no reboot
 supervisor is installed. `tests/test_asr.py` runs in the ordinary root environment
 with a fake decoder; `tools/validate-asr.py` uses the actual running CUDA worker
@@ -452,10 +466,11 @@ this active test mode with full conversational readiness.
 The owner subsequently authorized M4 and selected OpenRouter Pro (ADR 0005).
 See [agent setup](../services/agent/README.md) for migrations, private environment
 files and the resident loopback agent on port 15073. Current carrier development
-uses `ALOJAN_VOICE_PROFILE=agent ALOJAN_ASR_PORT=15172 ALOJAN_AGENT_PORT=15073
+uses `ALOJAN_VOICE_PROFILE=agent ALOJAN_ASR_PORT=15173 ALOJAN_AGENT_PORT=15073
 scripts/run-netgsm.sh`; EMA remains the single resident worker on 15072.
-Port 15172 has the bounded ASR cancellation handoff update. The old ASR workers
-remain available for rollback and should be retired after acceptance.
+Port 15173 includes bounded cancellation handoff, exact spelling aliases and the
+one-thread BLAS launcher. The replaced live worker on 15172 was stopped after
+validation; older rollback workers remain and should be retired after acceptance.
 
 Run focused checks with the frozen root environment and `.local/dev.env`:
 
@@ -500,8 +515,10 @@ its prompt profile; resident inference workers do not need restarting.
 Carrier ringing uses `--answer-delay-ms 3000` in `scripts/run-netgsm.sh`.
 The interval starts after 180 Ringing; caller CANCEL must prevent a later 200.
 Keep the greeting PCM lead-in separate from this pre-answer interval.
-Agent response selection buffers commentary until it can choose final speech,
-tool readback, or one commentary-only fallback; only sent phrases enter history.
+The 120B agent requires `respond`/`finish_call` speech tools and waits for their
+complete validated arguments. Raw model text/commentary is never spoken; only
+sent phrases enter history. See ADR 0005 and the 120B reasoning validation report
+for the active medium-reasoning profile and its remaining boundary-test failure.
 
 The active carrier opening is now `assets/prompts/tr-v5-kubra` (ADR 0006),
 with the owner-approved Kübra/Burhan Bey text and unchanged 400 ms lead-in.
@@ -511,3 +528,1054 @@ No readback question is used.
 Agent closing waits three seconds plus 150 ms media drain before BYE.
 Availability wording is owner-configured and applies only without a supplied
 message. Notification delivery remains deferred. See the Kübra validation report.
+
+
+## M3-01 silence recovery follow-up
+
+Build the native gateway on Linux and upgrade the agent service before restarting
+the idle carrier listener. Do not replace an active call. Preserve the previous
+binary and agent `service.py`/`models.py` for rollback; ASR and EMA need no restart.
+Runtime endpoint CLI flags and their bounds are documented in the
+[gateway guide](../services/voice-gateway/README.md#m3-01-silence-recovery-and-runtime-calibration).
+The current launcher retains the calibrated defaults; custom flags are for
+explicit native calibration profiles until human acceptance.
+
+Run the native CTests, agent/phrase/database tests and these SIP suites:
+`test_silence.py`, `test_turn.py`, `test_interruption.py`, `test_agent_dialogue.py`.
+Keep CPU/synthetic-service evidence separate from resident CUDA and real handset
+checks. No caller recording or new inference model is needed.
+
+## Optional Nemotron comparison (M2-01 / M5-03)
+
+[ADR 0008](ADR/0008-selectable-asr.md) adds `ALOJAN_ASR_BACKEND=whisper|nemotron`
+to the existing launcher and private `.local/asr.env`. The default and active
+worker remain Whisper: neither tested Nemotron profile improved local Turkish
+accuracy. [Worker setup](../services/asr/README.md#optional-nemotron-backend-adr-0008)
+documents the separate frozen environment and explicit pinned model download.
+[Evaluation instructions](../tools/asr-compare/README.md) keep public/synthetic
+speech and detailed results under ignored `.local/`. Model preparation may need
+several GB of disk/network; runtime itself does not download weights.
+
+Use an unused loopback port, run comparison profiles sequentially, and stop only
+the temporary worker. Copying source or changing the private backend variable
+does not switch an already running process. An idle-line restart and successful
+quality/lifecycle validation are required for future promotion. The initial
+Nemotron adapter repeats cumulative audio for gRPC partials; it does not maintain
+incremental caches across partial requests. [Measured limitations](validation/nemotron-asr-2026-10-23.md).
+
+## Latency diagnostics and routing comparison (M4-01 / M5-03)
+
+The default OpenRouter route remains selected. Optional `ALOJAN_AGENT_ROUTING`
+values in the private agent environment are `default`, `latency`, `sticky` and
+`latency-sticky`; invalid values fail startup. Restart the agent only on an idle
+line after validating a configuration change. No new credential is required.
+
+Run the comparison on the Linux development host, with a new ignored output path:
+
+```sh
+uv run --frozen --env-file .local/agent.env python tools/benchmark-agent-routing.py \
+  --rounds 3 --output .local/routing-comparison.json
+uv run --frozen python tools/report-latency.py \
+  .local/logs/agent.log .local/logs/netgsm-gateway.log
+```
+
+The first command makes paid real API requests using synthetic callers, an
+in-memory note store and simulated receipts. Three rounds produce up to 72 turns;
+API failures are recorded and do not count as successful fast responses. The
+second command is read-only and prints aggregate metrics without caller content
+or call identities. Neither command places carrier calls or enables recording.
+Details and limits: [routing evidence](validation/latency-routing-2026-10-24.md).
+
+## Synthetic agent dialogue evaluation
+
+The agent README documents `tools/evaluate-agent-dialogue.py`, an explicitly invoked
+real-API check using synthetic fixtures and isolated loopback gRPC/in-memory notes.
+Use the primary Linux host and private env files. It does not place carrier calls,
+write production notes, or exercise CUDA speech. JSON output belongs under ignored
+`.local/`; do not commit private transcripts. Nonzero exit indicates failed checks;
+manual review of the rubric remains necessary even when automatic checks pass.
+
+## Offline native noise suppression comparison
+
+The owner-authorized M2-01/M5-03 experiment builds WebRTC 2.1, RNNoise v0.2 and
+SpeexDSP 1.2.1 privately on Ubuntu. It does not change the gateway or resident
+ASR worker. Follow [the pinned build/evaluation instructions](../tools/denoise-compare/README.md).
+Use only the existing public/synthetic fixture manifest; keep audio, detailed
+transcripts, native binaries and downloaded sources under ignored `.local/`.
+See [results and rejected promotion](validation/denoise-2026-10-24.md).
+
+The same evaluator also supports a pinned DTLN CPU follow-up, using the existing
+ONNX Runtime through Python/NumPy. See the README's DTLN section for downloads,
+model hashes, full/half-strength profiles and the distinction between processing
+cost and signal delay. Results: [DTLN evaluation](validation/dtln-2026-10-24.md).
+
+### Live endpoint scheduling switch
+
+For the agent carrier profile, `scripts/run-netgsm.sh` reads
+`ALOJAN_TURN_PARTIAL_HINT` from the private carrier environment (default `0`).
+The owner-directed 2026-10-24 deployment sets it to `1` on the Linux host. This
+requires the compatible gateway and ASR scheduling implementation; it does not
+change the LLM or silence thresholds. See
+[deployment, rollback and the remaining quality gate](validation/endpoint-calibration-2026-10-24.md).
+
+
+## Profile and system settings storage (PROF-02)
+
+The existing migration command now includes additive `0003_profile_settings.sql`.
+Use [the SQL setup guide](../infra/examples/README.md) for disabled sample profiles,
+configuration ownership and isolated PostgreSQL checks. No SQL Server is required.
+A fresh installation runs all migrations; existing installations retain migration
+checksums and data. Sample profiles are optional and never activate carrier routes
+or notifications. Current runtime does not yet consume these new tables.
+
+## Native management application (AGP-02)
+
+**2026-10-26 in-place trial update:** the owner authorized the existing unused line
+as the evaluation environment. The existing database now has all 16 migrations;
+the prepared owner configuration and number binding were installed. Managed voice
+uses the existing workers; management HTTP and scoped summary/delivery use separate
+containers without recreating PostgreSQL. Earlier statements below about an
+unmigrated database or an exclusively loopback managed launcher are historical.
+See [current deployment/evidence](validation/in-place-platform-2026-10-26.md).
+
+`ALOJAN_VOICE_PROFILE=managed` selects the Netgsm managed launcher. Configure private
+`ALOJAN_AGENT_PORT`, `ALOJAN_ASR_PORT`, `ALOJAN_TTS_PORT`, `ALOJAN_CALLED_SOURCE`
+(`request_uri` by default), and `ALOJAN_CALLED_NATIONAL_PREFIX` (`none` by default).
+For the current Netgsm trunk, retained signaling carries a ten-digit `850…`
+Request-URI user: set `ALOJAN_CALLED_NATIONAL_PREFIX=0` explicitly. This enables
+the existing exact Turkish-number normalization to the verified `+90850…` binding.
+Leaving it at `none` rejects that carrier format with SIP 404 before agent setup.
+Confirm the actual trunk format; do not infer it from the stored canonical number
+or enable fallback to caller headers. The source allowlist remains mandatory.
+Existing source allowlists, caller normalization and public/LAN addresses remain
+infrastructure configuration. Do not pass global prompts or turn tuning to this
+profile; publish a prepared engine revision instead. The explicit native managed
+ports require adaptive turn models and trusted allowlisted SIP sources. Test-only
+ports retain their previous loopback restriction.
+
+Validate the pinned release with the exact summary/delivery worker image as well
+as the live agent before declaring a deployment ready. A running idle worker does
+not prove release compatibility: the first managed handset trial exposed an older
+worker image with the former 6,000-character instruction limit, while the deployed
+agent/management contract already accepted 20,000. Align the shared contract image;
+do not truncate the user's instructions or reset pending job claims. Expired leases
+allow the corrected worker to resume the existing summary exactly once at commit.
+
+[Management setup and exact HTTP contract](../services/app-api/README.md) documents
+public registration with private workspaces, scoped draft authoring, the independent
+Docker image, cookie/origin configuration, private recovery and Linux validation.
+Use additive migrations and a separate restricted management DB role for deployment.
+Do not use the live migration role or activate routes from unprepared drafts.
+The self-service voice runtime and live migration remain pending.
+
+
+### Prepared release validation (AGP-02/06)
+
+For exact reuse of a trusted historical EMA pack, use the operator-only
+[`alojan.voice_pack` command](../services/app-api/README.md#immutable-publication-and-prepared-audio).
+It checks source provenance inputs/integrity and produces a release-format pack without
+inference, qualification or publication. Candidate Kübra v2 and its verified unchanged
+WAVs are staged privately under `.local/voice-preparation-20261026/` on Linux; its
+`owner-state.json` supersedes the earlier preparation state's draft version/path.
+Do not use the earlier v1 state for subsequent preparation. See the
+[2026-10-26 evidence](validation/voice-pack-preparation-2026-10-26.md). Changed speech
+still requires fenced resident EMA generation; never relabel another profile's audio.
+
+Use the updated [management contract](../services/app-api/README.md) for the native
+email login, preparation/publication/rollback APIs, restricted database-role grants
+and trusted prepared-WAV import command. All commands run on primary Linux.
+`infra/compose.management.yaml` now connects management and PostgreSQL through a
+private internal bridge and publishes HTTP on host loopback only. Its network change
+requires a coordinated PostgreSQL container recreation at the approved rollout gate;
+it has not been applied to the live stack. Preserve the current lifecycle release.
+
+`tools/validate-management.py` accepts `--network`/`--database-host` together to test
+a disposable management container against the existing database bridge. It creates
+its own restricted role/schema/secret and cleans them up; no live schema migration.
+Run the release tests alongside the existing account/draft/database/profile suites.
+No catalog qualification, agent activation or target-account ownership migration
+is implied by passing management tests. Production audio generation remains drained
+resident EMA work, not an HTTP side effect or a second model process.
+
+
+### Number binding and admission repository (AGP-03)
+
+Migration 0008 and `tests/test_number_routing.py` extend isolated management validation
+with verified ownership, node readiness, atomic release binding and async call
+snapshots. Use [the management contract](../services/app-api/README.md) for protected
+number endpoints, private evidence commands and `alojan.roles --purpose routing`.
+The management deployment may set `ALOJAN_VOICE_NODE_ID`; this is system configuration,
+not a user field. It does not create a ready node or authorize a carrier route.
+
+The private agent setup path consumes snapshots and requires preloaded runtime/PCM;
+the native gateway does not yet consume these releases. Do not mark production
+readiness or apply live migrations until native/audio/scoped-storage consumers,
+private RPC authentication, initialization/activation/cancellation and stale-call
+reconciliation are integrated and tested against the newer live lifecycle release.
+The existing second number remains disabled; do not synthesize private number/bot
+configuration or infer agent ownership from an unverified email identifier.
+
+
+## Private release readiness coordinator
+
+AGP-03 now has a tested internal preload/health coordinator. The normal agent launcher
+remains legacy and the native managed profile remains loopback-only. Do not attach a
+routing service to a public/carrier deployment until credential/tool/action consumers,
+qualification and migration are complete. Explicit isolated startup is described below.
+
+Apply additive migration `0010_release_readiness_consumer.sql` using controlled
+migration credentials before updated role provisioning. Existing receipt rows remain
+unchanged; only the coordinator's fresh local pins can authorize managed admission.
+Provision a separate existing unprivileged DB role with private operator credentials:
+
+```sh
+PYTHONPATH=services/app-api:services/voice-contracts uv run --project services/app-api \
+  --frozen python -m alojan.roles READINESS_ROLE --purpose readiness --node-id VOICE_NODE
+```
+
+`ALOJAN_DATABASE_URL` in this provisioning command is the private migration DSN, never
+a request parameter. Runtime ReadinessRepository uses the dedicated readiness DSN;
+AgentService retains separate routing/record DSNs. Do not reuse a management, record,
+summary or routing role. Reprovisioning is an operator action. No default credentials,
+number claims or ready=true seed is provided. `infra/examples/agent_readiness.sql`
+is a read-only diagnostic; its example identifiers never activate a release.
+
+The caller supplies trusted deployment targets and existing private speech channels,
+activates each target, runs the refresh task, and closes it before cache/channel
+teardown. Tests use ephemeral ports, generated assets and disposable DB schemas;
+there is no source/audio copy or EMA generation during a phone call. This component
+adds no HTTP service. Future management startup must remain its separate Docker app.
+
+## Explicit managed-node startup (isolated AGP-03)
+
+### Supervised admission validation package
+
+AGP-09, M1/M5: `infra/docker/supervise.py` and `health.py` retain the operator's
+preserved lifecycle deployment source. The supervisor adds optional gateway admission
+control; other workers keep their existing launch/probe behavior. The updated
+`scripts/run-netgsm.sh` forwards supervisor startup arguments and retains the Linux
+caller's national-prefix setting. See [the control contract](../services/voice-gateway/README.md#supervised-persistent-admission).
+
+The operator-only `infra/compose.admission.yaml` overlay requires an explicit tested
+`ALOJAN_ADMISSION_IMAGE` and absolute `ALOJAN_ADMISSION_DIR`. It mounts that directory
+read-only and selects `/run/alojan-admission/state`. Before a compatible deployment,
+create the directory with owner-only permissions, persist `drained\n` as its state,
+and retain it across restarts. Change state using a same-directory temporary regular
+file, flush/fsync it, atomically replace `state`, then fsync the directory. Only
+`open\n` allows admission. Never mount the state file alone, since replacement would
+leave the container reading the old inode. Do not send USR signals to the supervisor.
+
+`infra/docker/gateway-admission.Dockerfile` is a staged Linux validation recipe.
+Supply a verified local base tag with its recorded image ID, plus a context containing
+the tested Linux `voice-gateway`, `supervise.py`, `health.py`, and `run-netgsm.sh`.
+Do not use a Mac binary or the repository-wide build context. Docker's BuildKit
+interprets a bare `sha256:...` FROM argument as an image name; tag the exact local
+image ID, verify the tag's ID, and supply that tag with `--pull=false`. No registry
+publication or new dependency installation is needed. Record both final image ID and
+native binary hash. This derivative preserves the old runtime/model libraries; it
+is not a replacement for a fresh full-source production build or managed-model gates.
+
+Primary Linux artifacts are in `.local/supervised-drain-20261026/`: the staged image,
+source backups, test logs, and Docker acceptance script/result. The isolated container
+used no network, secrets, DB, GPU or carrier ports, and was removed after checks.
+Compose was validated against the preserved `.local/call-lifecycle-release/infra/`
+base and voice definitions; no `compose up` was issued. Applying the overlay to a
+live project remains pending coordinated worker quiescence and rollout checks.
+Do not recreate PostgreSQL or unrelated services as part of a gateway-only change.
+
+For maintenance, wait for fresh native closed/local-drained acknowledgements after
+the operator write, bound to the current container start identity. If the process
+restarts, repeat receipt verification. Confirm all dependent work/leases and exclude
+other GPU producers before a preparation or benchmark run. Resume only after that
+work finishes. The tested overlay does not itself establish worker quiescence.
+
+### Managed runtime preparation
+
+#### Dependent-worker maintenance fence
+
+Deployment update (2026-10-26): gateway and speech workers are admission-closed
+after explicit owner-authorized bootstrap INVITE fencing. Actual startup/idle
+receipts passed, but the agent is now stopped: its scoped consumer requires tables
+absent from the unmigrated production DB. The strengthened startup check rejects
+that schema before listening. Matching candidate schema/runtime is next. See
+[rollout evidence](validation/maintenance-rollout-2026-10-26.md) for exact images,
+rollback, private operator helpers and remaining acceptance gates. Earlier package
+validation paragraphs below describe their historical pre-deployment state.
+
+Compatible ASR, TTS, legacy-agent and managed-agent launchers now opt into an
+operator-only gate with `ALOJAN_WORKER_ADMISSION_FILE`. This is separate from the
+gateway's admission file: close gateway admission first and let calls finish before
+closing the workers. Only an exact `open\n` regular file opens worker admission;
+all other states fail closed. Use owner-only directories, atomic replacement and
+file/directory fsync as described above. Mount the directory read-only, not its
+individual state file. No management API or user profile can change this control.
+
+`infra/compose.worker-maintenance.yaml` requires explicit tested ASR/TTS/agent image
+references and an absolute worker-state directory. The existing supervisor still
+probes ordinary service health, so intentional maintenance does not cause restart
+loops. The separate maintenance check is **not** a container liveness check.
+
+On a compatible process, existing gRPC Health **Check** for `voice.v1.Maintenance`
+returns SERVING only when admission is closed, no tracked RPC/lease/active call or
+agent summary/initialization/turn remains, native futures have completed successfully,
+and cleanup is confirmed. It is computed for each check, not cached. Health Watch
+does not provide this receipt. Ordinary service health keeps its original meaning.
+Missing support, RPC errors, open/busy workers or unconfirmed cleanup all fail the
+operator probe with a nonzero exit status and no credential/response-body logging.
+
+```sh
+docker exec "$ASR_CONTAINER" services/asr/.venv/bin/python infra/docker/health.py asr --maintenance
+docker exec "$TTS_CONTAINER" services/tts/.venv/bin/python infra/docker/health.py tts --maintenance
+docker exec "$AGENT_CONTAINER" services/agent/.venv/bin/python infra/docker/health.py agent --maintenance
+```
+
+Close new gateway admission, wait for its current local drain receipt, close the
+separate worker state, then require all three current-process maintenance checks.
+Keep both controls closed during the reserved interval. Capture container start
+identities and `worker_maintenance instance=...` events; any worker restart invalidates
+the reservation and requires a fresh check of all dependencies. Restart may warm a
+model before its listener is ready; do not infer a globally reserved GPU from an old
+receipt. Native futures/lease expiry alone and `nvidia-smi` idle snapshots are not
+substitutes for these gates. Exclude other GPU producers and independent summary,
+delivery or management work as required by the selected performance scenario.
+
+The gate rejects new inference/setup RPCs with UNAVAILABLE, while existing requests
+finish and cancellation, release, end-call and playback bookkeeping remain allowed.
+Legacy summaries stop claiming new work but retain queued jobs and finish the current
+job. DB reconciliation/readiness housekeeping can continue; the receipt is not a
+database write lock or proof that an external provider has stopped computation.
+No cancellation timeout forcibly converts an incomplete cleanup into success.
+Unexpected cleanup errors and cancelled/failed native futures remain unready; inspect
+and repair/restart the affected worker before accepting a fresh receipt.
+
+After preparation, open worker admission first, verify normal health and managed
+release readiness, then reopen gateway admission. If a benchmark intentionally uses
+the resident workers, keep the gateway closed and reopen only the required workers
+under exclusive operator control; their maintenance receipt is no longer valid while
+the benchmark runs. Never start a second EMA instance to bypass the fence.
+
+`infra/docker/worker-maintenance.Dockerfile` builds source-only validation derivatives
+of verified retained local runtime images, using a staged context with Python sources,
+generated Python contracts and `health.py`. Private logs, secrets, caches, model weights
+and host virtual environments are excluded. The Linux artifact directory
+`.local/worker-quiescence-20261026/` retains the exact base/final image IDs, packaging
+script and import/CLI checks. These checks load no GPU model and are not full-source
+production build or model readiness evidence. The resident containers are unchanged;
+see [validation](validation/worker-quiescence-2026-10-26.md).
+
+Native maintenance control: the updated gateway supports
+[`--start-drained 1`, SIGUSR1 and SIGUSR2](../services/voice-gateway/README.md#operator-admission-drain).
+Use only a verified compatible gateway PID and process-specific acknowledgement;
+the resident lifecycle image and its supervisor have not been upgraded. In a
+maintenance launch, preserve start-drained across automatic restarts. A local
+`admission_drained` event does not establish remote GPU quiescence; unresolved
+cleanup/leases and other inference producers must also be accounted for. Do not
+replace a live long call with SIGTERM. See the local SIP evidence in
+[admission drain validation](validation/admission-drain-2026-10-26.md).
+
+Owner preparation update: the [2026-10-26 evidence](validation/owner-preparation-2026-10-26.md)
+records a verified real live-backup restoration and the separate
+`alojan_candidate_20261026` database. Its private account/connection identities, restricted
+DSN and encryption key are in `.local/owner-preparation-20261026/` on Linux. Do not point
+resident services at this candidate or mistake it for the live DB: it has no qualified
+release, grant, phone binding or historical call records. Owner password setup is still
+required before interactive use. Use the existing private `alojan.accounts reset-password`
+flow with the **candidate** DSN; never pass a password in CLI arguments or chat. The
+temporary HTTP probe has exited; no persistent API or host port was installed.
+
+Live migration preflight: see the
+[2026-10-25 report and cutover order](validation/platform-preflight-2026-10-25.md).
+The [legacy rollback boundary](validation/legacy-rollback-2026-10-25.md) now provides
+the operator-only `alojan.roles ROLE --purpose legacy-rollback` provisioning path and
+`infra/compose.legacy-rollback.yaml` credential overlay. Linux record/consumer tests,
+expanded regression, package imports and Compose configuration checks passed after
+connectivity resumed on 2026-10-26. This is not a live rollback rehearsal. Do not restore
+the old privileged database secret.
+The resident deployment currently uses preserved `lifecycle-20261024` Docker images;
+do not confuse it with the native development profile. Its old summary consumer has
+no workspace filter and its DB role bypasses RLS. Stop that consumer before managed
+jobs can exist; rollback needs a tested legacy-only consumer boundary too. Migration
+must use explicit connection lock/statement budgets and a restorable backup. A recent
+idle observation does not replace admission fencing for asset generation/cutover.
+
+Rehearse the deployed three-migration schema and legacy data preservation without
+copying any real records:
+
+```sh
+uv run --frozen --env-file .local/dev.env pytest tests/test_legacy_platform_upgrade.py -q
+```
+
+These tests create disposable schemas, verify repeat upgrade, late-error and lock-timeout
+rollback, and check that no ownership/route/grant/action is seeded or historical send
+requeued. They do not apply production migrations or activate any release.
+
+`python -m alojan_agent.managed --config /absolute/private/managed-node.json` starts
+the routed agent using only operator-selected immutable releases. It is a separate
+entry point in the existing voice app, not an HTTP server or a new Docker service.
+The original `python -m alojan_agent` and resident carrier launch scripts remain legacy.
+Management HTTP continues in its own Docker service. Do not use this launcher for the
+resident carrier until remaining action and qualification gates pass.
+
+Copy `infra/examples/managed-node.json` to ignored private deployment storage and
+replace synthetic identifiers with existing, prepared releases for the chosen node.
+Use an absolute installed asset directory and three distinct, unused loopback ports.
+Start compatible ASR/TTS workers with `--require-agent-release` on those ports first.
+The file accepts only schema version 1 and 1–16 unique `(scope_id, release_id)` pairs;
+it is bounded to 64 KiB. It contains no tokens, numbers, user engine knobs or generated
+prompts. It never creates a release, prepares audio, verifies ownership or binds a DID.
+The unavailable second number is omitted, not seeded or activated.
+
+Provision separate routing, records and node-specific readiness roles using the existing
+`alojan.roles` commands (`--purpose routing`, `--purpose records`, and
+`--purpose readiness --node-id NODE`) after applying migrations through 0011 in the
+intended environment. Supply their private connection strings via
+`ALOJAN_ROUTING_DATABASE_URL`, `ALOJAN_RECORDS_DATABASE_URL` and
+`ALOJAN_READINESS_DATABASE_URL`. Missing values fail startup; there is no fallback to
+`ALOJAN_DATABASE_URL`. Role provisioning remains responsible for least privilege/RLS.
+Managed mode additionally requires `ALOJAN_CREDENTIALS_DATABASE_URL` for a separately
+provisioned `--purpose credentials` reader and `ALOJAN_CREDENTIAL_KEY_FILE` for the
+external encryption key described below. Every selected release needs its own scoped
+`model_connection` reference. Managed mode never reads `OPENROUTER_API_KEY`; structural
+preflight does not verify provider quota/API access. Never use an admin/migration DSN
+for runtime roles.
+
+Example after loading the private runtime environment into the process:
+
+```sh
+PYTHONPATH=services/agent:services/voice-contracts:generated/python \
+  uv run --frozen python -m alojan_agent.managed --config /absolute/private/managed-node.json
+```
+
+The launcher reserves its agent port exclusively before claiming receipts, checks
+routing access, preloads/probes every target and refreshes the full set before serving.
+Any failed target aborts the whole startup and withdraws owned receipts. A restart
+revalidates installed assets/dependencies and obtains new consumer IDs. There is no
+automatic activation of new releases or hot reload of this file; change explicit targets
+through a controlled stop/start until a deployment controller is implemented.
+Use one process per node identity. Different endpoints sharing a node identity still
+have the coordinator's bounded successor fencing, not an atomic blue/green handoff.
+
+SIGTERM/SIGINT stop local admission, withdraw owned receipts, cancel generations and
+close RPC leases/cache/provider channels. Repeated stop signals do not interrupt cleanup.
+The existing reconciliation loop checks this node's stale routes every 30 seconds;
+600 seconds is the fixed system recovery age, above the 300-second engine ceiling.
+Forced termination can leave uncertain calls until reconciliation and DB readiness
+until its ten-second TTL. A stop is not a zero-downtime active-call migration.
+
+The legacy summary/Telegram loop is not started here. Ended scoped calls persist
+summary jobs for the separate worker; no external delivery is implied. Health SERVING
+reports the running RPC service after startup, while each new call still needs fresh
+release readiness. Dependency loss closes admission without changing existing call pins.
+Real provider/CUDA, PERF-01–06, carrier and ownership migration remain separate gates.
+
+## Scoped provider credentials and separate summary worker
+
+Apply additive migration 0011 and reprovision dedicated roles in the intended test
+environment before using the new API. `--purpose credentials` grants a read-only,
+workspace-RLS credential reader with no account/call/publication/delivery access.
+Management can insert ciphertext and read connection metadata, but cannot select
+the ciphertext column. Other runtime roles cannot read credentials. Do not combine
+these roles or pass the migration DSN to either executable.
+
+One external encryption key is shared by the authorized management writer and
+credential consumers. It is never stored in PostgreSQL, a release, the repository,
+an image or a log. Create it once in private deployment storage (preserve/back it up
+securely; replacing it makes existing ciphertext unreadable):
+
+```sh
+uv run --frozen python - <<'PY'
+import os
+from cryptography.fernet import Fernet
+fd = os.open('.local/provider.key', os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+with os.fdopen(fd, 'wb') as output:
+    output.write(Fernet.generate_key())
+PY
+```
+
+Set `ALOJAN_CREDENTIAL_KEY_FILE` to this file for the native managed agent. In the
+management container, add the opt-in `infra/compose.credentials.yaml` overlay after
+`infra/compose.management.yaml`; it mounts the key read-only and supplies its path.
+The existing management configuration still runs without that overlay; credential
+creation then returns `credential_storage_unavailable`, not a plaintext fallback.
+Do not send the key or a provider token in a chat or command argument.
+
+The protected API has workspace-scoped `GET/POST provider-connections` and
+`POST provider-connections/{id}/revoke` resources. Creation accepts exactly
+`provider: "openrouter"`, a label and `api_key`; responses/listing expose only ID,
+provider, label and enabled status. Only owners create/revoke; existing origin/CSRF,
+session, scope and body-size checks apply. Set `model_connection` to that UUID in the
+agent draft, prepare/publish a release, then explicitly deploy it. Selected references
+are rechecked under a lock at draft write/publication/rollback. A connection ID cannot
+be transplanted from another workspace. `infra/examples/provider_connections.sql`
+is a read-only metadata/reference example, never a token seed.
+
+Connections and their encrypted identities are immutable. To change an API key,
+create a new connection and explicitly republish/rebind the agent; old jobs keep the
+old reference. Revocation is irreversible and prevents new provider requests after
+bounded propagation. In-place credential rotation/master-key rotation is not yet
+implemented. Historical manifests without `model_connection` retain their exact
+digests and can be inspected/offline-published, but managed deployment rejects them.
+Republish with an explicit connection before migration; there is no global-key fallback.
+
+The node preloads at most 16 provider clients. Background readiness refresh checks
+connection/workspace status; selection during a turn is memory-only. A two-second
+monotonic freshness window bounds stale key use. Refresh preserves still-fresh access
+while its IO runs and clears access on failure; missed refresh expires automatically.
+Revocation or credential-storage outage blocks subsequent provider requests, including
+later turns of existing calls. Already-dispatched requests are not forcibly recalled.
+This is bounded revocation, not instantaneous cancellation or proof of provider quota.
+
+`services/action-worker` is an independent pinned dependency environment; its launcher
+is `python -m alojan_agent.summary_worker`. It requires only
+`ALOJAN_SUMMARIES_DATABASE_URL`, `ALOJAN_CREDENTIALS_DATABASE_URL` and the key-file path.
+It never reads the legacy database/model/Telegram environment. Provision summaries
+with `--purpose summaries` and credentials with `--purpose credentials`. A private
+`.local/worker.env` supplies the two runtime DSNs; use container-reachable PostgreSQL
+addresses when running under Docker. The opt-in `infra/compose.worker.yaml` overlay
+adds the worker in a separate container, with no published port, no GPU and bounded
+CPU/memory/PIDs. It has outbound provider access; management HTTP stays independent.
+
+```sh
+PYTHONPATH=services/agent:services/voice-contracts \
+  uv run --project services/action-worker --frozen --env-file .local/worker.env \
+  python -m alojan_agent.summary_worker --once
+docker compose --env-file .local/dev.env -f infra/compose.yaml \
+  -f infra/compose.worker.yaml config --quiet
+```
+
+The first command consumes at most one scoped job and can call the configured provider;
+run only in the intended accepted environment. Without `--once` it polls sequentially,
+sleeping one second when idle/unavailable. Each job has an independent provider client
+and pins its historical release, instructions, records and credential reference.
+Cancellation/crash leaves the existing 60-second claim lease for retry; stale claims
+cannot finalize over a successor. Credential absence/revocation or model failure emits
+an explicit failed/null summary; infrastructure/input errors retain leased work for
+retry. Successful finalization preserves note confirmation evidence and occurs once.
+The summary worker itself never sends Telegram/webhook actions. Delivery is handled
+by the separate process documented below. The worker has no placeholder health
+endpoint; inspect its process/logs and scoped queue/finalization state. Initial Docker
+validation builds images and imports entry points without starting resident services.
+`.dockerignore` allows only reviewed source/lock/migration files into either image.
+
+
+## Telegram connection authoring foundation
+
+AGP-05 migration 0012 extends the isolated management schema. Apply migrations in
+order with operator credentials, then re-provision the management role for metadata
+SELECT, INSERT and UPDATE(enabled) on telegram_connections. All existing private-role
+provisioners now require 0012 and reject Telegram ciphertext-read privilege, including
+the OpenRouter credential reader. Do not add that privilege to the summary/voice roles.
+The management readiness endpoint now requires migrations 0011 and 0012 as well as
+its prior schema baseline. No live migration was performed during development.
+
+Use the same external key and optional compose.credentials.yaml mount documented
+above. The owner-only telegram-connections API stores a fixed numeric chat ID and
+write-only bot token; GET returns metadata. There is no bot validation request, test
+send, send grant or live activation on save. Never put a real token in CLI arguments,
+SQL examples, logs, source files or manifests. Connection replacement creates a new
+reference; master-key/token rotation in place remains unimplemented. The separate
+summary worker continues to finalize calls without delivering Telegram messages.
+
+
+## Reviewed post-call grants
+
+Migration 0013 follows Telegram connection storage and is required by management
+readiness. Re-provision management grants after applying it; no worker receives grant
+writes. The API review/authorize/revoke flow is documented in services/app-api/README.md.
+Initialize no owner grants from SQL, migrations, prompts or fixtures with real targets.
+New action-bearing publications use schema v2 and pin the exact original grant.
+With migration 0014 and the scoped delivery consumer below, runtime/preload supports
+v2 for its exact workspace. Legacy v1 retains its original digests/behavior. Do not
+manufacture readiness receipts; publication does not start a worker or certify delivery.
+No live migration or resident restart accompanies this implementation.
+
+## Scoped Telegram delivery
+
+AGP-05 now includes migration 0014 and independent `alojan_agent.delivery_worker`.
+Apply migrations with operator credentials in the intended schema, then re-provision
+`--purpose summaries` for atomic job/scheduler insertion and a **new dedicated** role
+with `--purpose actions`. Never combine it with management, records, summary or
+provider-credential roles. Management readiness requires 0014. The migration creates
+no jobs for old events, no targets and no grants; granting a role sends nothing.
+
+The action role reads only its job projection, scoped grant/target, issuer enabled
+state/membership and workspace enabled state; it cannot read raw call records,
+provider ciphertext, passwords or sessions, nor author grants/jobs/destinations.
+Both the release and its original grant are enforced by the job's composite FK.
+
+Create an ignored, private `.local/delivery.env` with
+`ALOJAN_ACTIONS_DATABASE_URL` for that role. The Docker overlay mounts it only into
+`delivery-worker`, with the existing external `.local/provider.key` at
+`ALOJAN_CREDENTIAL_KEY_FILE`. Use a container-reachable database address. The worker
+and summary containers use the same pinned image but independent commands, DSNs,
+resource limits and lifecycles. No credentials belong in source or CLI arguments.
+
+```sh
+# Inspect composition only; does not start a worker or send a message.
+docker compose --env-file .local/dev.env -f infra/compose.yaml \
+  -f infra/compose.management.yaml -f infra/compose.credentials.yaml \
+  -f infra/compose.worker.yaml config --quiet
+```
+
+Only start the delivery service in a separately accepted environment: starting it
+(or running its `--once` command) can send previously authorized pending jobs. Saving
+a connection/draft/grant still sends nothing. Review metadata with
+[the read-only SQL example](../infra/examples/action_delivery.sql), without displaying
+payloads or credentials. Worker logs expose sanitized event/class only. Do not enable
+HTTP wire logging: Telegram URLs carry credentials.
+
+The former v2 compiler/preloader gate is removed because the scoped consumer now
+exists; v2 requires its exact workspace. This does not manufacture node readiness or
+real remote acceptance. Production rollout still needs the worker, roles, key mount,
+accepted destination and the existing voice quality/PERF/carrier gates. Revocation
+blocks subsequent dispatch checks, not already-authorized in-flight HTTP. Crashes or
+ambiguous responses after sending begins produce terminal delivery_unknown, with no
+automatic retry. The reviewed manual-retry workflow is documented below; never
+reset terminal rows directly. No live migration or resident restart is implied.
+
+## Delivery outcome and retry management
+
+Apply migration 0015 with operator credentials in the intended schema and re-provision
+both management and actions roles. Management readiness now requires 0015. No existing
+job is reopened by migration. The migration adds a 0..3 retry_generation, scoped
+immutable action_retry_requests, indexed history and unconsumed-request lookup. Only
+the worker may set the request's consumed_at marker; consent itself cannot change.
+
+Deploy management and the delivery worker together: management stores owner approval,
+while the worker consumes at most 32 pending approvals per iteration before its
+existing fair/rate-limited claim. Consumption and original-job reopening commit
+atomically. Worker restarts cannot consume the same approval twice. An old worker
+will leave approvals waiting rather than implicitly retrying them. No new service,
+credential environment variable or dependency is introduced.
+
+The [API contract](../services/app-api/README.md#delivery-outcomes-and-reviewed-retry-agp-05)
+describes metadata-only history, owner-only exact-message review, the duplicate warning,
+explicit acceptance and idempotent request_id replay. Approval alone is not delivery.
+The same original grant/target and live requester membership must hold at dispatch;
+permanently revoked grants/targets cannot be revived. Never reset terminal rows or
+fabricate a success receipt. Frontend and real Telegram/carrier/PERF acceptance remain
+separate. [SQL diagnostics](../infra/examples/action_retries.sql) omit review content.
+
+
+## Approved private web preview (AGP-06)
+
+The owner-approved Next.js/shadcn frontend is in `services/web`, with independent
+web/TLS services in `infra/compose.web.yaml`. Follow its [README](../services/web/README.md)
+for pinned Linux build/browser validation, exact-origin configuration and rollback.
+Do not rebuild/restart voice services to deploy the frontend. Keep resource caps.
+
+The current preview is reachable only through an SSH forward from the Mac:
+
+```sh
+. .local/remote.env
+ssh -f -N -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 \
+  -o ServerAliveCountMax=3 -L 127.0.0.1:13443:127.0.0.1:13443 "$ALOJAN_DEV_SSH"
+```
+
+Open `https://localhost:13443`; its private self-signed certificate requires a
+browser exception. Do not change system trust or disable verification globally.
+If the port is occupied, inspect the existing tunnel rather than opening another.
+The tunnel can close on laptop sleep or connection loss; the Linux containers
+remain independent. Use a real certificate/origin for a future public domain.
+
+Private first-login details are in `.local/web-preview-20261026/giris-bilgileri.txt`
+on the Mac; never paste them into logs, documentation, commits or screenshots.
+Change the initial password through Account after first login. Read the
+[validation report](validation/web-preview-2026-10-26.md) for feature limits.
+
+### Prepared audio preview and Telegram action UI
+
+The management container now needs a read-only mount of the trusted workspace voice
+store at `ALOJAN_VOICE_ASSET_ROOT` for the two prepared preview clips. Absence returns
+a sanitized 503 only for preview; it must not silently expose another directory or
+invoke synthesis. The web/TLS resource limits and private origin are unchanged.
+Deploy updated management/web only; keep voice/background/DB container identities.
+
+Use the management project's pinned test dependency when running its regressions
+from the root environment: `uv run --frozen --with httpx==0.28.1 --env-file
+.local/dev.env pytest -q tests/test_voice_preview.py tests/test_agent_releases.py
+tests/test_action_grants.py`. Run the isolated browser harness after rebuilding for
+its test API port as described in the web README. Never run synthetic action tests
+against the owner account. The real owner smoke only reads existing settings/audio;
+it does not grant, revoke, publish, rebind or send a notification.
+
+Rollback copies for this update are under `.local/web-actions-20261026`; restore
+only the management configuration and web image environment, then recreate those
+two services. No DB rollback or voice restart is needed. See
+[validation](validation/web-actions-2026-10-26.md).
+
+## Durable resident audio preparation (AGP-06)
+
+The private preview now requests queued audio through the management API. Run the
+[separate host coordinator](../services/voice-preparer/README.md) with its dedicated
+SQL login, pinned runtime and operator-owned configuration. Migration 0016 adds only
+the queue; reapply management grants. TTS must have its own admission file before
+enabling the coordinator. It never loads a second model or runs inside HTTP.
+
+The Linux deployment uses `.local/voice-preparer/` for private configuration, journal
+and rollback evidence, and `alojan-voice-preparer.service` as a bounded user service.
+Observe the documented recovery process after interruption; never treat expiry or
+a generic healthy flag as a fresh drain receipt.
+
+## Background response timing import
+
+AGP-06/P1 uses the existing gateway's content-free `turn_latency` log records, not
+conversation timestamps. Apply 0019 with migration credentials after backup and
+provision the existing management role with `grant_management`. Create a fresh,
+unprivileged login role and run `alojan.latency.grant_ingest(dsn, role, node)` using
+private operator credentials. The collector reads route IDs for that node and
+inserts bounded numeric samples; no credential/transcript/audio access is granted.
+
+Keep these files private (0700 directory, 0600 files):
+
+- `.local/latency/database.env`: `ALOJAN_DATABASE_URL` for the dedicated import role,
+  in Docker environment-file syntax (the DSN value is not shell-quoted).
+- `.local/latency/collector.env`: `ALOJAN_LATENCY_IMAGE=sha256:...` with a validated
+  management image, `ALOJAN_VOICE_NODE_ID` matching the gateway's configured node,
+  and absolute `ALOJAN_LATENCY_DATABASE_ENV` pointing to the first file.
+
+Install `infra/systemd/alojan-latency-import.{service,timer}` in the Linux user's
+systemd directory; adjust the default `%h/ai/alojan` paths if necessary. Run
+`scripts/import-latency.sh` with the collector environment once, then enable/start
+the timer. It reads at most 10000 gateway log lines from the last ten minutes every
+minute and starts a short-lived non-root/read-only container with 0.25 CPU/128 MiB.
+The host-side oneshot has a 45-second deadline and 256 MiB ceiling. It neither starts
+nor restarts the gateway and exposes no HTTP port. Pinned images avoid mutable
+checkout code in the import process. No raw log capture is stored.
+
+Check `systemctl --user show alojan-latency-import.service -p Result -p ExecMainStatus`
+and the timer's next activation. Journal output contains counters only; malformed,
+unowned and duplicate observations are not presented as fresh samples. The UI's
+last-import timestamp is the latest persisted observation, not a collector heartbeat.
+An interruption longer than ten minutes or log rotation/tail limits can lose samples;
+this is a bounded diagnostic view, not a lossless telemetry pipeline. A future wider
+capacity rollout must qualify retention/throughput before changing these bounds.
+An operator can explicitly replay a bounded older log window; existing samples will
+not be duplicated and unscoped legacy identities will not be adopted.
+
+Rollback: stop/disable the timer, allow its current oneshot to finish, restore the
+prior management/web image IDs, and recreate only those HTTP services. Leave the
+additive table and private role intact for investigation; no voice rollback or sample
+deletion is needed. Deployment evidence lives in the ignored `.local/performance-ui-20261026`.
+
+## Candidate MCP runtime (AGP-07)
+
+Migrations 0020–0022 remain isolated candidate work; the serving schema is still
+through 0019. Apply and validate all three before provisioning the separate discovery
+and execution roles. Follow the [management provisioning](../services/app-api/README.md#mcp-release-pinning-and-execution-agp-07-runtime-slice)
+and [managed-node contract](../services/agent/README.md#mcp-call-runtime-agp-07).
+The optional executor uses the existing native managed agent; no new HTTP app or
+unbounded per-agent process is added. Management HTTP remains its separate container.
+
+Test with the frozen root environment and the management project's pinned HTTP test
+dependency. `tests/test_mcp_runtime.py` uses real PostgreSQL service roles and the real
+Agents/MCP SDKs with synthetic model/HTTP peers. It requires the private `.local/dev.env`
+DB connection and never contacts an external MCP server. Include release/readiness,
+summary/action, managed-startup and historical-compatibility suites before rollout.
+Do not infer endpoint authorization or enable production MCP from a passing mock test.
+
+
+## Candidate MCP OAuth (AGP-07)
+
+Migrations 0020–0023 and matching API/worker/executor/web images remain coordinated
+candidate work; serving schema remains through 0019. OAuth uses the already separate
+management application and discovery worker; no additional web service is embedded
+in voice. Follow the [provider/role/overlay setup](../services/app-api/README.md#oauth-lifecycle-agp-07-candidate).
+The example registry is synthetic and must not be activated unchanged. A real approved
+provider, preregistered public client, redirect origin and explicit real-server test
+are prerequisites for activation. Do not send test calls to an arbitrary provider.
+
+`tests/test_mcp_oauth.py` uses disposable PostgreSQL schemas and restricted production
+roles with synthetic AS/token peers. Browser `mcp-oauth.spec.ts` intercepts OAuth API
+and provider responses; it validates UI behavior but not real provider interoperability.
+Run it through `tools/validate-web.py` with the newly built candidate API and pinned
+Node/Playwright images. The ordinary 19 scoped API journeys remain real DB/API checks.
+Do not reuse a serving schema, import user tokens into fixtures or archive raw callbacks.
+
+## HTTP post-call candidate rollout (AGP-08 / migration 0024)
+
+The candidate is documented in [HTTP evidence](validation/http-actions-2026-10-26.md).
+No new daemon/container overlay or dependency is required: HTTP stays in the existing
+independent management application, Next frontend and action delivery worker.
+
+Before activation, back up schema/service identities and confirm no outstanding
+sending lease is being replaced. Apply unchanged migrations in order through 0024
+with the migration role; re-provision the existing management/actions roles using
+their normal commands. New generated target columns backfill historical Telegram
+jobs; adapter-specific foreign keys preserve workspace identity. Never bypass the
+migration checksum runner or insert grants/retry requests through SQL.
+
+Activate compatible management, action worker, voice-contract consumers and web
+images together, using the existing controlled rollout/health/readiness procedure.
+The actions role needs HTTP connection SELECT and action_jobs.http_status UPDATE;
+management must not have ciphertext SELECT. An unreprovisioned worker lacks the new
+column/table permissions and cannot dispatch. Do not enable an HTTP-bearing release
+until a compatible worker is present. Pending MCP migrations/consumers and existing admission gates still apply.
+
+Create a fixed HTTPS destination through the owner API/UI, then explicitly review
+mapping and grant, publish and route separately. Saving/reviewing sends nothing.
+A real endpoint test is an external write and needs explicit authorization. No new
+network test button or automatic callback is added. API/worker `--once` can send queued
+authorized actions; do not use production queues for synthetic transport tests.
+
+Use [disabled SQL example](../infra/examples/http-actions.sql) only in a synthetic
+workspace after 0024; it rolls back and seeds no job/grant. Candidate schemas/tests
+must remain separate from serving PostgreSQL. Downgrade is not a destructive reverse
+migration; preserve queued intent and use compatible images or reviewed recovery.
+
+## Declared output candidate activation (AGP-08)
+
+No migration 0025 is needed: definitions live in existing immutable draft/release JSON,
+and outputs/statuses in existing final-event JSON. Existing MCP execution rows/indexes
+supply scoped successful results. Apply earlier candidates through migration 0024 as
+usual, then re-provision the `summaries` role through its normal call-record provisioning
+command. It needs limited SELECT of scope/call/release/alias/status/ordinal/completed_at/
+output on mcp_tool_executions, under existing workspace RLS. No management/action/record
+role may read the raw output column; no new execution write permission is granted.
+
+Activate matching shared contracts, management, summary/delivery workers, voice/preparer
+consumers and Next frontend through the existing coordinated rollout. v4 releases and
+v3 output consent reject unsupported older consumers; existing empty-output releases
+retain their v1–v3 versions/digests. No automatic migration/republication/rebinding of
+live agents or historical output backfill. A new publication is required to configure
+outputs for future calls. Preserve original finalizations and uncertain job history.
+
+Tests use disposable databases, synthetic model/tool transports and the pinned Agents
+SDK. No external request or serving worker `--once` is needed to validate this slice.
+See [evidence](validation/declared-outputs-2026-10-26.md) and the read-only PostgreSQL
+example. Real inference/receiver acceptance and PERF-01–06 remain separate gates.
+
+### Summary-conditioned post-call actions (AGP-08 candidate)
+
+Non-default action conditions require release-v5/action-review-v4 consumers across
+management, readiness/voice-preparer, voice and summary/delivery services. Upgrade
+consumers together before publishing these agents; old default releases retain their
+schema/digest. There is no new migration beyond the existing HTTP/output candidate
+chain and no new role permission. Never replay historical finalizations as part of
+activation. Run `tests/test_action_conditions.py` with the frozen root environment,
+`--with httpx==0.28.1` and `.local/dev.env`, plus the compatibility/browser suites.
+[Sanitized evidence and candidate images](validation/action-conditions-2026-10-26.md).
+
+### Optional transcript sharing (AGP-08 candidate)
+
+Upgrade release-v6/review-v5 shared-contract consumers together, including management,
+voice/preparer/readiness, summary/action workers and web, before publishing opted-in
+agents. No new migration or privilege beyond the pending HTTP/output chain. Default
+off preserves existing releases and greeting identities; enabled agents need freshly
+prepared disclosure audio. No automatic live-agent republication or historical replay.
+Run `tests/test_transcript_sharing.py` with the frozen root environment,
+`--with httpx==0.28.1 --env-file .local/dev.env`, then relevant compatibility and web
+checks. Disposable DB and synthetic receivers only. [Evidence](validation/transcript-sharing-2026-10-26.md).
+
+### Call lifecycle action activation (AGP-08 candidate)
+
+Apply additive `0025_call_lifecycle_actions.sql` after the existing candidate chain.
+It permits terminal `not_requested` in summary jobs/finalizations and performs no
+backfill. Management readiness now requires it. Re-run normal routing-role provisioning
+for scoped summary-job INSERT and records-role provisioning for scoped agent-release
+SELECT; do not grant finalization/delivery writes to routing/records or summary-model
+access to routing. Existing RLS and immutable-route constraints remain mandatory.
+
+Activate release-v7/action-review-v6 consumers together (management, voice/readiness/
+preparer, summary/delivery, web). Old releases keep behavior; no automatic publication,
+rebinding or historical replay. Preserve forward-compatible schema and queued intent
+on rollback; do not drop the new enum value while such jobs/events exist. Run frozen
+`tests/test_lifecycle_actions.py` with httpx 0.28.1 and `.local/dev.env`, scoped lifecycle/
+routing/action compatibility and web journeys. [Evidence](validation/call-lifecycle-actions-2026-10-26.md).
+
+
+## Bounded MCP schema candidate (AGP-07)
+
+Deploy compatible management, voice/readiness/preparation, summary/delivery and web
+consumers before publishing release v8 / MCP review v2. No new migration/role grants
+are introduced by this slice; keep the previously required 0025 chain. Existing strict
+v1 MCP grants and releases retain their bytes. Do not auto-approve discovered tools or
+republish an existing agent. The no-answer queue guard includes v8. Rolling back to
+older readers requires binding a compatible older release; retain additive DB state.
+
+`tests/test_mcp_schema.py` exercises bounded schema narrowing, exact grants, fixed/null/
+omitted inputs, output rejection and unanswered-call queue compatibility using isolated
+PostgreSQL schemas and synthetic network. `tests/test_mcp_hindsight_live.py` is excluded
+unless `ALOJAN_HINDSIGHT_READ_ACCEPTANCE=1` is explicitly set after owner authorization.
+It performs real discovery and at most one `list_banks` read on the documented Hindsight
+endpoint with an unmatched random query and pinned limit/offset; it never writes remote
+memory. The exact inspected tool digest must match. Changed metadata needs a new review,
+not a bypass. Use the frozen Linux environment with `--with httpx==0.28.1` and the private
+development env; do not run this opt-in case during routine CI. Never print remote bank
+content, session credentials or DSNs on failure.
+
+The browser harness requires `--with httpx==0.28.1`, a frontend build with
+`ALOJAN_MANAGEMENT_URL=http://127.0.0.1:18181` and its matching candidate management image.
+For `tools/validate-management.py`, also set `PYTHONPATH=services/voice-contracts`.
+[Acceptance and remaining limits](validation/mcp-schema-2026-10-26.md).
+
+
+## Real post-call extraction and receiver acceptance (AGP-08)
+
+Run on the primary Linux host using disposable DB schemas; do not supply a production
+records DSN. `tests/test_declared_outputs_live.py` requires `ALOJAN_REAL_OUTPUTS=1`,
+`ALOJAN_OUTPUTS_EVIDENCE_DIR` and a provider key in the private environment. It uses the
+real restricted worker/credential pipeline with authored synthetic conversations and
+no post-call actions. `tests/test_agent_summary_live.py` and
+`tests/test_managed_summary_live.py` require `ALOJAN_REAL_SUMMARY=1` and
+`ALOJAN_SUMMARY_EVIDENCE_DIR`. The former covers the legacy/shared policy; the latter
+runs the same correction/ambiguity corpus through scoped records, the immutable
+release, restricted credentials and the separate worker. All use the pinned existing
+model/provider. The opt-in fixture waits six seconds in test setup, outside the
+production worker deadline, and reports only exception type/HTTP status, never response
+bodies. Evidence destinations are checked before call setup/inference; database fixture
+setup may already have occurred. These suites are semantic checks, not latency benchmarks,
+and remain skipped in routine offline runs. `tests/test_live_summary_configuration.py`
+checks evidence preflight and deadline separation without model or database access.
+Shared assertions also require faithful verbs, caller/recipient responsibility,
+withdrawn-action handling and complete ambiguous quotes, not merely matching nouns.
+Consult [current fact-boundary evidence](validation/summary-fact-boundaries-2026-10-26.md)
+before treating a previous corpus pass as current acceptance.
+
+Before selecting a diagnostic alternative, inspect account-filtered model eligibility
+and current key quota using read-only provider metadata. A public catalog or successful
+model-list request does not prove inference access. Treat 403/key-limit errors as
+unavailable access, not semantic model failure; stop further inference on an exhausted
+key. Do not change billing/privacy policy or enable fallback as a test workaround.
+A Mac project connection must not be assumed identical to the Linux connection.
+
+Example (after explicit authorization to use the provider):
+
+```sh
+ALOJAN_REAL_OUTPUTS=1 ALOJAN_OUTPUTS_EVIDENCE_DIR=.local/output-acceptance \
+ALOJAN_REAL_SUMMARY=1 ALOJAN_SUMMARY_EVIDENCE_DIR=.local/summary-acceptance \
+~/.local/bin/uv run --frozen --with httpx==0.28.1 \
+  --env-file .local/dev.env --env-file .local/agent.env \
+  pytest -q -s --tb=short tests/test_declared_outputs_live.py \
+    tests/test_agent_summary_live.py tests/test_managed_summary_live.py
+```
+
+`tests/test_http_receiver.py` needs only the disposable DB env. It starts an ephemeral
+loopback HTTPS receiver, creates an ephemeral trusted certificate, and substitutes
+only socket routing/trust and DNS answers in the test. The production HTTP client,
+TLS hostname validation, scoped grant/finalization, delivery and persistence are real.
+No production SSRF bypass or extra deployment service is added. No external receiver
+gets a POST. This does not certify a customer's receiver or business idempotency.
+
+[Current evidence](validation/real-outputs-receiver-2026-10-26.md) records a failed
+expanded summary gate. Do not promote the candidate until that gate passes.
+
+
+## Scoped summary rate-limit recovery (AGP-08)
+
+The candidate scoped worker retries only explicit provider HTTP 429 failures. It
+reuses the fenced processing lease as a durable 60–300 second cooldown, with at most
+three total claims. No migration or additional role grant is needed. It creates no
+final event/action while deferred and rechecks the pinned connection on every attempt.
+Other jobs can proceed. Invalid/over-ceiling Retry-After, authentication failure and
+exhaustion finalize as summary failure; cancellation retains existing recovery rules.
+This does not add retries to the legacy rollback worker or the live voice turn path.
+
+Run `tests/test_summary_worker.py` and `tests/test_scoped_call_records.py` using the
+frozen Linux environment, disposable DB env and test-only httpx 0.28.1. The acceptance
+covers cooldown, exhaustion, dates/seconds, revoked credentials, stale claim fencing
+and another call proceeding during cooldown. It does not measure provider-wide limits.
+[Current evidence](validation/source-fidelity-2026-10-26.md) keeps the summary-quality
+gate open; do not activate this candidate yet.
+
+
+## Coordinated private platform deployment — 2026-10-27
+
+The owner-authorized deployment now includes migrations 0020–0025, current v8-capable
+management/agent/worker/web readers, independent MCP discovery/execution identities,
+and a matching pinned host voice-preparer runtime. Existing number/release/model/EMA
+configuration is preserved. The exact active images, verified health, backup/recovery
+receipts and remaining gates are in
+[platform rollout evidence](validation/platform-rollout-2026-10-27.md).
+
+Active private configuration remains in the existing in-place background/managed
+Compose files and web-preview environment. MCP role files and the exact endpoint
+allowlist are referenced from `.local/platform-rollout-20261027/attempt-2/`; preserve
+those files and the provider key on host backup. Never sync them to Git or Mac source.
+No OAuth provider or production MCP tool grant was automatically created.
+
+### Management MCP development (ADR 0012)
+
+See [service setup](../services/management-mcp/README.md),
+[operation matrix](MANAGEMENT_MCP_OPERATIONS.md) and
+[current evidence](validation/management-mcp-2026-10-27.md).
+Use the primary Linux host for acceptance. Supplemental Mac tests require an
+explicit disposable PostgreSQL `ALOJAN_DATABASE_URL`; pytest isolates schemas.
+Run `tests/test_personal_tokens.py`, `tests/test_management_mcp.py`,
+`tests/test_connection_setups.py` and `tests/test_call_search.py` with the existing
+frozen root environment and test-client dependency. The independent transport
+uses its own frozen lock. Apply migrations 0027–0029 before the new API and refresh
+restricted management grants. Never copy private test environments, token values,
+Mac virtual environments or graph caches to Linux. `infra/examples/management-mcp.sql`
+contains read-only synthetic PostgreSQL examples; do not seed real token secrets.
+
+## Shared waiting speech and Jev shadow (ADR 0014, VXP-01–06)
+
+The candidate is developed/tested on the primary Linux host; copying source there
+is not a live deployment. See [evidence](validation/voice-response-implementation-2026-10-27.md).
+Use `response_experience` in the version-checked agent draft through HTTP or MCP;
+the frontend exposes the same enable/style/optional text fields. An omitted field
+keeps old behavior/digests. See [SQL data example](../infra/examples/response-experience.sql).
+Enablement requires preparing a new voice pack, previewing the `waiting` clip,
+publishing a new immutable release and passing existing readiness/number-binding
+checks. Changing text invalidates old audio. Prepared waiting audio is limited to
+five seconds and does not consume the call-time synthesis worker.
+
+Upgrade agent, native gateway, generated contracts, management API/MCP, preparation
+worker and frontend together before enabling a release. Reapply `grant_management`
+for the serving management role using the existing privileged role setup procedure:
+it now needs column-level read access to `utterances.source_generation_id` to derive
+transcript kind. No table migration or new service is needed; do not grant table-wide
+SELECT/UPDATE. Retain the old release for rollback and preserve all private config.
+
+`ALOJAN_JEV_SHADOW=1` is the managed-runtime default under the owner's 2026-10-27
+deployment approval. It enables observation only for runtimes with validated,
+published conversational MCP tool grants, using the call's already prepared
+workspace credential. A connection without selected tools, Telegram actions and
+ordinary non-MCP agents do not trigger requests. `0` disables all Jev observations.
+Values other than `0`/`1` fail startup. Never use a global fallback key. Jev cannot speak, execute tools or alter
+routing. Roll back by setting `0` and by selecting the prior qualified agent release;
+drain/fence calls using existing maintenance procedure before downgrading binaries.
+
+Synthetic-only tools (existing authorized key in the process environment, never
+CLI arguments) are `tools/evaluate-response-decisions.py --output <private-path>`
+and `tools/benchmark-interim-metadata.py --output <private-path>`. The first sends
+only the maintained labeled Turkish fixtures; the second forces synthetic tool
+proposals without executing them. Neither establishes real EMA/SIP/handset latency.
+Dynamic text/TTS and Jev-driven selection remain inactive until their quality,
+latency and GPU isolation gates pass. No fast recipe/planner race is enabled.
+
+### Resident EMA waiting comparison (VXP-01/02)
+
+`tests/sip-integration/test_waiting_ema_live.py` is opt-in and must run inside the
+existing exclusive voice-preparer operator window described above. The flag alone
+is not a maintenance lock. Hold the preparation advisory lock, verify no active
+preparation, stop the idle preparer, reserve `DockerWindow`, keep checking its
+identity/gate receipts, and restore/restart only after its successful cleanup.
+Use the existing resident TTS endpoint; do not start another GPU model process.
+
+Prepare a synthetic `AgentDraft` with response experience enabled through
+`generate_pack` in that window. Store its JSON as `draft.json` and the digest-bound
+assets under `pack/` in a new ignored evidence directory. Set
+`ALOJAN_WAITING_EMA_WINDOW=1` and `ALOJAN_WAITING_EMA_EVIDENCE` to that absolute
+path only for the child pytest process. Run the whole four-case test file with the
+existing development DB environment and pinned httpx test dependency. Leave
+`ALOJAN_WAITING_EMA_TURNS` unset (14) for reporting; three-turn smoke output is not
+accepted by the reporter. Continue window checks until the child exits and verify
+all gates/routes, journal removal and preparer health afterwards.
+
+Run `uv run --frozen python tools/report-waiting-ema.py <private-evidence-directory>`
+afterwards. It requires all four complete ABBA calls and their expected waiting
+segments. Keep raw output and synthetic WAVs ignored; publish sanitized numbers
+and limitations. This setup scripts ASR, operations and answers and cannot qualify
+production naturalness, barge-in or full-pipeline latency. See
+[the first measurements](validation/voice-response-measurements-2026-10-27.md).
+
+### Private MCP endpoint configuration
+
+MCP server endpoints belong in private operator/user configuration, never Git.
+The OAuth provider example intentionally leaves endpoint fields empty and must be
+filled privately before use. The discovery SQL example requires the psql
+`mcp_endpoint` variable. Live Hindsight acceptance requires both explicit opt-in
+and `ALOJAN_HINDSIGHT_MCP_URL`; there is no built-in endpoint. Synthetic tests
+construct reserved test destinations and mock transport/DNS without deployment defaults.

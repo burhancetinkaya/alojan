@@ -1,0 +1,46 @@
+# Private preview: reach HTTPS through an SSH tunnel, not a public listener.
+services:
+  web:
+    image: ${ALOJAN_WEB_IMAGE:?Build services/web/Dockerfile and pin the image}
+    network_mode: host
+    user: "1000:1000"
+    read_only: true
+    tmpfs: ["/tmp:size=32m,mode=1777"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    cpus: 0.5
+    mem_limit: 512m
+    pids_limit: 128
+    restart: unless-stopped
+    environment:
+      HOSTNAME: 127.0.0.1
+      PORT: "13000"
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:13000/giris').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+  web-tls:
+    image: nginx:1.28-alpine@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236
+    network_mode: host
+    user: "1000:1000"
+    entrypoint: [nginx]
+    command: ["-g", "daemon off;"]
+    read_only: true
+    tmpfs: ["/tmp:size=16m,mode=1777"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    cpus: 0.25
+    mem_limit: 64m
+    pids_limit: 32
+    restart: unless-stopped
+    volumes:
+      - ./examples/web-preview.nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${ALOJAN_WEB_TLS_DIR:?Set private certificate directory}:/run/tls:ro
+    healthcheck:
+      test: [CMD, wget, --no-check-certificate, -q, -O, /dev/null, "https://127.0.0.1:13443/giris"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3

@@ -7,10 +7,17 @@ import threading
 import grpc
 import pytest
 from alojan_contracts.audio import AudioStreamValidator
+from alojan_contracts.synthesis import EMA_MODEL, EMA_VOICE, SynthesisProfile
 from alojan_tts.outbox import CancellableOutbox
 from alojan_tts.service import InvalidText, SynthesisService, create_server
 from voice.v1 import voice_pb2 as pb
 from voice.v1 import voice_pb2_grpc as rpc
+
+
+# Declared test capability only; Producer never loads EMA or claims CUDA readiness.
+SYNTHETIC_PROFILE = SynthesisProfile(
+    EMA_MODEL, "e7c96f2fc0ba843cd0f86e02786655bb56f50df8", EMA_VOICE
+)
 
 
 class Producer:
@@ -41,9 +48,9 @@ def request(**changes):
 
 
 @asynccontextmanager
-async def running():
-    backend = Producer()
-    service = SynthesisService(backend)
+async def running(backend=None, **options):
+    backend = Producer() if backend is None else backend
+    service = SynthesisService(backend, **options)
     server = create_server(service)
     port = server.add_insecure_port("127.0.0.1:0")
     await server.start()
@@ -220,6 +227,9 @@ def test_tts_slow_write_stops_bounded_producer():
         pass
 
     class Context:
+        def invocation_metadata(self):
+            return ()
+
         def time_remaining(self):
             return 10
 

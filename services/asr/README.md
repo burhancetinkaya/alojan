@@ -1,5 +1,15 @@
 # Persistent Turkish ASR (M2-01)
 
+## Operator maintenance fence
+
+The launcher optionally reads `ALOJAN_WORKER_ADMISSION_FILE` through the shared
+worker gate. New setup/recognition requests are rejected while fenced; existing
+streams can finish and cancellation/release remain available. A cancelled RPC or
+expired lease does not imply that the native decoder returned. The separate
+`voice.v1.Maintenance` Health Check stays unready until active requests, leases and
+native inference are gone; cancelled or failed native futures cannot attest idle.
+Normal Recognition health is unchanged. See the [operator sequence](../../docs/DEV_SETUP.md#dependent-worker-maintenance-fence).
+
 The native Linux worker implements `voice.v1.Recognition` and
 `voice.v1.GenerationControl` using one persistent faster-whisper large-v3-turbo
 model on CUDA float16. It binds only `127.0.0.1:15071`. The [M2-03 scripted
@@ -14,7 +24,7 @@ From `~/ai/alojan` on the authorized Ubuntu GPU host:
 ```sh
 export PATH="$HOME/.local/bin:$PATH"
 uv sync --frozen --project services/asr
-PYTHONPATH=services/asr uv run --frozen --project services/asr python -m alojan_asr.model
+PYTHONPATH=services/asr:services/voice-contracts uv run --frozen --project services/asr python -m alojan_asr.model
 scripts/run-asr.sh
 ```
 
@@ -23,8 +33,9 @@ The explicit preparation command downloads only the five files pinned in
 stay under ignored `.local/asr/models` and `services/asr/.venv`. Runtime loading
 is offline and verifies the hashes again. CUDA absence, missing/corrupt weights
 or warm-up failure prevents readiness; there is no smaller-model or CPU fallback.
-The launcher sets process-local CUDA library paths, leaving the driver and EMA
-installation unchanged. `--port` selects another unprivileged loopback port.
+The launcher sets process-local CUDA library paths and `OPENBLAS_NUM_THREADS=1`
+to avoid oversized CPU thread pools for mel features. Driver and EMA settings stay
+unchanged. `--port` selects another unprivileged loopback port.
 
 After real model loading and a decoder warm-up, the process logs `event=asr_ready`.
 The standard gRPC health service reports `SERVING` for `voice.v1.Recognition`.
@@ -57,7 +68,68 @@ restart after host reboot and production supervision are separate deployment wor
 - Decoding is Turkish transcription, temperature 0, beam size 5, no cross-turn
   text context, no model VAD and at most 440 generated tokens per decode. Names may
   differ in spelling/word boundaries; numbers and dates can be emitted as digits.
-  The caller-confirmation policy remains essential in subsequent agent work.
+  The current agent follows ADR 0007: no blanket readback confirmation; clarify
+  unclear content in context. ASR output alone never authenticates a caller.
+
+## Optional exact vocabulary spelling
+
+The launcher loads ignored `.local/asr.env` if present. Set
+`ALOJAN_ASR_REPLACEMENTS` to a JSON object mapping observed misspellings to the
+owner-approved spelling, for example:
+
+```dotenv
+ALOJAN_ASR_REPLACEMENTS='{"Orion akredit":"Orion Accredit"}'
+```
+
+Keep this file private (`chmod 600`); do not commit customer-specific vocabulary.
+The default `{}` disables replacements. At most eight aliases fit in 2048 UTF-8
+bytes; each source/target contains two to four alphabetic words separated by single
+spaces, up to 80 characters. Invalid configuration prevents readiness without
+logging its content. Numbers and single-word acknowledgments cannot be mapped.
+Case-insensitive, whole-phrase matching preserves surrounding punctuation and
+apostrophe suffixes. It does not fuzzy-match, expand partial words or cascade
+replacements. Longest matching aliases take precedence. This corrects spelling
+in partial/final text; it cannot recover speech the model did not recognize.
+Aliases must be narrow and unambiguous; a legitimate identical phrase will also
+be replaced. Readiness logs only the entry count.
+
+Decoding keeps the original timestamp-token behavior and beam size 5. Experimental
+text-only decoding and model hotwords changed a synthetic phone number, so neither
+is enabled. No additional model, denoiser, VAD pass or retry is added. Noise-only
+hallucinations remain a limitation; the existing gateway VAD is still necessary.
+See [quality/performance evidence](../../docs/validation/asr-quality-2026-10-23.md).
+
+## Pinned agent vocabulary (AGP-03, isolated rollout)
+
+Agent drafts now accept `asr_replacements` with the same bounded exact spelling
+policy. The shared validator is used by authoring, release compilation and the ASR
+worker. Case-equivalent aliases with conflicting/duplicate spellings are rejected,
+including Unicode variants matched by Python IGNORECASE. `vocabulary` supplies
+business terms to the agent prompt; it does **not** enable unqualified decoder
+hotwords. No phonetic guessing, numeric rewriting or decoder setting changes occur.
+
+`InitializeCall.recognition` returns schema-version-1 vocabulary from the pinned
+release. Before recognition, the trusted gateway must open a **separate ASR lease**
+and call `Recognition.ConfigureCall` with that lease, an explicit deadline and the
+same call/release/digest. This private loopback boundary trusts the gateway's release
+selection; it does not fetch the management API or authenticate workspace users.
+It must never be public. Repeat of identical data is accepted; changes to release,
+digest or aliases fail, and a legacy call cannot be configured after decoding starts.
+Release/expiry removes the configuration and invalidates generations.
+
+Configured calls always override worker-wide environment vocabulary, even when the
+agent map is empty. Whisper/Nemotron receive immutable call-local options; neither
+shared model nor its defaults are mutated/reloaded. Existing inference admission,
+cancellation, output bounds and 30-second/one-second budgets remain unchanged.
+The existing `partial_hint` may spend the next decode at most 400 ms early; repeated
+hints do not add decode jobs beyond that budget.
+
+For an isolated routed worker use `scripts/run-asr.sh --port PORT --require-agent-release`.
+This mode refuses every unconfigured stream, including legacy IDs. The default
+keeps existing legacy compatibility. Do not enable it against the live gateway yet:
+native setup and turn/interrupt handoff now have isolated SIP/probe evidence;
+full routed Session integration and readiness acknowledgement remain pending. A successful ConfigureCall is not production readiness or model/
+quality/performance acceptance. No current live service is restarted by this change.
 
 ## Bounds, cancellation and errors
 
@@ -108,6 +180,63 @@ partial/final output, cancellation and recovery, and samples host GPU memory.
 Its unpaced upload times are **not** SIP turn-end latency, phone intelligibility,
 noise WER, a 50-turn percentile benchmark or concurrent EMA acceptance.
 
+`tools/benchmark-asr-quality.py` compares baseline decoding with the actual backend
+using a private synthetic EMA manifest (file hashes, text, optional required
+entities) and a private replacements JSON file. It applies G.711, noise, hum and
+quiet conditions, alternates paired runs, and saves raw synthetic results only to
+a new private directory. Run in the frozen ASR environment with the same CUDA
+library paths as the launcher and `OPENBLAS_NUM_THREADS=1`:
+
+```sh
+python tools/benchmark-asr-quality.py --fixtures .local/evaluation/fixtures.json \
+  --vocabulary-file .local/evaluation/replacements.json \
+  --output .local/evaluation-new --repeats 3
+```
+
+Literal word error counts include spoken-number versus digit formatting. They
+are not semantic accuracy or human-carrier acceptance. Check phone/date entities
+separately with `tools/validate-asr.py` before activating a configuration.
+
 See [Linux evidence](../../docs/validation/linux-asr-2026-10-23.md) and
 [dependency inventory](../../docs/DEPENDENCIES.md) for pins, measured limitations
 and pending license/distribution review.
+
+## Optional Nemotron backend (ADR 0008)
+
+`ALOJAN_ASR_BACKEND=whisper` (default) or `nemotron` selects the worker at startup.
+Set it in the private `.local/asr.env`, alongside the existing optional spelling
+aliases, or export it before `scripts/run-asr.sh --port PORT`. Invalid values fail
+closed. The two backends share the existing loopback gRPC service and cancellation
+policy; the launcher loads only the selected model. Changes require restarting
+an idle worker. Keep the active carrier on Whisper until comparison evidence
+supports promotion.
+
+Nemotron has a separate frozen environment, `services/asr-nemotron`, because its
+Transformers/Hugging Face requirements differ from faster-whisper. On Linux:
+
+```sh
+uv sync --frozen --project services/asr-nemotron
+# Explicit model download; runtime itself is offline and verifies every file.
+uv run --frozen --project services/asr-nemotron python - <<'PY'
+import json
+from huggingface_hub import snapshot_download
+pin = json.load(open("services/asr/nemotron.json"))
+snapshot_download(pin["repository"], revision=pin["revision"],
+                  allow_patterns=list(pin["sha256"]), local_dir=".local/nemotron-model")
+PY
+ALOJAN_ASR_BACKEND=nemotron scripts/run-asr.sh --port 15174
+```
+
+The optional adapter uses float32 CUDA, explicit `tr-TR`, 320 ms native model
+chunks and fresh encoder/decoder caches for each decode. The existing gRPC worker
+still recomputes cumulative audio for each one-second partial. This is **not**
+persistent incremental caching across gRPC partials, and offline decode timings
+are not turn-end or handset latency. No CPU/model fallback is hidden. Readiness
+requires real CUDA warm-up; exact digital silence is empty, while quiet speech
+remains eligible for recognition. The final partial chunk is zero-padded to avoid
+losing its last word. Native decoding retains its admission slot after RPC
+cancellation until it drains, just as the Whisper path does.
+
+Use an unused port for evaluation. Never replace an active carrier call. See
+[comparison tooling](../../tools/asr-compare/README.md) and
+[decision](../../docs/ADR/0008-selectable-asr.md).

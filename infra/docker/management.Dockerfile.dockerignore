@@ -1,0 +1,16 @@
+**
+!services/
+!services/app-api/
+!services/app-api/pyproject.toml
+!services/app-api/uv.lock
+!services/app-api/alojan/
+!services/app-api/alojan/*.py
+!services/voice-contracts/
+!services/voice-contracts/alojan_contracts/
+!services/voice-contracts/alojan_contracts/*.py
+!infra/
+!infra/migrations/
+!infra/migrations/*.sql
+!infra/docker/
+!infra/docker/management.Dockerfile
+!infra/docker/management.Dockerfile.dockerignore

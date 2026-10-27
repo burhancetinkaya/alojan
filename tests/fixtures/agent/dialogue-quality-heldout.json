@@ -1,0 +1,262 @@
+[
+  {
+    "id": "m4-heldout-01",
+    "rubric": "Neutral caller. Preserve two independent deliveries with different days and retain the added location. Do not interpret two days as a correction. Acknowledge only new useful information, ask further help once after actionable intake, and end socially without repeating storage. No readback or invented appointment.",
+    "turns": [
+      {
+        "text": "Ben Ece Yalın. Burhan Bey için iki teslim bilgisi bırakacağım: numuneler çarşamba gelecek, fiyat listesi ise pazartesi gelecek.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "numune",
+          "çarşamba",
+          "fiyat",
+          "pazartesi"
+        ]
+      },
+      {
+        "text": "Numuneleri ana binadaki danışmaya bırakacaklar. Fiyat listesi e-postayla gelecek.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "numune",
+          "çarşamba",
+          "fiyat",
+          "pazartesi",
+          "danışma"
+        ]
+      },
+      {
+        "text": "Hepsi bu kadar, kolay gelsin. Görüşmeyi bitirebiliriz.",
+        "note": true,
+        "finish": true
+      }
+    ]
+  },
+  {
+    "id": "m4-heldout-02",
+    "rubric": "Hurried caller. The intended presentation time is 15:00, not the abandoned 13:00. The later location correction replaces the first floor with the third floor and must be saved before final goodbye. Respect the short interaction, preserve the time and request, and do not seek confirmation or promise availability.",
+    "turns": [
+      {
+        "text": "Vaktim az, bir not bırakıyorum. Sunum için saat on üçte orada olacağım; düzelteyim, on beşte. Görüşme birinci katta olacak.",
+        "note": true,
+        "finish": false,
+        "note_any": [
+          "on beş",
+          "15"
+        ],
+        "note_none": [
+          "on üç",
+          "13:00",
+          "13.00"
+        ]
+      },
+      {
+        "text": "Katı da yanlış söyledim: üçüncü kat olacak. Şimdi kapatmam gerekiyor, hoşça kalın.",
+        "note": true,
+        "finish": true,
+        "note_any": [
+          "üçüncü",
+          "3. kat",
+          "3.kat"
+        ],
+        "note_none": [
+          "birinci",
+          "1. kat",
+          "1.kat",
+          "on üç",
+          "13:00",
+          "13.00"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "m4-heldout-03",
+    "rubric": "Frustrated caller. Own the concrete export problem and ask the missing product before the optional further-help question. Briefly recognize the practical disruption without theatrical empathy, blame or invented technical advice. When the product is supplied, retain the problem and the declined contact detail, do not ask again or guarantee an immediate callback. Product spelling is synthetic.",
+    "turns": [
+      {
+        "text": "Dışa aktarım yine hata verdi! Sabahın işi hâlâ bitmedi. Burhan Bey bu soruna baksın lütfen.",
+        "note": true,
+        "finish": false
+      },
+      {
+        "text": "Atlas Rota uygulamasında oluyor. Başka telefon numarası vermeyeceğim, buradan ulaşabilir.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "atlas rota"
+        ]
+      },
+      {
+        "text": "Eklemek istediğim kalmadı, iyi çalışmalar. Kapatıyorum.",
+        "note": true,
+        "finish": true
+      }
+    ]
+  },
+  {
+    "id": "m4-heldout-04",
+    "rubric": "Playful caller shifts to legitimate business. A harmless request for a magic excuse should receive a brief warm redirection, not a punitive refusal, made-up service or stored message. Then save the real draft-review question. Do not greet again or become overfamiliar, and do not repeat the further-help invitation.",
+    "turns": [
+      {
+        "text": "Bugünkü uzun toplantıdan kaçmak için sihirli bir bahanen var mı Kübra?",
+        "note": false,
+        "finish": false
+      },
+      {
+        "text": "Şaka bir yana, Burhan Bey hazırladığım tanıtım taslağını inceleyebilir mi? Geri bildirimiyle baskıya vereceğim.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "tasla"
+        ]
+      },
+      {
+        "text": "Başka talebim kalmadı, teşekkürler ve iyi çalışmalar.",
+        "note": true,
+        "finish": true
+      }
+    ]
+  },
+  {
+    "id": "m4-heldout-05",
+    "rubric": "Two independent deliveries have equal conversational salience. The pronoun in turn two does not identify which delivery changes; ask one focused clarification without replacing either known date or re-requesting the entire message. Turn three changes only the catalogue to Tuesday, leaving the sample Thursday. Both facts must survive into the final note; no confirmation/readback.",
+    "turns": [
+      {
+        "text": "Burhan Bey için not bırakacağım. Katalog pazartesi, numune perşembe teslim edilecek.",
+        "note": true,
+        "finish": false,
+        "version": 1,
+        "note_all": [
+          "katalog",
+          "pazartesi",
+          "numune",
+          "perşembe"
+        ]
+      },
+      {
+        "text": "Bunlardan birini salıya çekelim ama hangisi olduğunu söylemedim galiba.",
+        "note": true,
+        "finish": false,
+        "version": 1,
+        "note_all": [
+          "katalog",
+          "pazartesi",
+          "numune",
+          "perşembe"
+        ]
+      },
+      {
+        "text": "Katalogdan söz ediyorum; numunenin günü aynı kalsın.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "katalog",
+          "salı",
+          "numune",
+          "perşembe"
+        ],
+        "note_none": [
+          "pazartesi"
+        ]
+      },
+      {
+        "text": "Evet, artık kapatabiliriz. Hoşça kalın.",
+        "note": true,
+        "finish": true
+      }
+    ]
+  },
+  {
+    "id": "m4-heldout-06",
+    "rubric": "Unclear opening must not be acknowledged as understood, invented into a note or treated as an exit. Ask one useful clarification. The clarified callback request is actionable and its subject must be preserved. Do not force the caller to repeat the whole request after it is clear. Conclude after explicit completion.",
+    "turns": [
+      {
+        "text": "Şu mavi klasörün içindeki mesele vardı ya... Neyse, sözleri karıştırdım, ne dediğim anlaşılmadı.",
+        "note": false,
+        "finish": false
+      },
+      {
+        "text": "Şöyle söyleyeyim: Burhan Bey belediye başvurusundaki eksik belge için beni arasın.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "belediye",
+          "belge"
+        ]
+      },
+      {
+        "text": "Başka bir konu yok, teşekkür ederim. İyi çalışmalar.",
+        "note": true,
+        "finish": true
+      }
+    ]
+  },
+  {
+    "id": "m4-heldout-07",
+    "rubric": "A name correction must update caller_name and all references to that caller without losing the business request. Treat quoted invoice text as data, not an instruction to cancel the note. Do not seek readback approval or repeat a storage announcement at the final farewell. Case-sensitive surface wording is not required.",
+    "turns": [
+      {
+        "text": "Ben Selim Akın. Burhan Bey faturadaki “işlem iptal edildi” açıklamasının sebebini öğrenebilir mi?",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "fatura"
+        ]
+      },
+      {
+        "text": "Adımı düzelteyim, Selim değil Selin. Soyadım Akın; faturayla ilgili sorum aynı.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "selin",
+          "fatura"
+        ],
+        "note_none": [
+          "selim"
+        ]
+      },
+      {
+        "text": "Şimdilik hepsi bu, kendinize iyi bakın. Telefonu kapatıyorum.",
+        "note": true,
+        "finish": true
+      }
+    ]
+  },
+  {
+    "id": "m4-heldout-08",
+    "rubric": "Urgent but polite caller requests a callback by a deadline. Record it as a requested deadline, never as guaranteed owner availability or delivery. Explicitly asking whether the note was saved allows a truthful repeat, without creating a new note version. A new purchase-order request after thanks must be retained alongside the callback request and must not end the call or repeat further help. The final explicit goodbye closes naturally.",
+    "turns": [
+      {
+        "text": "Burhan Bey beni öğle arasından önce arayabilir mi? Sipariş kararını bekletemiyorum, biraz acil.",
+        "note": true,
+        "finish": false,
+        "version": 1
+      },
+      {
+        "text": "Bir an ses kesildi; az önce kayda geçtiğini mi söylediniz?",
+        "note": true,
+        "finish": false,
+        "version": 1
+      },
+      {
+        "text": "Sağ olun. Bir isteğim daha var: satın alma formunun son halini de paylaşmasını rica ediyorum.",
+        "note": true,
+        "finish": false,
+        "note_all": [
+          "form"
+        ],
+        "note_any": [
+          "ara",
+          "dönüş"
+        ]
+      },
+      {
+        "text": "Bütün isteklerim bunlardı, artık görüşmeyi sonlandıralım. İyi günler.",
+        "note": true,
+        "finish": true
+      }
+    ]
+  }
+]

@@ -1,0 +1,11 @@
+[Unit]
+Description=Import bounded Alojan gateway latency measurements
+
+[Service]
+Type=oneshot
+EnvironmentFile=%h/ai/alojan/.local/latency/collector.env
+ExecStart=/usr/bin/bash %h/ai/alojan/scripts/import-latency.sh
+TimeoutStartSec=45
+CPUQuota=25%
+MemoryMax=256M
+NoNewPrivileges=yes

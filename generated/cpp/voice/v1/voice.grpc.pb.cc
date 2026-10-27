@@ -24,6 +24,7 @@ namespace voice {
 namespace v1 {
 
 static const char* Recognition_method_names[] = {
+  "/voice.v1.Recognition/ConfigureCall",
   "/voice.v1.Recognition/StreamRecognize",
 };
 
@@ -34,8 +35,32 @@ std::unique_ptr< Recognition::Stub> Recognition::NewStub(const std::shared_ptr< 
 }
 
 Recognition::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
-  : channel_(channel), rpcmethod_StreamRecognize_(Recognition_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::BIDI_STREAMING, channel)
+  : channel_(channel), rpcmethod_ConfigureCall_(Recognition_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_StreamRecognize_(Recognition_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::BIDI_STREAMING, channel)
   {}
+
+::grpc::Status Recognition::Stub::ConfigureCall(::grpc::ClientContext* context, const ::voice::v1::RecognitionCallConfiguration& request, ::voice::v1::AgentAck* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::voice::v1::RecognitionCallConfiguration, ::voice::v1::AgentAck, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ConfigureCall_, context, request, response);
+}
+
+void Recognition::Stub::async::ConfigureCall(::grpc::ClientContext* context, const ::voice::v1::RecognitionCallConfiguration* request, ::voice::v1::AgentAck* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::voice::v1::RecognitionCallConfiguration, ::voice::v1::AgentAck, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ConfigureCall_, context, request, response, std::move(f));
+}
+
+void Recognition::Stub::async::ConfigureCall(::grpc::ClientContext* context, const ::voice::v1::RecognitionCallConfiguration* request, ::voice::v1::AgentAck* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ConfigureCall_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* Recognition::Stub::PrepareAsyncConfigureCallRaw(::grpc::ClientContext* context, const ::voice::v1::RecognitionCallConfiguration& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::voice::v1::AgentAck, ::voice::v1::RecognitionCallConfiguration, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ConfigureCall_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* Recognition::Stub::AsyncConfigureCallRaw(::grpc::ClientContext* context, const ::voice::v1::RecognitionCallConfiguration& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncConfigureCallRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
 
 ::grpc::ClientReaderWriter< ::voice::v1::AudioFrame, ::voice::v1::RecognitionEvent>* Recognition::Stub::StreamRecognizeRaw(::grpc::ClientContext* context) {
   return ::grpc::internal::ClientReaderWriterFactory< ::voice::v1::AudioFrame, ::voice::v1::RecognitionEvent>::Create(channel_.get(), rpcmethod_StreamRecognize_, context);
@@ -56,6 +81,16 @@ void Recognition::Stub::async::StreamRecognize(::grpc::ClientContext* context, :
 Recognition::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Recognition_method_names[0],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Recognition::Service, ::voice::v1::RecognitionCallConfiguration, ::voice::v1::AgentAck, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Recognition::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::voice::v1::RecognitionCallConfiguration* req,
+             ::voice::v1::AgentAck* resp) {
+               return service->ConfigureCall(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Recognition_method_names[1],
       ::grpc::internal::RpcMethod::BIDI_STREAMING,
       new ::grpc::internal::BidiStreamingHandler< Recognition::Service, ::voice::v1::AudioFrame, ::voice::v1::RecognitionEvent>(
           [](Recognition::Service* service,
@@ -69,6 +104,13 @@ Recognition::Service::Service() {
 Recognition::Service::~Service() {
 }
 
+::grpc::Status Recognition::Service::ConfigureCall(::grpc::ServerContext* context, const ::voice::v1::RecognitionCallConfiguration* request, ::voice::v1::AgentAck* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
 ::grpc::Status Recognition::Service::StreamRecognize(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::voice::v1::RecognitionEvent, ::voice::v1::AudioFrame>* stream) {
   (void) context;
   (void) stream;
@@ -77,6 +119,7 @@ Recognition::Service::~Service() {
 
 
 static const char* Synthesis_method_names[] = {
+  "/voice.v1.Synthesis/ConfigureCall",
   "/voice.v1.Synthesis/StreamSynthesize",
 };
 
@@ -87,8 +130,32 @@ std::unique_ptr< Synthesis::Stub> Synthesis::NewStub(const std::shared_ptr< ::gr
 }
 
 Synthesis::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
-  : channel_(channel), rpcmethod_StreamSynthesize_(Synthesis_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
+  : channel_(channel), rpcmethod_ConfigureCall_(Synthesis_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_StreamSynthesize_(Synthesis_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
   {}
+
+::grpc::Status Synthesis::Stub::ConfigureCall(::grpc::ClientContext* context, const ::voice::v1::SynthesisCallConfiguration& request, ::voice::v1::AgentAck* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::voice::v1::SynthesisCallConfiguration, ::voice::v1::AgentAck, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ConfigureCall_, context, request, response);
+}
+
+void Synthesis::Stub::async::ConfigureCall(::grpc::ClientContext* context, const ::voice::v1::SynthesisCallConfiguration* request, ::voice::v1::AgentAck* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::voice::v1::SynthesisCallConfiguration, ::voice::v1::AgentAck, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ConfigureCall_, context, request, response, std::move(f));
+}
+
+void Synthesis::Stub::async::ConfigureCall(::grpc::ClientContext* context, const ::voice::v1::SynthesisCallConfiguration* request, ::voice::v1::AgentAck* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ConfigureCall_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* Synthesis::Stub::PrepareAsyncConfigureCallRaw(::grpc::ClientContext* context, const ::voice::v1::SynthesisCallConfiguration& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::voice::v1::AgentAck, ::voice::v1::SynthesisCallConfiguration, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ConfigureCall_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* Synthesis::Stub::AsyncConfigureCallRaw(::grpc::ClientContext* context, const ::voice::v1::SynthesisCallConfiguration& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncConfigureCallRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
 
 ::grpc::ClientReader< ::voice::v1::AudioFrame>* Synthesis::Stub::StreamSynthesizeRaw(::grpc::ClientContext* context, const ::voice::v1::SynthesisRequest& request) {
   return ::grpc::internal::ClientReaderFactory< ::voice::v1::AudioFrame>::Create(channel_.get(), rpcmethod_StreamSynthesize_, context, request);
@@ -109,6 +176,16 @@ void Synthesis::Stub::async::StreamSynthesize(::grpc::ClientContext* context, co
 Synthesis::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Synthesis_method_names[0],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Synthesis::Service, ::voice::v1::SynthesisCallConfiguration, ::voice::v1::AgentAck, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Synthesis::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::voice::v1::SynthesisCallConfiguration* req,
+             ::voice::v1::AgentAck* resp) {
+               return service->ConfigureCall(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Synthesis_method_names[1],
       ::grpc::internal::RpcMethod::SERVER_STREAMING,
       new ::grpc::internal::ServerStreamingHandler< Synthesis::Service, ::voice::v1::SynthesisRequest, ::voice::v1::AudioFrame>(
           [](Synthesis::Service* service,
@@ -122,6 +199,13 @@ Synthesis::Service::Service() {
 Synthesis::Service::~Service() {
 }
 
+::grpc::Status Synthesis::Service::ConfigureCall(::grpc::ServerContext* context, const ::voice::v1::SynthesisCallConfiguration* request, ::voice::v1::AgentAck* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
 ::grpc::Status Synthesis::Service::StreamSynthesize(::grpc::ServerContext* context, const ::voice::v1::SynthesisRequest* request, ::grpc::ServerWriter< ::voice::v1::AudioFrame>* writer) {
   (void) context;
   (void) request;
@@ -131,8 +215,12 @@ Synthesis::Service::~Service() {
 
 
 static const char* Agent_method_names[] = {
+  "/voice.v1.Agent/InitializeCall",
+  "/voice.v1.Agent/CancelCallSetup",
+  "/voice.v1.Agent/GetPreparedAudio",
   "/voice.v1.Agent/RunTurn",
   "/voice.v1.Agent/ReportPlayback",
+  "/voice.v1.Agent/ReportCallAnswered",
   "/voice.v1.Agent/EndCall",
 };
 
@@ -143,10 +231,83 @@ std::unique_ptr< Agent::Stub> Agent::NewStub(const std::shared_ptr< ::grpc::Chan
 }
 
 Agent::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
-  : channel_(channel), rpcmethod_RunTurn_(Agent_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
-  , rpcmethod_ReportPlayback_(Agent_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_EndCall_(Agent_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  : channel_(channel), rpcmethod_InitializeCall_(Agent_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_CancelCallSetup_(Agent_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_GetPreparedAudio_(Agent_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_RunTurn_(Agent_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
+  , rpcmethod_ReportPlayback_(Agent_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ReportCallAnswered_(Agent_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_EndCall_(Agent_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
+
+::grpc::Status Agent::Stub::InitializeCall(::grpc::ClientContext* context, const ::voice::v1::CallInitializationRequest& request, ::voice::v1::CallInitializationReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::voice::v1::CallInitializationRequest, ::voice::v1::CallInitializationReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_InitializeCall_, context, request, response);
+}
+
+void Agent::Stub::async::InitializeCall(::grpc::ClientContext* context, const ::voice::v1::CallInitializationRequest* request, ::voice::v1::CallInitializationReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::voice::v1::CallInitializationRequest, ::voice::v1::CallInitializationReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_InitializeCall_, context, request, response, std::move(f));
+}
+
+void Agent::Stub::async::InitializeCall(::grpc::ClientContext* context, const ::voice::v1::CallInitializationRequest* request, ::voice::v1::CallInitializationReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_InitializeCall_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::voice::v1::CallInitializationReply>* Agent::Stub::PrepareAsyncInitializeCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallInitializationRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::voice::v1::CallInitializationReply, ::voice::v1::CallInitializationRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_InitializeCall_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::voice::v1::CallInitializationReply>* Agent::Stub::AsyncInitializeCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallInitializationRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncInitializeCallRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status Agent::Stub::CancelCallSetup(::grpc::ClientContext* context, const ::voice::v1::CallSetupCancellation& request, ::voice::v1::AgentAck* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::voice::v1::CallSetupCancellation, ::voice::v1::AgentAck, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_CancelCallSetup_, context, request, response);
+}
+
+void Agent::Stub::async::CancelCallSetup(::grpc::ClientContext* context, const ::voice::v1::CallSetupCancellation* request, ::voice::v1::AgentAck* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::voice::v1::CallSetupCancellation, ::voice::v1::AgentAck, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CancelCallSetup_, context, request, response, std::move(f));
+}
+
+void Agent::Stub::async::CancelCallSetup(::grpc::ClientContext* context, const ::voice::v1::CallSetupCancellation* request, ::voice::v1::AgentAck* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CancelCallSetup_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* Agent::Stub::PrepareAsyncCancelCallSetupRaw(::grpc::ClientContext* context, const ::voice::v1::CallSetupCancellation& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::voice::v1::AgentAck, ::voice::v1::CallSetupCancellation, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_CancelCallSetup_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* Agent::Stub::AsyncCancelCallSetupRaw(::grpc::ClientContext* context, const ::voice::v1::CallSetupCancellation& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncCancelCallSetupRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status Agent::Stub::GetPreparedAudio(::grpc::ClientContext* context, const ::voice::v1::PreparedAudioRequest& request, ::voice::v1::PreparedAudioReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::voice::v1::PreparedAudioRequest, ::voice::v1::PreparedAudioReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetPreparedAudio_, context, request, response);
+}
+
+void Agent::Stub::async::GetPreparedAudio(::grpc::ClientContext* context, const ::voice::v1::PreparedAudioRequest* request, ::voice::v1::PreparedAudioReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::voice::v1::PreparedAudioRequest, ::voice::v1::PreparedAudioReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetPreparedAudio_, context, request, response, std::move(f));
+}
+
+void Agent::Stub::async::GetPreparedAudio(::grpc::ClientContext* context, const ::voice::v1::PreparedAudioRequest* request, ::voice::v1::PreparedAudioReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetPreparedAudio_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::voice::v1::PreparedAudioReply>* Agent::Stub::PrepareAsyncGetPreparedAudioRaw(::grpc::ClientContext* context, const ::voice::v1::PreparedAudioRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::voice::v1::PreparedAudioReply, ::voice::v1::PreparedAudioRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetPreparedAudio_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::voice::v1::PreparedAudioReply>* Agent::Stub::AsyncGetPreparedAudioRaw(::grpc::ClientContext* context, const ::voice::v1::PreparedAudioRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncGetPreparedAudioRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
 
 ::grpc::ClientReader< ::voice::v1::AgentEvent>* Agent::Stub::RunTurnRaw(::grpc::ClientContext* context, const ::voice::v1::AgentRequest& request) {
   return ::grpc::internal::ClientReaderFactory< ::voice::v1::AgentEvent>::Create(channel_.get(), rpcmethod_RunTurn_, context, request);
@@ -187,6 +348,29 @@ void Agent::Stub::async::ReportPlayback(::grpc::ClientContext* context, const ::
   return result;
 }
 
+::grpc::Status Agent::Stub::ReportCallAnswered(::grpc::ClientContext* context, const ::voice::v1::CallAnswer& request, ::voice::v1::AgentAck* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::voice::v1::CallAnswer, ::voice::v1::AgentAck, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ReportCallAnswered_, context, request, response);
+}
+
+void Agent::Stub::async::ReportCallAnswered(::grpc::ClientContext* context, const ::voice::v1::CallAnswer* request, ::voice::v1::AgentAck* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::voice::v1::CallAnswer, ::voice::v1::AgentAck, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ReportCallAnswered_, context, request, response, std::move(f));
+}
+
+void Agent::Stub::async::ReportCallAnswered(::grpc::ClientContext* context, const ::voice::v1::CallAnswer* request, ::voice::v1::AgentAck* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ReportCallAnswered_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* Agent::Stub::PrepareAsyncReportCallAnsweredRaw(::grpc::ClientContext* context, const ::voice::v1::CallAnswer& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::voice::v1::AgentAck, ::voice::v1::CallAnswer, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ReportCallAnswered_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* Agent::Stub::AsyncReportCallAnsweredRaw(::grpc::ClientContext* context, const ::voice::v1::CallAnswer& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncReportCallAnsweredRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 ::grpc::Status Agent::Stub::EndCall(::grpc::ClientContext* context, const ::voice::v1::CallEnd& request, ::voice::v1::AgentAck* response) {
   return ::grpc::internal::BlockingUnaryCall< ::voice::v1::CallEnd, ::voice::v1::AgentAck, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_EndCall_, context, request, response);
 }
@@ -213,6 +397,36 @@ void Agent::Stub::async::EndCall(::grpc::ClientContext* context, const ::voice::
 Agent::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Agent_method_names[0],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Agent::Service, ::voice::v1::CallInitializationRequest, ::voice::v1::CallInitializationReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Agent::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::voice::v1::CallInitializationRequest* req,
+             ::voice::v1::CallInitializationReply* resp) {
+               return service->InitializeCall(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Agent_method_names[1],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Agent::Service, ::voice::v1::CallSetupCancellation, ::voice::v1::AgentAck, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Agent::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::voice::v1::CallSetupCancellation* req,
+             ::voice::v1::AgentAck* resp) {
+               return service->CancelCallSetup(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Agent_method_names[2],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Agent::Service, ::voice::v1::PreparedAudioRequest, ::voice::v1::PreparedAudioReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Agent::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::voice::v1::PreparedAudioRequest* req,
+             ::voice::v1::PreparedAudioReply* resp) {
+               return service->GetPreparedAudio(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Agent_method_names[3],
       ::grpc::internal::RpcMethod::SERVER_STREAMING,
       new ::grpc::internal::ServerStreamingHandler< Agent::Service, ::voice::v1::AgentRequest, ::voice::v1::AgentEvent>(
           [](Agent::Service* service,
@@ -222,7 +436,7 @@ Agent::Service::Service() {
                return service->RunTurn(ctx, req, writer);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Agent_method_names[1],
+      Agent_method_names[4],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Agent::Service, ::voice::v1::PlaybackReport, ::voice::v1::AgentAck, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Agent::Service* service,
@@ -232,7 +446,17 @@ Agent::Service::Service() {
                return service->ReportPlayback(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Agent_method_names[2],
+      Agent_method_names[5],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Agent::Service, ::voice::v1::CallAnswer, ::voice::v1::AgentAck, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Agent::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::voice::v1::CallAnswer* req,
+             ::voice::v1::AgentAck* resp) {
+               return service->ReportCallAnswered(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Agent_method_names[6],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Agent::Service, ::voice::v1::CallEnd, ::voice::v1::AgentAck, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Agent::Service* service,
@@ -244,6 +468,27 @@ Agent::Service::Service() {
 }
 
 Agent::Service::~Service() {
+}
+
+::grpc::Status Agent::Service::InitializeCall(::grpc::ServerContext* context, const ::voice::v1::CallInitializationRequest* request, ::voice::v1::CallInitializationReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Agent::Service::CancelCallSetup(::grpc::ServerContext* context, const ::voice::v1::CallSetupCancellation* request, ::voice::v1::AgentAck* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Agent::Service::GetPreparedAudio(::grpc::ServerContext* context, const ::voice::v1::PreparedAudioRequest* request, ::voice::v1::PreparedAudioReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
 ::grpc::Status Agent::Service::RunTurn(::grpc::ServerContext* context, const ::voice::v1::AgentRequest* request, ::grpc::ServerWriter< ::voice::v1::AgentEvent>* writer) {
@@ -260,6 +505,13 @@ Agent::Service::~Service() {
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
+::grpc::Status Agent::Service::ReportCallAnswered(::grpc::ServerContext* context, const ::voice::v1::CallAnswer* request, ::voice::v1::AgentAck* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
 ::grpc::Status Agent::Service::EndCall(::grpc::ServerContext* context, const ::voice::v1::CallEnd* request, ::voice::v1::AgentAck* response) {
   (void) context;
   (void) request;
@@ -270,6 +522,8 @@ Agent::Service::~Service() {
 
 static const char* GenerationControl_method_names[] = {
   "/voice.v1.GenerationControl/CancelGeneration",
+  "/voice.v1.GenerationControl/OpenCall",
+  "/voice.v1.GenerationControl/ReleaseCall",
 };
 
 std::unique_ptr< GenerationControl::Stub> GenerationControl::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -280,6 +534,8 @@ std::unique_ptr< GenerationControl::Stub> GenerationControl::NewStub(const std::
 
 GenerationControl::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
   : channel_(channel), rpcmethod_CancelGeneration_(GenerationControl_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_OpenCall_(GenerationControl_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ReleaseCall_(GenerationControl_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status GenerationControl::Stub::CancelGeneration(::grpc::ClientContext* context, const ::voice::v1::CancelRequest& request, ::voice::v1::CancelReply* response) {
@@ -305,6 +561,52 @@ void GenerationControl::Stub::async::CancelGeneration(::grpc::ClientContext* con
   return result;
 }
 
+::grpc::Status GenerationControl::Stub::OpenCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::voice::v1::CallLeaseReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::voice::v1::CallLeaseRequest, ::voice::v1::CallLeaseReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_OpenCall_, context, request, response);
+}
+
+void GenerationControl::Stub::async::OpenCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest* request, ::voice::v1::CallLeaseReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::voice::v1::CallLeaseRequest, ::voice::v1::CallLeaseReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_OpenCall_, context, request, response, std::move(f));
+}
+
+void GenerationControl::Stub::async::OpenCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest* request, ::voice::v1::CallLeaseReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_OpenCall_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::voice::v1::CallLeaseReply>* GenerationControl::Stub::PrepareAsyncOpenCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::voice::v1::CallLeaseReply, ::voice::v1::CallLeaseRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_OpenCall_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::voice::v1::CallLeaseReply>* GenerationControl::Stub::AsyncOpenCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncOpenCallRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status GenerationControl::Stub::ReleaseCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::voice::v1::AgentAck* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::voice::v1::CallLeaseRequest, ::voice::v1::AgentAck, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ReleaseCall_, context, request, response);
+}
+
+void GenerationControl::Stub::async::ReleaseCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest* request, ::voice::v1::AgentAck* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::voice::v1::CallLeaseRequest, ::voice::v1::AgentAck, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ReleaseCall_, context, request, response, std::move(f));
+}
+
+void GenerationControl::Stub::async::ReleaseCall(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest* request, ::voice::v1::AgentAck* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ReleaseCall_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* GenerationControl::Stub::PrepareAsyncReleaseCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::voice::v1::AgentAck, ::voice::v1::CallLeaseRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ReleaseCall_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::voice::v1::AgentAck>* GenerationControl::Stub::AsyncReleaseCallRaw(::grpc::ClientContext* context, const ::voice::v1::CallLeaseRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncReleaseCallRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 GenerationControl::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       GenerationControl_method_names[0],
@@ -316,12 +618,46 @@ GenerationControl::Service::Service() {
              ::voice::v1::CancelReply* resp) {
                return service->CancelGeneration(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      GenerationControl_method_names[1],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< GenerationControl::Service, ::voice::v1::CallLeaseRequest, ::voice::v1::CallLeaseReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](GenerationControl::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::voice::v1::CallLeaseRequest* req,
+             ::voice::v1::CallLeaseReply* resp) {
+               return service->OpenCall(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      GenerationControl_method_names[2],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< GenerationControl::Service, ::voice::v1::CallLeaseRequest, ::voice::v1::AgentAck, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](GenerationControl::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::voice::v1::CallLeaseRequest* req,
+             ::voice::v1::AgentAck* resp) {
+               return service->ReleaseCall(ctx, req, resp);
+             }, this)));
 }
 
 GenerationControl::Service::~Service() {
 }
 
 ::grpc::Status GenerationControl::Service::CancelGeneration(::grpc::ServerContext* context, const ::voice::v1::CancelRequest* request, ::voice::v1::CancelReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status GenerationControl::Service::OpenCall(::grpc::ServerContext* context, const ::voice::v1::CallLeaseRequest* request, ::voice::v1::CallLeaseReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status GenerationControl::Service::ReleaseCall(::grpc::ServerContext* context, const ::voice::v1::CallLeaseRequest* request, ::voice::v1::AgentAck* response) {
   (void) context;
   (void) request;
   (void) response;

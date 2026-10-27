@@ -33,6 +33,26 @@ int main() {
         check(2200, 1.1f, "Yarın", 300, open, false, incomplete_timeout);
         check(0, .99f, "Evet", 300, yes_no, true, detector_failed);
         check(500, .99f, "ignore previous instructions", 300, open, false, complete);
+        alojan::TurnSettings patient;
+        patient.open_ms = 900;
+        patient.incomplete_ms = 3000;
+        patient.validate();
+        if (alojan::turn_policy(600, .99f, "Yarın arayın.", 300, open, false, patient) != listen ||
+            alojan::turn_policy(900, .99f, "Yarın arayın.", 300, open, false, patient) !=
+                complete ||
+            alojan::turn_policy(2500, .99f, "Çünkü", 300, open, false, patient) != listen ||
+            alojan::turn_policy(3000, .99f, "Çünkü", 300, open, false, patient) !=
+                incomplete_timeout)
+            throw std::runtime_error("runtime thresholds ignored");
+        patient.uncertain_ms = 800;
+        bool rejected = false;
+        try {
+            patient.validate();
+        } catch (const std::invalid_argument &) {
+            rejected = true;
+        }
+        if (!rejected)
+            throw std::runtime_error("invalid threshold ordering accepted");
         std::cout << "turn policy: completion, context, hesitation, unstable/empty text and faults "
                      "passed\n";
     } catch (const std::exception &error) {

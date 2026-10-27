@@ -1,0 +1,23 @@
+# Install as a user unit after replacing paths with the authorized Linux checkout.
+# Deliberately no auto-restart: interrupted admission requires fresh operator recovery.
+[Unit]
+Description=Alojan resident voice preparation
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/ai/alojan
+Environment=PYTHONPATH=services/app-api:services/voice-contracts:generated/python
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=%h/ai/alojan/.local/voice-preparer/worker.env
+ExecStart=%h/ai/alojan/services/voice-preparer/.venv/bin/python -m alojan.voice_worker --config .local/voice-preparer/config.json
+UMask=0077
+MemoryMax=256M
+CPUQuota=50%
+TasksMax=64
+NoNewPrivileges=true
+Restart=no
+TimeoutStopSec=180
+
+[Install]
+WantedBy=default.target

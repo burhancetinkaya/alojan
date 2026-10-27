@@ -1,0 +1,24 @@
+# Select compatible worker images explicitly; old lifecycle images do not implement this gate.
+# Close gateway admission and drain calls BEFORE closing the worker state file.
+services:
+  asr:
+    image: ${ALOJAN_MAINTENANCE_ASR_IMAGE:?Set tested maintenance-capable ASR image}
+    environment:
+      ALOJAN_WORKER_ADMISSION_FILE: /run/alojan-worker-admission/state
+    volumes: &worker-admission
+      - type: bind
+        source: ${ALOJAN_WORKER_ADMISSION_DIR:?Set absolute private worker admission directory}
+        target: /run/alojan-worker-admission
+        read_only: true
+        bind:
+          create_host_path: false
+  tts:
+    image: ${ALOJAN_MAINTENANCE_TTS_IMAGE:?Set tested maintenance-capable TTS image}
+    environment:
+      ALOJAN_WORKER_ADMISSION_FILE: /run/alojan-worker-admission/state
+    volumes: *worker-admission
+  agent:
+    image: ${ALOJAN_MAINTENANCE_AGENT_IMAGE:?Set tested maintenance-capable agent image}
+    environment:
+      ALOJAN_WORKER_ADMISSION_FILE: /run/alojan-worker-admission/state
+    volumes: *worker-admission

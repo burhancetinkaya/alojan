@@ -1,0 +1,38 @@
+# Independent HTTP application. Add to the existing project only after acceptance.
+services:
+  management-api:
+    image: alojan-management:${ALOJAN_MANAGEMENT_TAG:-development}
+    build:
+      context: ..
+      dockerfile: infra/docker/management.Dockerfile
+    networks: [management]
+    ports: ["127.0.0.1:18081:18081"]
+    environment:
+      ALOJAN_MANAGEMENT_BIND: 0.0.0.0
+    user: "1000:1000"
+    init: true
+    restart: unless-stopped
+    read_only: true
+    cpus: 0.5
+    mem_limit: 512m
+    pids_limit: 64
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: [/tmp:size=64m,mode=1777]
+    secrets: [management_env]
+    healthcheck:
+      test: [CMD, /opt/alojan/services/app-api/.venv/bin/python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:18081/health/ready', timeout=2).read()"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+    logging:
+      driver: local
+      options: {max-size: 10m, max-file: '3'}
+  postgres:
+    networks: [default, management]
+networks:
+  management:
+    internal: true
+secrets:
+  management_env:
+    file: ../.local/management.env

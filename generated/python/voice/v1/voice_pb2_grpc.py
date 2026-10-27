@@ -34,6 +34,11 @@ class RecognitionStub(object):
         Args:
             channel: A grpc.Channel.
         """
+        self.ConfigureCall = channel.unary_unary(
+                '/voice.v1.Recognition/ConfigureCall',
+                request_serializer=voice_dot_v1_dot_voice__pb2.RecognitionCallConfiguration.SerializeToString,
+                response_deserializer=voice_dot_v1_dot_voice__pb2.AgentAck.FromString,
+                _registered_method=True)
         self.StreamRecognize = channel.stream_stream(
                 '/voice.v1.Recognition/StreamRecognize',
                 request_serializer=voice_dot_v1_dot_voice__pb2.AudioFrame.SerializeToString,
@@ -44,6 +49,12 @@ class RecognitionStub(object):
 class RecognitionServicer(object):
     """Missing associated documentation comment in .proto file."""
 
+    def ConfigureCall(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def StreamRecognize(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -53,6 +64,11 @@ class RecognitionServicer(object):
 
 def add_RecognitionServicer_to_server(servicer, server):
     rpc_method_handlers = {
+            'ConfigureCall': grpc.unary_unary_rpc_method_handler(
+                    servicer.ConfigureCall,
+                    request_deserializer=voice_dot_v1_dot_voice__pb2.RecognitionCallConfiguration.FromString,
+                    response_serializer=voice_dot_v1_dot_voice__pb2.AgentAck.SerializeToString,
+            ),
             'StreamRecognize': grpc.stream_stream_rpc_method_handler(
                     servicer.StreamRecognize,
                     request_deserializer=voice_dot_v1_dot_voice__pb2.AudioFrame.FromString,
@@ -68,6 +84,33 @@ def add_RecognitionServicer_to_server(servicer, server):
  # This class is part of an EXPERIMENTAL API.
 class Recognition(object):
     """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def ConfigureCall(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/voice.v1.Recognition/ConfigureCall',
+            voice_dot_v1_dot_voice__pb2.RecognitionCallConfiguration.SerializeToString,
+            voice_dot_v1_dot_voice__pb2.AgentAck.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
 
     @staticmethod
     def StreamRecognize(request_iterator,
@@ -106,6 +149,11 @@ class SynthesisStub(object):
         Args:
             channel: A grpc.Channel.
         """
+        self.ConfigureCall = channel.unary_unary(
+                '/voice.v1.Synthesis/ConfigureCall',
+                request_serializer=voice_dot_v1_dot_voice__pb2.SynthesisCallConfiguration.SerializeToString,
+                response_deserializer=voice_dot_v1_dot_voice__pb2.AgentAck.FromString,
+                _registered_method=True)
         self.StreamSynthesize = channel.unary_stream(
                 '/voice.v1.Synthesis/StreamSynthesize',
                 request_serializer=voice_dot_v1_dot_voice__pb2.SynthesisRequest.SerializeToString,
@@ -116,6 +164,12 @@ class SynthesisStub(object):
 class SynthesisServicer(object):
     """Missing associated documentation comment in .proto file."""
 
+    def ConfigureCall(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def StreamSynthesize(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -125,6 +179,11 @@ class SynthesisServicer(object):
 
 def add_SynthesisServicer_to_server(servicer, server):
     rpc_method_handlers = {
+            'ConfigureCall': grpc.unary_unary_rpc_method_handler(
+                    servicer.ConfigureCall,
+                    request_deserializer=voice_dot_v1_dot_voice__pb2.SynthesisCallConfiguration.FromString,
+                    response_serializer=voice_dot_v1_dot_voice__pb2.AgentAck.SerializeToString,
+            ),
             'StreamSynthesize': grpc.unary_stream_rpc_method_handler(
                     servicer.StreamSynthesize,
                     request_deserializer=voice_dot_v1_dot_voice__pb2.SynthesisRequest.FromString,
@@ -140,6 +199,33 @@ def add_SynthesisServicer_to_server(servicer, server):
  # This class is part of an EXPERIMENTAL API.
 class Synthesis(object):
     """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def ConfigureCall(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/voice.v1.Synthesis/ConfigureCall',
+            voice_dot_v1_dot_voice__pb2.SynthesisCallConfiguration.SerializeToString,
+            voice_dot_v1_dot_voice__pb2.AgentAck.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
 
     @staticmethod
     def StreamSynthesize(request,
@@ -178,6 +264,21 @@ class AgentStub(object):
         Args:
             channel: A grpc.Channel.
         """
+        self.InitializeCall = channel.unary_unary(
+                '/voice.v1.Agent/InitializeCall',
+                request_serializer=voice_dot_v1_dot_voice__pb2.CallInitializationRequest.SerializeToString,
+                response_deserializer=voice_dot_v1_dot_voice__pb2.CallInitializationReply.FromString,
+                _registered_method=True)
+        self.CancelCallSetup = channel.unary_unary(
+                '/voice.v1.Agent/CancelCallSetup',
+                request_serializer=voice_dot_v1_dot_voice__pb2.CallSetupCancellation.SerializeToString,
+                response_deserializer=voice_dot_v1_dot_voice__pb2.AgentAck.FromString,
+                _registered_method=True)
+        self.GetPreparedAudio = channel.unary_unary(
+                '/voice.v1.Agent/GetPreparedAudio',
+                request_serializer=voice_dot_v1_dot_voice__pb2.PreparedAudioRequest.SerializeToString,
+                response_deserializer=voice_dot_v1_dot_voice__pb2.PreparedAudioReply.FromString,
+                _registered_method=True)
         self.RunTurn = channel.unary_stream(
                 '/voice.v1.Agent/RunTurn',
                 request_serializer=voice_dot_v1_dot_voice__pb2.AgentRequest.SerializeToString,
@@ -186,6 +287,11 @@ class AgentStub(object):
         self.ReportPlayback = channel.unary_unary(
                 '/voice.v1.Agent/ReportPlayback',
                 request_serializer=voice_dot_v1_dot_voice__pb2.PlaybackReport.SerializeToString,
+                response_deserializer=voice_dot_v1_dot_voice__pb2.AgentAck.FromString,
+                _registered_method=True)
+        self.ReportCallAnswered = channel.unary_unary(
+                '/voice.v1.Agent/ReportCallAnswered',
+                request_serializer=voice_dot_v1_dot_voice__pb2.CallAnswer.SerializeToString,
                 response_deserializer=voice_dot_v1_dot_voice__pb2.AgentAck.FromString,
                 _registered_method=True)
         self.EndCall = channel.unary_unary(
@@ -198,6 +304,24 @@ class AgentStub(object):
 class AgentServicer(object):
     """Missing associated documentation comment in .proto file."""
 
+    def InitializeCall(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CancelCallSetup(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetPreparedAudio(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def RunTurn(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -205,6 +329,12 @@ class AgentServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def ReportPlayback(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ReportCallAnswered(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -219,6 +349,21 @@ class AgentServicer(object):
 
 def add_AgentServicer_to_server(servicer, server):
     rpc_method_handlers = {
+            'InitializeCall': grpc.unary_unary_rpc_method_handler(
+                    servicer.InitializeCall,
+                    request_deserializer=voice_dot_v1_dot_voice__pb2.CallInitializationRequest.FromString,
+                    response_serializer=voice_dot_v1_dot_voice__pb2.CallInitializationReply.SerializeToString,
+            ),
+            'CancelCallSetup': grpc.unary_unary_rpc_method_handler(
+                    servicer.CancelCallSetup,
+                    request_deserializer=voice_dot_v1_dot_voice__pb2.CallSetupCancellation.FromString,
+                    response_serializer=voice_dot_v1_dot_voice__pb2.AgentAck.SerializeToString,
+            ),
+            'GetPreparedAudio': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetPreparedAudio,
+                    request_deserializer=voice_dot_v1_dot_voice__pb2.PreparedAudioRequest.FromString,
+                    response_serializer=voice_dot_v1_dot_voice__pb2.PreparedAudioReply.SerializeToString,
+            ),
             'RunTurn': grpc.unary_stream_rpc_method_handler(
                     servicer.RunTurn,
                     request_deserializer=voice_dot_v1_dot_voice__pb2.AgentRequest.FromString,
@@ -227,6 +372,11 @@ def add_AgentServicer_to_server(servicer, server):
             'ReportPlayback': grpc.unary_unary_rpc_method_handler(
                     servicer.ReportPlayback,
                     request_deserializer=voice_dot_v1_dot_voice__pb2.PlaybackReport.FromString,
+                    response_serializer=voice_dot_v1_dot_voice__pb2.AgentAck.SerializeToString,
+            ),
+            'ReportCallAnswered': grpc.unary_unary_rpc_method_handler(
+                    servicer.ReportCallAnswered,
+                    request_deserializer=voice_dot_v1_dot_voice__pb2.CallAnswer.FromString,
                     response_serializer=voice_dot_v1_dot_voice__pb2.AgentAck.SerializeToString,
             ),
             'EndCall': grpc.unary_unary_rpc_method_handler(
@@ -244,6 +394,87 @@ def add_AgentServicer_to_server(servicer, server):
  # This class is part of an EXPERIMENTAL API.
 class Agent(object):
     """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def InitializeCall(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/voice.v1.Agent/InitializeCall',
+            voice_dot_v1_dot_voice__pb2.CallInitializationRequest.SerializeToString,
+            voice_dot_v1_dot_voice__pb2.CallInitializationReply.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def CancelCallSetup(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/voice.v1.Agent/CancelCallSetup',
+            voice_dot_v1_dot_voice__pb2.CallSetupCancellation.SerializeToString,
+            voice_dot_v1_dot_voice__pb2.AgentAck.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetPreparedAudio(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/voice.v1.Agent/GetPreparedAudio',
+            voice_dot_v1_dot_voice__pb2.PreparedAudioRequest.SerializeToString,
+            voice_dot_v1_dot_voice__pb2.PreparedAudioReply.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
 
     @staticmethod
     def RunTurn(request,
@@ -300,6 +531,33 @@ class Agent(object):
             _registered_method=True)
 
     @staticmethod
+    def ReportCallAnswered(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/voice.v1.Agent/ReportCallAnswered',
+            voice_dot_v1_dot_voice__pb2.CallAnswer.SerializeToString,
+            voice_dot_v1_dot_voice__pb2.AgentAck.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
     def EndCall(request,
             target,
             options=(),
@@ -341,12 +599,34 @@ class GenerationControlStub(object):
                 request_serializer=voice_dot_v1_dot_voice__pb2.CancelRequest.SerializeToString,
                 response_deserializer=voice_dot_v1_dot_voice__pb2.CancelReply.FromString,
                 _registered_method=True)
+        self.OpenCall = channel.unary_unary(
+                '/voice.v1.GenerationControl/OpenCall',
+                request_serializer=voice_dot_v1_dot_voice__pb2.CallLeaseRequest.SerializeToString,
+                response_deserializer=voice_dot_v1_dot_voice__pb2.CallLeaseReply.FromString,
+                _registered_method=True)
+        self.ReleaseCall = channel.unary_unary(
+                '/voice.v1.GenerationControl/ReleaseCall',
+                request_serializer=voice_dot_v1_dot_voice__pb2.CallLeaseRequest.SerializeToString,
+                response_deserializer=voice_dot_v1_dot_voice__pb2.AgentAck.FromString,
+                _registered_method=True)
 
 
 class GenerationControlServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def CancelGeneration(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def OpenCall(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ReleaseCall(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -359,6 +639,16 @@ def add_GenerationControlServicer_to_server(servicer, server):
                     servicer.CancelGeneration,
                     request_deserializer=voice_dot_v1_dot_voice__pb2.CancelRequest.FromString,
                     response_serializer=voice_dot_v1_dot_voice__pb2.CancelReply.SerializeToString,
+            ),
+            'OpenCall': grpc.unary_unary_rpc_method_handler(
+                    servicer.OpenCall,
+                    request_deserializer=voice_dot_v1_dot_voice__pb2.CallLeaseRequest.FromString,
+                    response_serializer=voice_dot_v1_dot_voice__pb2.CallLeaseReply.SerializeToString,
+            ),
+            'ReleaseCall': grpc.unary_unary_rpc_method_handler(
+                    servicer.ReleaseCall,
+                    request_deserializer=voice_dot_v1_dot_voice__pb2.CallLeaseRequest.FromString,
+                    response_serializer=voice_dot_v1_dot_voice__pb2.AgentAck.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -388,6 +678,60 @@ class GenerationControl(object):
             '/voice.v1.GenerationControl/CancelGeneration',
             voice_dot_v1_dot_voice__pb2.CancelRequest.SerializeToString,
             voice_dot_v1_dot_voice__pb2.CancelReply.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def OpenCall(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/voice.v1.GenerationControl/OpenCall',
+            voice_dot_v1_dot_voice__pb2.CallLeaseRequest.SerializeToString,
+            voice_dot_v1_dot_voice__pb2.CallLeaseReply.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ReleaseCall(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/voice.v1.GenerationControl/ReleaseCall',
+            voice_dot_v1_dot_voice__pb2.CallLeaseRequest.SerializeToString,
+            voice_dot_v1_dot_voice__pb2.AgentAck.FromString,
             options,
             channel_credentials,
             insecure,

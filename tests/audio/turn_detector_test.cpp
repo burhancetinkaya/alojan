@@ -92,6 +92,33 @@ int main() {
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         require(long_turn.decide("Yarın arayın.", 300, QuestionContext::open) == complete,
                 "bounded history rollover failed");
+        TurnDetector quiet(models);
+        feed(quiet, false, 349);
+        require(!quiet.reminder_due(), "early silence reminder");
+        feed(quiet, false, 1);
+        require(quiet.reminder_due(), "seven-second reminder missing");
+        quiet.receive(weak_onset);
+        quiet.receive(weak_onset);
+        require(!quiet.reminder_due(), "reminder overlaps low-confidence onset");
+        feed(quiet, true, 10);
+        feed(quiet, false, 400);
+        require(!quiet.reminder_due(), "incomplete spoken turn mistaken for idle caller");
+        alojan::TurnSettings sensitive;
+        sensitive.vad_percent = 20;
+        TurnDetector configured(models, sensitive);
+        for (unsigned i = 0; i < 10; ++i)
+            configured.receive(weak_onset);
+        require(configured.has_speech(), "configured VAD threshold ignored");
+        sensitive.silence_reminder_ms = 3000;
+        TurnDetector early_reminder(models, sensitive), default_reminder(models);
+        sensitive.silence_reminder_ms = 15000;
+        feed(early_reminder, false, 149);
+        feed(default_reminder, false, 150);
+        require(!early_reminder.reminder_due() && !default_reminder.reminder_due(),
+                "reminder state leaked between calls");
+        feed(early_reminder, false, 1);
+        require(early_reminder.reminder_due() && !default_reminder.reminder_due(),
+                "configured reminder lost its snapshot");
         require(runs.load() >= 3, "background inference never ran");
         std::cout << "turn detector: reframing, isolation, stale score, failure and bounded "
                      "history passed\n";

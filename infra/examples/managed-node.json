@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "node_id": "isolated-voice-node",
+  "asset_root": "/absolute/path/to/installed/voice-assets",
+  "agent_port": 15083,
+  "asr_port": 15081,
+  "tts_port": 15082,
+  "targets": [
+    {
+      "scope_id": "00000000-0000-4000-8000-000000000001",
+      "release_id": "00000000-0000-4000-8000-000000000002"
+    }
+  ]
+}
