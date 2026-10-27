@@ -16,7 +16,7 @@ services:
     pids_limit: 32
     restart: unless-stopped
     volumes:
-      - ./examples/management-mcp.nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${ALOJAN_MCP_NGINX_CONFIG:?Set the private ingress configuration file}:/etc/nginx/nginx.conf:ro
     healthcheck:
       test: [CMD, wget, -q, -O, /dev/null, "http://127.0.0.1:13080/giris"]
       interval: 15s

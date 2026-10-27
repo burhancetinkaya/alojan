@@ -1,0 +1,19 @@
+[Unit]
+Description=Alojan private Telegram post-call notifications
+After=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+WorkingDirectory=%h/ai/alojan/.local/telegram-current
+Environment=PYTHONPATH=services/agent
+Environment=PYTHONUNBUFFERED=1
+ExecStart=%h/.local/bin/uv run --frozen --no-sync --env-file %h/ai/alojan/.local/dev.env --env-file %h/ai/alojan/.local/telegram.env --env-file %h/ai/alojan/.local/telegram-owner.env python -m alojan_agent.notifications
+Restart=on-failure
+RestartSec=30
+TimeoutStopSec=15
+NoNewPrivileges=true
+UMask=0077
+
+[Install]
+WantedBy=default.target

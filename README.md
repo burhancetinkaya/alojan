@@ -1,689 +1,217 @@
-<a id="top"></a>
-
-<div align="center">
-
-# ☎️ Alojan
-
-### Your calls. Your AI agents. Your infrastructure.
-
-**A self-hostable AI voice agent engine for real-time phone conversations, being developed as an open-source project.**
-
-Build AI agents that answer phone calls, listen naturally, understand callers, speak, and take action when needed.
-
-**Without depending on hosted voice AI platforms such as Vapi or Retell AI.**
-
-<br />
-
-[![Status](https://img.shields.io/badge/Status-In%20Development-F59E0B?style=for-the-badge)](https://github.com/burhancetinkaya/alojan)
-[![Self Hosted](https://img.shields.io/badge/Deployment-Self--Hosted-10B981?style=for-the-badge)](#architecture)
-[![C++](https://img.shields.io/badge/C%2B%2B-20-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)](#technology-stack)
-[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](#technology-stack)
-
-<br />
-
-[![Python](https://img.shields.io/badge/Python-Agent%20%26%20Inference-3776AB?style=flat-square&logo=python&logoColor=white)](#technology-stack)
-[![NVIDIA](https://img.shields.io/badge/NVIDIA-CUDA-76B900?style=flat-square&logo=nvidia&logoColor=white)](#technology-stack)
-[![SIP](https://img.shields.io/badge/Telephony-SIP%20%2F%20RTP-7C3AED?style=flat-square)](#architecture)
-[![Turkish](https://img.shields.io/badge/Language-Turkish--First-EC4899?style=flat-square)](#why-alojan)
-
-<br />
-
-[**Why Alojan?**](#why-alojan) ·
-[**Features**](#planned-features) ·
-[**Architecture**](#architecture) ·
-[**Conversation Engine**](#conversation-engine) ·
-[**Roadmap**](#roadmap) ·
-[**Contributing**](#contributing)
-
-</div>
-
----
-
-<a id="why-alojan"></a>
-
-## ✨ Why Alojan?
-
-**Alo** is how a phone conversation begins in Turkish.
-
-**Ajan** means an agent: an autonomous AI system that can perform specific tasks.
-
-**Alo + Ajan = Alojan**
-
-Alojan aims to provide a voice AI engine that answers incoming calls, listens to callers, understands why they are calling, speaks natural Turkish, and uses tools to take action when appropriate.
-
-The starting point is a personal AI phone assistant. The long-term goal is modular infrastructure that developers can use to build their own voice agents.
-
-<table>
-<tr>
-<td width="33%" align="center">
-<strong>🎙️ Natural Conversations</strong><br/>
-<sub>Intelligent silence detection, turn management, and interruption handling.</sub>
-</td>
-<td width="33%" align="center">
-<strong>🧠 Agentic AI</strong><br/>
-<sub>LLMs, tool calling, MCP, and extensible agent capabilities.</sub>
-</td>
-<td width="33%" align="center">
-<strong>🔐 You Are in Control</strong><br/>
-<sub>Your SIP infrastructure, your voice engine, your server.</sub>
-</td>
-</tr>
-</table>
-
-> [!IMPORTANT]
-> **Project status: Early development / architecture planning**
->
-> This repository now has a runnable local SIP/WAV gateway, PostgreSQL migrations, API health checks, tested C++/Python gRPC contracts and automated tests. The default gateway plays a Turkish AI introduction and an unavailable-service announcement, then closes. The gRPC peer uses synthetic fixtures; message collection and model inference are still pending. The complete AI phone assistant is not implemented yet.
-> Alojan is not ready for production use. The features and architecture below describe the intended design, not completed functionality.
-> The roadmap will be updated as features are implemented and validated. An open-source license has not yet been selected; see [License](#license).
-
----
-
-<a id="planned-features"></a>
-
-## Preparation and implementation entry points
-
-- [Technical requirements](docs/REQUIREMENTS.md) — maintained scope, behavior and contracts.
-- [Agent development rules](AGENTS.md) and [contribution guide](CONTRIBUTING.md).
-- [Development setup](docs/DEV_SETUP.md) — primary Linux GPU development, source synchronization, optional macOS checks and pinned Ponytail skill.
-- [Task plan](docs/PLAN.md) — detailed M0/M1 tasks and current implementation status.
-- [Architecture decision](docs/ADR/0001-architecture.md), [network setup](docs/NETWORK_NETGSM.md), and [acceptance gates](docs/CALL_TEST_PLAN.md).
-- [Security policy](SECURITY.md), [code of conduct](CODE_OF_CONDUCT.md), and [license proposal](docs/LICENSING.md).
-
-The MVP targets one personal assistant and one active call. Dashboard and contacts are P1; calendar writes, multi-tenancy, voice cloning, and hosted voice orchestration are outside v1. Broader examples below describe future capabilities, not expanded MVP scope.
-
-## 🚀 Planned Features
-
-| | Feature | Description |
-|:--:|---|---|
-| 📞 | **SIP / RTP Telephony** | Answer phone calls directly through a SIP trunk. |
-| 🎙️ | **Real-Time Conversation** | Process audio and generate responses with low latency. |
-| 🧠 | **Intelligent Turn Detection** | Distinguish a brief pause from the end of a caller's turn. |
-| ✋ | **Barge-in** | Stop the AI's speech when the caller starts speaking. |
-| 🔊 | **Streaming TTS** | Start speaking before the entire response is ready. |
-| 🎯 | **Turkish-First Experience** | Optimize speech processing for Turkish phone conversations. |
-| 🧩 | **Tool Calling** | Integrate calendars, contacts, notifications, and custom APIs. |
-| 🔌 | **MCP Support** | Provide an extensible architecture for tools on external MCP servers. |
-| 📝 | **Call Records and Summaries** | Store transcripts, caller details, summaries, and action items. |
-| 🐳 | **Self-Hosted Deployment** | Run on your own Linux server with Docker Compose. |
-| ⚡ | **GPU Acceleration** | Run local STT and TTS inference with NVIDIA CUDA. |
-| 📊 | **Observability** | Measure latency, RTP quality, interruptions, and agent performance. |
-
----
-
-<a id="architecture"></a>
-
-## 🏗️ System Architecture
-
-Alojan is designed as a modular system that manages its own telephony infrastructure and real-time conversation engine.
-
-SIP/RTP, STT, TTS, and conversation orchestration are intended to run on a self-hosted server. The planned GPT-6 Luna integration uses an external API.
-
-```mermaid
-flowchart TB
-    CALLER["📱 Caller"]
-    PHONE["📲 Personal Phone Line"]
-    NETGSM["☎️ Netgsm 0850 SIP Trunk"]
-    FIREWALL["🛡️ Firewall / NAT"]
-
-    CALLER -->|Phone call| NETGSM
-    PHONE -.->|Optional call forwarding| NETGSM
-    NETGSM <-->|SIP + RTP| FIREWALL
-
-    subgraph SERVER["🖥️ Ubuntu Server / Docker / RTX 4080"]
-        direction TB
-
-        GATEWAY["⚙️ C++20 SIP Gateway / PJSIP"]
-        ENGINE["🎚️ Real-Time Conversation Engine"]
-
-        VAD["🎤 Silero VAD"]
-        TURN["🎯 Smart Turn"]
-        INTERRUPT["✋ Barge-in Controller"]
-
-        ASR["🎧 Whisper STT / CUDA"]
-        AGENT["🧠 Python AI Agent / Agents SDK"]
-        TTS["🗣️ EMA Lightning TTS / CUDA"]
-
-        DB[("🗄️ PostgreSQL")]
-        API["📊 Management API / Notifications"]
-        OBS["📈 Logs / Metrics / Traces"]
-        TUNNEL["🔒 Cloudflare Tunnel / HTTPS"]
-
-        GATEWAY <--> ENGINE
-
-        ENGINE --> VAD
-        VAD --> TURN
-        TURN --> ENGINE
-        ENGINE <--> INTERRUPT
-
-        ENGINE -->|Incoming PCM audio| ASR
-        ASR -->|Transcript| AGENT
-        AGENT -->|Response text| TTS
-        TTS -->|Generated audio| ENGINE
-
-        ENGINE --> DB
-        AGENT --> DB
-
-        DB --> API
-        ENGINE --> OBS
-        AGENT --> OBS
-
-        API <--> TUNNEL
-    end
-
-    FIREWALL <-->|SIP / RTP UDP| GATEWAY
-
-    AGENT <-->|Streaming API| LLM["☁️ GPT-6 Luna"]
-
-    OWNER["👤 User / Dashboard"]
-    OWNER <-->|HTTPS| TUNNEL
-
-    classDef external fill:#172554,stroke:#60a5fa,color:#ffffff
-    classDef compute fill:#064e3b,stroke:#34d399,color:#ffffff
-    classDef agent fill:#581c87,stroke:#c084fc,color:#ffffff
-    classDef infra fill:#334155,stroke:#94a3b8,color:#ffffff
-
-    class CALLER,PHONE,NETGSM,LLM,OWNER external
-    class ENGINE,VAD,TURN,INTERRUPT,ASR,TTS compute
-    class AGENT agent
-    class FIREWALL,GATEWAY,DB,API,OBS,TUNNEL infra
-```
-
-### Core Architectural Principles
-
-- **Independent telephony infrastructure.** The SIP gateway operates independently of the agent framework.
-- **A dedicated conversation engine.** VAD, turn management, and interruption control belong to the engine.
-- **Separate AI services.** STT, TTS, and agent services can be developed independently.
-- **Replaceable model providers.** Interfaces are designed to support alternative LLM, STT, and TTS providers in the future.
-- **gRPC streaming.** C++ and Python services communicate through low-latency, bidirectional streams.
-- **Cloudflare Tunnel is for HTTP only.** SIP/RTP UDP traffic is routed directly through the firewall.
-
----
-
-## 📡 How a Phone Call Will Be Processed
-
-```mermaid
-sequenceDiagram
-    autonumber
-
-    participant C as Caller
-    participant N as Netgsm
-    participant V as Voice Engine
-    participant S as Whisper STT
-    participant A as AI Agent
-    participant T as EMA Lightning
-    participant DB as PostgreSQL
-
-    C->>N: Phone call
-    N->>V: SIP INVITE + Caller ID
-    V-->>N: SIP 200 OK / RTP
-
-    V->>T: Greeting text
-    T-->>V: Streaming audio
-    V-->>C: Hello, I am an AI assistant...
-
-    loop Natural Conversation
-        C->>V: RTP audio packets
-        V->>S: Process audio chunks
-        S-->>V: Partial / Final Transcript
-
-        Note over V,S: VAD and Smart Turn analysis
-
-        V->>A: Completed caller turn
-        A->>A: LLM + Optional Tool Calling
-        A-->>V: Streaming response
-
-        V->>T: TTS text segments
-        T-->>V: Streaming audio
-        V-->>C: Spoken response
-
-        opt Caller interrupts the AI
-            C->>V: New speech
-            V->>V: Detect barge-in
-            V->>V: Clear audio buffer
-            V-->>A: Cancel outdated response
-            V-->>T: Cancel TTS generation
-        end
-    end
-
-    V->>DB: Call events and transcript
-    A->>DB: Summary and actions
-
-    Note over A,DB: Notify the user
-```
-
----
-
-<a id="conversation-engine"></a>
-
-## 🧠 Natural Conversation Engine
-
-A voice AI system needs more than a **Speech-to-Text → LLM → Text-to-Speech** pipeline.
-
-During a phone call, the assistant needs to know when to speak, when to remain silent, and how to react when interrupted. Alojan aims to manage these behaviors within its **Real-Time Conversation Engine**.
-
-### 🎯 Intelligent Turn Detection
-
-A caller may pause briefly while speaking:
-
-> "Hello, about tomorrow's meeting..."
->
-> *(one second of silence)*
->
-> "...I wanted to make a change."
-
-If the system relies only on silence duration, the AI may interrupt too early. The planned process is:
-
-1. Detect speech and silence using **Silero VAD**.
-2. Estimate whether the caller has finished using **Smart Turn**.
-3. Consider the ongoing dialogue through **conversation context**.
-4. Send the completed turn to the AI agent.
-
-### ✋ Barge-in: Interrupting the AI
-
-Callers should be able to interrupt the AI naturally:
-
-> **Alojan:** All right, the meeting is tomorrow at...
->
-> **Caller:** No, not tomorrow. Friday.
->
-> **Alojan:** Understood. I'll correct that to Friday.
-
-In this scenario, the engine is intended to:
-
-- Detect the caller's new speech.
-- Clear queued AI audio packets.
-- Cancel ongoing TTS generation.
-- Stop the outdated LLM response.
-- Process the new speech.
-
-Background noise, brief acknowledgments, and audio echo will also be considered to reduce false interruptions.
-
-### ⚡ Streaming LLM + Streaming TTS
-
-Responses will be split into segments instead of waiting for the LLM to finish the entire response.
+# Alojan
+
+A Turkish-first phone assistant with self-hosted SIP/RTP, speech recognition and
+speech synthesis, an external conversation model, and post-call Telegram notifications.
+
+**Status: working development deployment, not a production release.**
+This page describes the implementation and recorded validation as of **2026-10-27**.
+An open-source license has not yet been adopted; see [License](#license).
+
+Alojan combines *alo* (the Turkish telephone greeting) and *ajan* (agent).
+The current implementation supports authenticated workspaces, configurable agents,
+one active agent per verified number, a Next.js management UI and a token-protected
+HTTP MCP server. Agents use scoped tools and configured post-call Telegram/HTTP
+actions. Calls retain transcripts, summaries and delivery outcomes. The qualified
+live deployment currently serves one verified inbound number; simultaneous-call
+capacity is a separate acceptance gate. It does not depend on a hosted voice orchestration platform.
+
+See the [platform design](docs/VOICE_AGENT_PLATFORM.md),
+[MCP client setup](docs/MANAGEMENT_MCP_CLIENTS.md) and
+[current validation record](docs/PLAN.md) for the latest scoped capabilities.
+MCP endpoints and credentials are supplied privately, never as repository defaults.
+
+## What works today
+
+| Area | Implemented behavior |
+|---|---|
+| Inbound telephony | Native C++20/PJSIP SIP and G.711 RTP gateway; a real Netgsm trunk has been exercised. The carrier profile waits three seconds before answering and plays a prepared AI introduction. |
+| Speech recognition | Persistent faster-whisper **standard large-v3** on CUDA FP16, beam five, with pinned model files and checksum verification. |
+| Speech synthesis | Persistent **EMA Lightning** CUDA worker streams Turkish speech in bounded audio chunks. |
+| Conversation control | Silero VAD, Smart Turn v3.2, turn deadlines, interruption handling, silence reminders and timeout closing. |
+| Dialogue | OpenAI Agents SDK with OpenRouter **`openai/gpt-oss-120b`**, medium reasoning and Cerebras-only routing without provider fallback. |
+| Message intake | Tool-mediated local note storage, corrections and additions, clarification of unclear input, a once-per-call further-help invitation and contextual closing. Messages are not read back for confirmation. |
+| Playback and cancellation | Bounded queues, per-call generation invalidation, stale-audio rejection and sent-audio accounting. The gateway waits for closing audio and a configured closing pause before hanging up. |
+| Call records | PostgreSQL stores call metadata, available caller identity, recognized dialogue, notes and structured post-call summaries. |
+| Notifications | A separate Telegram worker sends the caller number when available, stored call times, summary and available final dialogue after the call ends. Long conversations use numbered messages with persisted delivery progress. |
+| Diagnostics | gRPC health checks, structured service events, stage latency reporting, native integration tests and optional model evaluation tools. |
+
+Caller ID is a carrier-supplied hint, not authentication. Missing or withheld numbers
+remain unknown. Assistant text in records is based on sent-audio accounting; it is
+not proof that every word was heard at the handset. Caller text is ASR output and
+may contain recognition errors.
+
+The agent can save a request for the owner. It cannot verify the owner's calendar,
+transfer a call to a person, answer from a verified company knowledge base or promise
+that a callback will happen. Saving a note and delivering a Telegram message are
+separate operations.
+
+## Architecture
+
+The Linux Docker Compose profile runs the gateway, ASR, TTS, agent, API, PostgreSQL
+and Telegram worker. ASR/TTS use the host NVIDIA GPU through its container runtime;
+SIP and loopback gRPC retain the host network layout. Speech inference is local;
+conversation and summary requests use OpenRouter. Telegram requires Internet access.
+See [Docker setup and recovery](docs/DOCKER.md) for deployment and validation limits.
 
 ```mermaid
 flowchart LR
-    A["🧠 First LLM Sentence"]
-    B["🗣️ EMA Lightning"]
-    C["🔊 RTP Playback"]
-
-    A -->|Text segment| B
-    B -->|Audio chunk| C
-
-    D["🧠 Next LLM Sentence"]
-    A -.-> D
-
-    classDef llm fill:#581c87,stroke:#c084fc,color:#fff
-    classDef audio fill:#064e3b,stroke:#34d399,color:#fff
-
-    class A,D llm
-    class B,C audio
+    Caller[Caller] -->|Direct call or optional mobile forwarding| Carrier[SIP carrier]
+    Carrier <-->|SIP and RTP through firewall / NAT| Gateway[C++ gateway]
+    Gateway <--> Control[VAD, turn detection and interruption control]
+    Gateway -->|16 kHz PCM over gRPC| ASR[Whisper large-v3 / CUDA]
+    ASR -->|Partial and final recognition| Gateway
+    Gateway <-->|Turn and validated reply over gRPC| Agent[Python agent]
+    Agent <-->|Responses API| LLM[OpenRouter / GPT-OSS 120B / Cerebras]
+    Gateway -->|Reply phrases over gRPC| TTS[EMA Lightning / CUDA]
+    TTS -->|8 kHz PCM| Gateway
+    Agent --> DB[(PostgreSQL)]
+    DB --> Notify[Telegram outbox worker]
+    Notify --> Owner[Configured private Telegram chat]
 ```
 
-This allows the LLM to generate the next sentence while TTS speaks the first one.
+### How a call flows
 
-### 🔧 Conversation Engine Components
+1. The gateway accepts an allowed inbound SIP call, waits for the configured answer
+   delay and plays the prepared greeting after call establishment.
+2. Incoming audio is decoded and resampled for recognition. VAD and turn detection
+   decide when to finalize the caller's turn.
+3. The agent receives the final text and bounded conversation history. Validated
+   tools select speech, save a local note or request a polite closing.
+4. The gateway sends reply phrases to EMA and plays its audio over RTP. Quiet waiting
+   music can cover response preparation; it is excluded from conversation records.
+5. Caller interruption invalidates the old generation and clears queued output.
+   Cancellation does not instantly preempt an already running GPU kernel.
+6. After the final farewell and closing pause, the call ends. Summary work and
+   Telegram delivery proceed separately from the live audio path.
 
-| Component | Responsibility |
+**Streaming has specific boundaries.** Whisper partials are repeated decoding of
+buffered audio, not native incremental token streaming. The agent streams provider
+responses, but waits for complete, validated speech-tool arguments before emitting
+reply phrases. EMA then streams audio. This is not an end-to-end speech-to-speech model.
+
+## Validation and current limits
+
+Real inbound calls, understandable synthesized speech, interruption and successful
+hangup have received limited handset acceptance. The standard large-v3 switch also
+received a successful live-call report. These checks establish a working development
+path, not broad production, noise-robustness or latency guarantees.
+
+| Evidence | Recorded result and scope |
 |---|---|
-| Silero VAD | Detect speech and silence |
-| Smart Turn v3.2 | Estimate when a caller's turn is complete |
-| Adaptive Endpointing | Adjust waiting periods dynamically |
-| Barge-in Controller | Handle intentional interruptions |
-| Echo-aware Detection | Reduce false detections caused by audio echo |
-| Playback Accounting | Track sent audio and estimate the corresponding spoken text; remote playback is not guaranteed |
-| Response Cancellation | Cancel outdated LLM and TTS work |
-| Conversation State | Manage dialogue context and call state |
+| [Docker runtime and recovery](docs/validation/docker-runtime-2026-10-24.md) | Seven services run in Compose; container regression and process-recovery evidence, soak status and limits are recorded separately. |
+| [Consolidated Linux validation](docs/validation/main-publication-2026-10-24.md) | Native build and all nine CTests passed. The full Python run had 385 passes, one contract-test failure and 18 skips; after correcting that test, the affected 76-test subset passed. The complete suite was not repeated. |
+| [Standard large-v3 activation](docs/validation/whisper-large-v3-live-2026-10-24.md) | 45 ASR tests passed; seven real CUDA gRPC cases and lifecycle checks passed before and after activation. One successful live call was subsequently reported. |
+| [Real carrier conversation](docs/validation/carrier-m3m4-2026-10-24.md) | Call records, interruption/accounting and successful closing were inspected; the report retains recognition and timing limitations. |
+| [Telegram validation](docs/validation/telegram-2026-10-24.md) | The expanded notification/database suite passed 33 tests. HTTP tests use simulated delivery; live activation and later content-validation limits are recorded separately. |
 
-<details>
-<summary><strong>⚡ Initial Performance Targets</strong></summary>
+Known limits and unfinished work:
 
-These are goals, not measured benchmark results.
+- **Concurrency:** speech workers currently admit one stream each; raising a gateway
+  setting alone does not provide parallel AI calls. Five calls per host and fifty
+  across hosts are approved design targets, not implemented or validated capacity.
+  See [the capacity plan](docs/CALL_CAPACITY_PLAN.md).
+- **Latency and quality:** stage measurements exist, but percentile response-time,
+  noisy-speech, false-interruption and long-running reliability targets remain open.
+  Some synthetic dialogue checks still fail; see the linked validation reports.
+- **Recognition alternatives:** Nemotron is selectable for evaluation. Other ASR and
+  denoising comparisons are optional tools; no RNNoise/DTLN preprocessing stage is
+  enabled in the default live pipeline. Standard large-v3 trades additional decode
+  time for improved accuracy on the evaluated small corpus.
+- **Lifecycle:** Compose restart policies and local worker watchdogs recover process
+  failures. The single-installation profile reconciles missing end records after the
+  hard call-duration limit. In-memory call/generation reclamation beyond the existing
+  lifetime bounds still needs work; a worker restart does not resume an active call.
+- **Notification delivery:** retries and per-part receipts are durable, but Telegram
+  does not provide an exactly-once guarantee. A failure after remote acceptance and
+  before receipt persistence can duplicate a part. Summary failure produces an
+  explicitly unavailable summary with the available dialogue.
+- **Management:** API health and database foundations exist; a full call dashboard,
+  contact management, operator retry interface and end-to-end OpenTelemetry setup
+  are not completed features.
+- **External tools:** an approval-gated MCP boundary exists, but arbitrary external
+  MCP tools are not attached to the phone agent. Calendar writes, live transfer,
+  voice cloning and multi-tenant bot/account management are not implemented.
+- **iPhone forwarding:** the carrier and iOS control forwarding. The repository does
+  not provide a verified, unattended Focus-mode forwarding installation.
+- **Release engineering:** hosted CI and clang-tidy validation remain pending.
 
-| Metric | Target |
+## Development setup
+
+Use [DOCKER.md](docs/DOCKER.md) for the complete Linux deployment and recovery.
+Use [DEV_SETUP.md](docs/DEV_SETUP.md) for pinned build tools, migrations and checks.
+Its early foundation profiles remain useful transport tests; starting the default
+WAV gateway alone does **not** launch the complete assistant.
+
+The working hardware reference is Ubuntu with an RTX 4080-class GPU and 16 GB VRAM.
+This is a tested development configuration, not a minimum specification or a
+concurrent-call capacity claim. macOS can be used for editing and selected checks;
+real CUDA speech validation takes place on Linux.
+
+Set up the components in this order:
+
+1. Build the service images using the Docker guide; the gateway compiles inside Docker.
+2. Configure private database credentials, start PostgreSQL with
+   [`infra/compose.yaml`](infra/compose.yaml), and apply migrations.
+3. Prepare the pinned model caches for [ASR](services/asr/README.md) and
+   [TTS](services/tts/README.md); mount them into their containers.
+4. Configure an OpenRouter key privately for the [agent](services/agent/README.md).
+5. Configure the [gateway profile](services/voice-gateway/README.md) and your
+   [carrier network](docs/NETWORK_NETGSM.md). Keep evaluation listeners on loopback
+   and restrict carrier-facing SIP/RTP at the firewall.
+6. Optionally create your own bot and pair a private chat using
+   [Telegram setup](docs/TELEGRAM.md). Each installation supplies its own token and
+   recipient; the worker is single-owner, not a shared multi-tenant bot platform.
+7. Start the Compose runtime and verify all container health checks before carrier testing.
+
+There is no one-command production installer. Adapt the assistant identity, owner
+references and prepared greeting assets before using the project for another person;
+the current implementation is not a profile-management product. Keep credentials,
+recipient identifiers and installation-specific values in ignored private files.
+
+## Repository map
+
+| Path | Purpose |
 |---|---|
-| P50 response onset | Under 1 second |
-| P95 response onset | Under 1.8 seconds |
-| Barge-in stop latency | Under 250 ms |
-| Premature turn cutoff rate | Under 2% |
-| False interruption rate | Under 3% |
-
-Actual results will be measured against a test dataset of Turkish phone conversations.
-
-</details>
-
----
-
-<a id="technology-stack"></a>
-
-## 🛠️ Planned Technology Stack
-
-| Layer | Technology | Purpose |
-|---|---|---|
-| Telephony | **C++20 + PJSIP / PJSUA2** | SIP, RTP, and call management |
-| Voice Engine | **Custom C++ Engine** | Audio and conversation orchestration |
-| VAD | **Silero VAD / ONNX** | Speech detection |
-| Turn Detection | **Smart Turn v3.2** | End-of-turn detection |
-| STT | **Faster-Whisper** | Turkish speech recognition |
-| Agent Runtime | **OpenAI Agents SDK** | Agent orchestration and tool calling |
-| LLM | **GPT-6 Luna API** | Dialogue and decision-making |
-| TTS | **EMA Lightning** | Turkish speech generation |
-| Communication | **gRPC + Protocol Buffers** | Streaming between services |
-| Database | **PostgreSQL** | Call records and actions |
-| Deployment | **Docker Compose** | Self-hosted operation |
-| GPU | **NVIDIA CUDA** | Accelerated inference |
-| Management API | **HTTP API** | Call results and notifications |
-| Observability | **OpenTelemetry** | Logs, traces, and metrics |
-
-### 🗣️ EMA Lightning
-
-[EMA Lightning on Hugging Face](https://huggingface.co/canberkkkkkk/ema-lightning) is selected for Turkish speech generation. The two versioned [greeting/fallback prompts](assets/prompts/tr-v3-ema/README.md) were generated with real EMA CUDA inference on the development server. The owner accepted the v2 EMA voice and the v3 greeting naming Burhan Çetinkaya. A [persistent EMA worker](services/tts/README.md) now streams bounded audio and has passed limited concurrent ASR/GPU checks. A [scripted native gateway profile](services/voice-gateway/README.md) now connects both speech directions. Turn decisions, agent responses, broader pronunciation quality and carrier intelligibility remain pending.
-
-### 🎧 Faster-Whisper
-
-The native Linux development worker now provides pinned large-v3-turbo CUDA float16 transcription over gRPC, with partial/final text, bounded admission and cancellation. [Setup and limits](services/asr/README.md) · [Measured evidence](docs/validation/linux-asr-2026-10-23.md). It is not yet connected to live phone media.
-
-
-### 🧠 AI Agent
-
-The agent layer is planned around the **OpenAI Agents SDK**, with support for:
-
-- Streaming LLM responses
-- Function calling
-- MCP tool integrations
-- Conversation context
-- Caller intent recognition
-- Structured post-call summaries
-- Authorized actions in external systems
-
-> [!NOTE]
-> Alojan's SIP, conversation management, STT, and TTS components are designed to be self-hosted.
->
-> The default architecture is not fully offline because the planned GPT-6 Luna integration uses an external API.
-
----
-
-## 💬 Example Phone Conversation
-
-The following example is translated into English; the initial experience targets Turkish conversations.
-
-**Alojan:**
-
-> Hello! I'm the AI assistant for the person you're calling. They are unavailable right now. Who am I speaking with?
-
-**Caller:**
-
-> Hi, I'm Ayşe. I'd like to move our meeting tomorrow to 4:00 PM.
-
-**Alojan:**
-
-> Understood, Ayşe. I'll pass along your request to move tomorrow's meeting to 4:00 PM. Is there anything else you'd like to add?
-
-**Caller:**
-
-> No, thank you.
-
-**Alojan:**
-
-> You're welcome. I've noted your request. Have a good day!
-
-### 📝 After the Call
-
-Alojan aims to record structured information such as the following. The summary and action text are translated into English for this example; `language` identifies the original call language.
-
-```json
-{
-  "call_id": "call_example_001",
-  "caller_number": "+90532XXXXXXX",
-  "caller_name": "Ayşe",
-  "language": "tr",
-  "intent": "meeting_reschedule",
-  "summary": "The caller wants to reschedule tomorrow's meeting to 4:00 PM.",
-  "priority": "medium",
-  "action_required": true,
-  "action": "Notify the user of the meeting rescheduling request.",
-  "status": "completed"
-}
-```
-
-> This is an illustrative call result, not output from a working implementation.
-> Caller ID is obtained automatically when provided by the carrier. A phone number alone is not treated as proof of identity.
-
----
-
-## 🧱 Planned Repository Structure
-
-The layout below is the target. The voice gateway, API foundation, protobuf, database and tests now exist; inference/agent services remain planned.
-
-```text
-alojan/
-├── services/
-│   ├── voice-gateway/
-│   │   └── C++20 / SIP / RTP / Conversation Engine
-│   │
-│   ├── asr-service/
-│   │   └── Faster-Whisper / CUDA
-│   │
-│   ├── tts-service/
-│   │   └── EMA Lightning / CUDA
-│   │
-│   ├── agent-service/
-│   │   └── OpenAI Agents SDK / Tools / MCP
-│   │
-│   └── app-api/
-│       └── Private API / Notifications
-│
-├── proto/
-│   └── voice/v1/
-│       └── gRPC Contracts
-│
-├── infra/
-│   ├── compose.yaml
-│   └── migrations/
-│
-├── docs/
-│   ├── ADR/
-│   ├── DEV_SETUP.md
-│   ├── PLAN.md
-│   └── CALL_TEST_PLAN.md
-│
-├── tests/
-│   ├── unit/
-│   ├── integration/
-│   └── performance/
-│
-├── scripts/
-├── AGENTS.md
-├── CONTRIBUTING.md
-└── README.md
-```
-
----
-
-<a id="roadmap"></a>
-
-## 🗺️ Development Roadmap
-
-The native foundation now builds and tests on the authorized Linux GPU server. All full product milestones below remain open; see the [task plan](docs/PLAN.md) for dependencies and acceptance criteria. The [native Linux G1 SIP/RTP scenario set is complete](docs/validation/linux-m1-development-report-2026-10-23.md), including owner listening acceptance; M2-01 now provides a [persistent Turkish CUDA ASR worker](services/asr/README.md); M2-02 now provides [persistent EMA streaming and measured GPU coexistence](docs/validation/linux-tts-2026-10-23.md). M2-03 now connects the gateway to both speech services through an explicit [scripted test profile](services/voice-gateway/README.md); M3 turn decisions and M4 agent responses remain pending. Real inference and Netgsm acceptance remain separate under [ADR 0003](docs/ADR/0003-linux-development.md).
-
-- [ ] **M0 — Foundation**
-  - Project scaffolding
-  - Docker Compose configuration
-  - NVIDIA GPU access
-  - C++ / Python service structure
-  - gRPC contracts
-
-- [ ] **M1 — SIP / RTP**
-  - PJSIP integration
-  - Incoming call handling
-  - G.711 codec support
-  - RTP audio transmission and reception
-  - NAT and firewall testing
-  - Real Netgsm inbound call with bidirectional audio (G2)
-
-- [ ] **M2 — Speech Pipeline**
-  - Faster-Whisper STT
-  - EMA Lightning TTS
-  - Streaming audio pipeline
-  - GPU optimizations
-
-- [ ] **M3 — Conversation Engine**
-  - Silero VAD
-  - Smart Turn
-  - Adaptive endpointing
-  - Barge-in
-  - Playback tracking
-  - Echo-aware interruption
-
-- [ ] **M4 — AI Agent**
-  - GPT-6 Luna integration
-  - OpenAI Agents SDK
-  - Streaming responses
-  - Tool calling
-  - Call summaries
-  - Extensible infrastructure for MCP
-
-- [ ] **M5 — Operations**
-  - PostgreSQL
-  - Call history
-  - Transcript and action records
-  - User notifications
-  - Management API
-  - Monitoring and security
-
-- [ ] **M6 — Real-World Testing**
-  - Turkcell call forwarding
-  - Caller ID validation
-  - Turkish conversation tests
-  - Latency and performance benchmarks
-
-Follow development through [GitHub Issues](https://github.com/burhancetinkaya/alojan/issues).
-
----
-
-## 🐳 Development & Deployment
-
-Start with the [development setup](docs/DEV_SETUP.md). It includes working native build, local SIP test, migration and health commands.
-
-The planned Mac development profile runs gateway/Python services natively and PostgreSQL in Docker. CPU inference is attempted where supported; explicitly selected test services cover local contracts otherwise. Production hardware and live acceptance remain Ubuntu-only.
-
-### Production Reference Hardware
-
-The initial development environment targets:
-
-| Component | Configuration |
-|---|---|
-| Operating System | Ubuntu Linux |
-| GPU | NVIDIA RTX 4080 |
-| VRAM | 16 GB |
-| Container Runtime | Docker |
-| Orchestration | Docker Compose |
-| GPU Runtime | NVIDIA Container Toolkit |
-| Telephony Connection | SIP Trunk / Public IPv4 |
-
-### Clone the Repository
-
-```bash
-git clone https://github.com/burhancetinkaya/alojan.git
-cd alojan
-```
-
-> [!WARNING]
-> The project is in early development. The local WAV gateway is runnable; it is not a complete AI assistant or production service.
-> Working deployment instructions will be published with the first validated release.
-
-### Telephony
-
-The proposed initial configuration is:
-
-```text
-SIP: UDP 5060
-RTP: UDP 10000-10100
-```
-
-These ports are intended to be configurable. SIP and RTP access should be restricted to authorized carrier IP addresses.
-
-### GPU Inference
-
-ASR and TTS models are designed to run in Docker containers with NVIDIA GPU access. Inference services will remain ready between calls instead of reloading models for every call.
-
----
-
-## 🔐 Privacy and Security
-
-Security and personal data protection are core design goals. Planned safeguards include:
-
-- The assistant identifies itself as AI at the beginning of the call.
-- It does not impersonate the phone's owner.
-- Raw audio is not recorded by default.
-- Phone numbers, transcripts, and call history are access-controlled.
-- A phone number alone is not accepted as authentication.
-- Tool calls pass through authorization checks.
-- Actions such as changing calendars or sending messages require appropriate user authorization and approval.
-- Sensitive information is excluded from logs.
-- API keys and SIP credentials are kept out of the repository.
-- The management API requires authentication.
-- Firewall rules restrict SIP/RTP access.
-
-Real-world deployments must account for applicable personal data protection obligations, including Türkiye's KVKK.
-
----
-
-<a id="contributing"></a>
-
-## 🤝 Contributing
-
-Alojan is being developed with an open-source approach. Contributions are especially welcome in:
-
-- SIP / RTP protocol development
-- Real-time audio processing
-- Turkish speech recognition optimization
-- TTS model integration
-- Turn detection and barge-in
-- Agent framework integration
-- Performance and latency optimization
-- Security and documentation
-
-Read [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) first. Use [SECURITY.md](SECURITY.md) for sensitive reports.
-
-**Get involved:**
-
-- 💡 [Open an issue](https://github.com/burhancetinkaya/alojan/issues)
-- 🔧 [Submit a pull request](https://github.com/burhancetinkaya/alojan/pulls)
-- ⭐ Star the project to follow its progress.
-
-<a id="license"></a>
-
-### 📜 License
-
-An open-source license will be selected before the first distributable release. [GPL-3.0-or-later is proposed](docs/LICENSING.md), pending owner approval and dependency review; no license has been adopted.
-
-Distribution compatibility of dependencies, including PJSIP's GPL and commercial licensing terms, will be evaluated.
-
-Until a license is added, do not assume unrestricted rights to reuse the source code.
-
----
-
-<div align="center">
-
-## ☎️ Alojan
-
-### Alo + Ajan = Alojan
-
-**Your calls. Your AI agents. Your infrastructure.**
-
-*Rethink phone conversations with AI.*
-
-<br />
-
-[**GitHub**](https://github.com/burhancetinkaya/alojan) ·
-[**Issues**](https://github.com/burhancetinkaya/alojan/issues) ·
-[**Back to Top**](#top)
-
-<br />
-
-**Made in Türkiye · Built for the world**
-
-</div>
+| `services/voice-gateway/` | Native SIP/RTP, media queues and conversation control |
+| `services/asr/` | Default Whisper service and pinned model manifests |
+| `services/asr-nemotron/` | Separate environment for the optional ASR backend |
+| `services/tts/` | Persistent EMA speech worker |
+| `services/agent/` | Dialogue, local note tools, summaries and Telegram worker |
+| `services/app-api/` | API health and database/migration foundation |
+| `services/voice-contracts/`, `proto/`, `generated/` | Shared validation and versioned gRPC contracts |
+| `infra/` | Full-runtime Compose overlay, Docker builds/watchdogs, database migrations and legacy service template |
+| `assets/` | Prepared prompts and waiting audio |
+| `tests/`, `tools/` | Regression suites, integration probes and optional evaluations |
+| `docs/` | Requirements, decisions, task status and sanitized acceptance evidence |
+
+## Privacy and security
+
+Raw caller audio recording is off by default. Text transcripts and notes are stored
+in PostgreSQL; enabling Telegram sends available final dialogue and call metadata
+to the configured private chat. Conversation/summary requests send relevant text
+to the configured model provider. Self-hosted audio processing is not fully offline
+processing or a promise that no data leaves the server.
+
+Never commit credentials, real caller numbers, private transcripts, recordings or
+packet captures. Use synthetic fixtures for shared tests. Caller text and model/tool
+outputs are untrusted; caller ID does not authorize private access or external actions.
+See [the security policy](SECURITY.md) and [security design](docs/SECURITY.md).
+
+## Roadmap and contributing
+
+The [task plan](docs/PLAN.md) tracks M0–M6 and the remaining acceptance gates.
+Near-term work includes measured response latency, broader dialogue/recognition
+quality, lifecycle hardening and capacity implementation. Planned work is not a
+claim that those capabilities are available today.
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md),
+[requirements](docs/REQUIREMENTS.md) and the [acceptance plan](docs/CALL_TEST_PLAN.md)
+before changing behavior. Keep native, simulated, GPU, provider and carrier evidence
+separate when reporting results.
+
+## License
+
+No project license has been adopted. [GPL-3.0-or-later is proposed](docs/LICENSING.md),
+pending approval and dependency/distribution review. Do not assume unrestricted
+reuse rights until a license is added. Model and dependency licenses must also be
+reviewed; the [dependency inventory](docs/DEPENDENCIES.md) records their sources and pins.

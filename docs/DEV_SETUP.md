@@ -1,6 +1,12 @@
 # Development setup
 
-## Current state
+## Docker runtime
+
+The owner selected the complete [Docker runtime](DOCKER.md) under
+[ADR 0011](ADR/0011-docker-runtime.md). Use that guide for the current deployment.
+The native commands below remain development and rollback references.
+
+## Historical native foundation
 
 2026-10-27 activation fix: apply migration 0026 and refresh management/readiness roles
 before starting the updated API/agent. Management `ALOJAN_VOICE_NODE_ID` assigns new
@@ -307,7 +313,7 @@ is implied by server access. See the [Linux evidence report](validation/linux-de
 
 ## Native ASR worker (M2-01)
 
-The persistent large-v3-turbo worker runs independently on loopback port 15071.
+The persistent standard large-v3 worker runs independently on loopback port 15071.
 Follow [setup, contract limits and shutdown](../services/asr/README.md). Its isolated
 `uv.lock` pins CUDA 12/cuDNN 9 libraries for the existing host driver; runtime
 weights are offline and checksummed. Model health is serving only after real
@@ -1579,3 +1585,8 @@ filled privately before use. The discovery SQL example requires the psql
 `mcp_endpoint` variable. Live Hindsight acceptance requires both explicit opt-in
 and `ALOJAN_HINDSIGHT_MCP_URL`; there is no built-in endpoint. Synthetic tests
 construct reserved test destinations and mock transport/DNS without deployment defaults.
+
+For public ingress, copy `infra/examples/management-mcp.nginx.conf` to an ignored
+operator file, replace `YOUR_DEPLOYMENT_HOST` there, and set
+`ALOJAN_MCP_NGINX_CONFIG` to that absolute private path. The serving container must
+mount the private copy, so source synchronization cannot overwrite its routing.

@@ -162,7 +162,7 @@ The existing Kübra profile’s owner-approved greeting is “Merhaba, ben Kübr
 
 ### 9.4 Post-call summary
 
-Validate and persist structured JSON: caller_name, caller_number, subject, summary, requested_action, urgency (low/medium/high), promised_action (none by default), confirmation_status, unresolved_questions, confidence, privacy_flags. Notify only from this finalized object; do not delay caller disconnection for analysis.
+Validate and persist structured JSON: caller_name, caller_number, subject, summary, requested_action, urgency (low/medium/high), promised_action (none by default), confirmation_status, unresolved_questions, confidence, privacy_flags. Notify summary content only from this finalized object; do not delay caller disconnection for analysis. If finalization fails or exceeds two minutes, label the summary as unavailable without inventing it. Under owner-approved ADR 0010, Telegram also includes the persisted calling number, stored call start/end in Türkiye time and all available final dialogue, with sent-audio accounting for assistant text. Long dialogue uses numbered, resumable messages; no silent transcript truncation.
 
 ## 10. Contracts
 
@@ -221,7 +221,7 @@ Protected REST: GET /health/live, GET /health/ready, GET /v1/calls, GET /v1/call
 | `call_summaries` | `call_id`, `caller_name`, `subject`, `summary`, `urgency`, `requested_action`, `confirmation_status`, `json_schema_version`, `created_at` |
 | `action_items` | `id`, `call_id`, `type`, `description`, `status pending/approved/done`, `owner_approved_at nullable` |
 | `notes` | `id`, `call_id`, `note_version`, `text`, `confirmed`, `created_at`; idempotency unique key |
-| `notification_outbox` | `id`, `call_id`, `target`, `payload_jsonb`, `retry_count`, `next_attempt_at`, `delivered_at`, `last_error` |
+| `notification_outbox` | `id`, `call_id`, `target`, `payload_jsonb`, `retry_count`, `next_attempt_at`, `delivered_at`, `last_error`, `failed_at`, `provider_message_id` |
 
 Unique (call_id, note_version) enforces note idempotency. Raw audio is off by default; opt-in recording needs separate disclosure, encrypted storage and retention policy. Transcript 30 days and metadata 90 days are configurable initial defaults requiring owner/privacy review. Restrict/encrypt backups and exclude secrets/full numbers/transcripts from logs; DB access is separately authorized.
 
@@ -327,7 +327,7 @@ checks. Per-agent model/workflow changes are measured separately from overhead.
 
 Use Ubuntu LTS, supported NVIDIA driver, Docker Engine/Compose and NVIDIA Container Toolkit. Host driver stays on host; pin compatible CUDA/cuDNN/PyTorch containers. Prefer gateway Linux host networking, private/loopback service access, persistent warm workers and independent ASR/TTS/agent/API/DB/listener readiness.
 
-[ADR 0003](ADR/0003-linux-development.md) makes the owner’s Ubuntu GPU server the primary development/build/test environment, retaining the native gateway/Python and Docker support profile. [ADR 0002](ADR/0002-macos-development.md) remains the historical macOS fallback decision. Local SIP/WAV tests do not require CUDA or inference models. Real local SIP/RTP must pass before downstream local development; Ubuntu/GPU/carrier acceptance remains separate. CUDA and real model readiness are required for G3, not the WAV-only G2 test. Explicit inference test services support contract tests but never count as model acceptance.
+[ADR 0003](ADR/0003-linux-development.md) makes the owner’s Ubuntu GPU server the primary development/build/test environment. The owner-selected [ADR 0011](ADR/0011-docker-runtime.md) supersedes the native runtime profile: gateway, ASR, TTS, agent, API, PostgreSQL and Telegram run in Compose. Native source builds inside the gateway image; the host provides Docker and NVIDIA drivers. [ADR 0002](ADR/0002-macos-development.md) remains the historical macOS fallback decision. Local SIP/WAV tests do not require CUDA or inference models. Real local SIP/RTP must pass before downstream local development; Ubuntu/GPU/carrier acceptance remains separate. CUDA and real model readiness are required for G3, not the WAV-only G2 test. Explicit inference test services support contract tests but never count as model acceptance.
 
 Restrict initial UDP 5060 and 10000–10100 to confirmed carrier sources; validate public IPv4, NAT/SDP, rate limits and TLS/SRTP availability. Document unencrypted WAN audio risk if unavailable. Prefer Access plus MFA for management. On overload use bounded queues and busy/fallback; on shutdown stop new admission, allow controlled active-call completion and preserve outbox. Benchmark precision/worker adjustments if GPU memory exceeds 16 GB.
 

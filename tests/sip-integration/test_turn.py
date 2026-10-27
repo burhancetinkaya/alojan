@@ -72,6 +72,17 @@ def run_case(tmp_path, speech_services, source, codec=8, expected="complete"):
                 assert timings["vad_end_to_audio_estimate_ms"] == (
                     timings["endpoint_silence_audio_ms"] + timings["endpoint_to_audio_ms"]
                 )
+                audit = next(
+                    x for x in contents.splitlines() if x.startswith("event=endpoint_diagnostics")
+                )
+                gates = {k: int(v) for k, v in re.findall(r"(\w+)=(-?\d+)", audit)}
+                assert gates["accepted"] == 1
+                assert gates["partial_coverage_audio_ms"] >= gates["last_voice_audio_ms"]
+                assert gates["partial_stable_wall_ms"] >= 200
+                assert gates["decision_silence_ms"] == metrics["turn_silence_ms"]
+                assert gates["last_coverage_block_silence_ms"] < gates["decision_silence_ms"]
+                assert gates["last_policy_block_silence_ms"] < gates["decision_silence_ms"]
+                assert gates["detector_jobs"] > 0
                 return metrics
             assert "event=speech_fallback" in contents, contents
             assert "event=speech_test_complete" not in contents

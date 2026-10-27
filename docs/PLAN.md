@@ -1,5 +1,18 @@
 # Implementation plan
 
+## 2026-10-27 — Qualified platform publication and private MCP configuration
+
+M5-03 / AGP-03/06 / MCP-06, US-02/05/06: owner ended noise experiments and
+requested live verification and main publication. Rejected trial archived privately;
+qualified gateway rebuilt byte-identically to the serving binary. Existing remote-main
+Docker changes retained; web/background workers updated and ingress moved to private
+operator configuration. Endpoint examples/defaults removed; private paths ignored.
+Linux 11 CTest and 48 browser scenarios passed. Broad Python run: 1,189 passed,
+68 skipped, two obsolete fixture failures corrected; all 20 targeted rechecks passed.
+Public login/health 200, unauthenticated MCP 401. No new carrier/acoustic acceptance.
+[Release evidence and limits](validation/main-publication-2026-10-27.md).
+
+
 ## 2026-10-27 — Interruption evidence candidate rejected; recovery isolated
 
 M3-02/M5-03/VXP-06, US-05/06: implemented an off-by-default, unmanaged-loopback-only
@@ -2695,7 +2708,11 @@ live carrier process while validating an opt-in adaptive single-turn profile.
 M3-02 continues on `codex/barge-in` with opt-in interruption, generation invalidation
 and conservative sent-history accounting; live carrier behavior is preserved.
 
-## Current implementation status
+## Foundation implementation status (historical)
+
+The dated follow-ups supersede this original foundation snapshot. In particular,
+standard large-v3, Telegram delivery and the Docker runtime have later evidence;
+use [the current README](../README.md) and linked validation reports for the deployed state.
 
 Evidence: [macOS foundation report](validation/macos-foundation-2026-10-09.md), [Linux development report](validation/linux-development-2026-10-23.md), [Linux SIP isolation report](validation/linux-sip-isolation-2026-10-23.md), [Linux caller identity report](validation/linux-caller-identity-2026-10-23.md), [Linux spoken fallback report](validation/linux-spoken-fallback-2026-10-23.md), [Linux audio conversion report](validation/linux-audio-conversion-2026-10-23.md), and [Linux EMA prompt report](validation/linux-ema-prompts-2026-10-23.md).
 
@@ -2785,13 +2802,13 @@ These retain required capability and acceptance boundaries. Refine implementatio
 | M4-01 | Integrate SDK streaming/context with an explicit test client; verify requested model/API when account available. | M3-02 local checks; EXT-06 for real API acceptance | DEC-11; §9 | macOS + API; later Ubuntu | Stream isolation/timeout/cancel locally; real account/model acceptance separate; full G3 deferred |
 | M4-02 | Implement take_note/finish_call, tool authorization/idempotency and a minimal Streamable HTTP MCP adapter boundary | M4-01 | US-02,08; §9.2–3 | macOS; later Ubuntu | Duplicate notes prevented; closing audio completes; injection/unauthorized actions rejected; adapter contract tested without live MCP integrations |
 | M4-03 | Persist utterances and schema-validated post-call summary | M4-02 | US-07; §9.4,11 | macOS; later Ubuntu | Confirmed versus unconfirmed facts preserved; summary failure recoverable; caller not held for analysis |
-| M5-01 | Durable webhook outbox with local test receiver; owner endpoint configured later. | M4-03 local checks; EXT-08 for actual delivery | US-07; §10,11 | macOS; later Ubuntu + endpoint | Retry/restart/deduplication locally; actual notification pending G5; no exactly-once claim |
+| M5-01 | Durable private Telegram outbox; owner-selected 2026-10-24. Bot pairing and real delivery acceptance required. | M4-03 local checks; EXT-08 for actual delivery | US-07; §10,11 | macOS; later Ubuntu + endpoint | Retry/restart/deduplication locally; actual notification pending G5; no exactly-once claim |
 | M5-02 | Private REST endpoints and HTTP-only Cloudflare Access guide | M4-03 | §10,12; P0 API | macOS; later Ubuntu | Auth/owner-only retry enforced; live/ready distinct; no dashboard required |
 | M5-03 | Observability, retention/backup restore, failure injection and soak | M5-01,02 | §3,12,14,15; G4,5,7 | Ubuntu GPU/phone | 30+ labeled scenarios, 50+ timed turns, two-call isolation and 30-minute soak; report targets versus measured values |
 | M6-01 | Compare direct, forwarded and withheld caller identity | M1-07; EXT-03 | US-03; §13; G6 | Phone + carrier | Sanitized header comparison; no caller identity guarantee |
 | M6-02 | Test manual/assisted iOS Focus forwarding and document limitations | M6-01; EXT-04 | US-09; §13; P1 | Owner iPhone | Owner-authorized enable/status/disable tests; no assumed unattended USSD support |
 
-Default notification is a generic webhook to minimize new provider-specific dependencies; endpoint credentials stay private. P1 dashboard, contacts and live MCP integrations remain deferred. M6 is a separate carrier/device feasibility report and must not conceal an otherwise functional P0 as either proven or broken without evidence.
+The owner selected private Telegram notifications on 2026-10-24, replacing the generic-webhook default. Bot credentials and paired recipient stay private; see [setup and delivery policy](TELEGRAM.md). P1 dashboard, contacts and live MCP integrations remain deferred. M6 is a separate carrier/device feasibility report and must not conceal an otherwise functional P0 as either proven or broken without evidence.
 
 ## Coverage and decision gates
 

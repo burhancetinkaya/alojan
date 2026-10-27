@@ -1,5 +1,18 @@
 # Call acceptance and external validation
 
+## 2026-10-27 — Qualified platform publication and private MCP configuration
+
+M5-03 / AGP-03/06 / MCP-06, US-02/05/06: owner ended noise experiments and
+requested live verification and main publication. Rejected trial archived privately;
+qualified gateway rebuilt byte-identically to the serving binary. Existing remote-main
+Docker changes retained; web/background workers updated and ingress moved to private
+operator configuration. Endpoint examples/defaults removed; private paths ignored.
+Linux 11 CTest and 48 browser scenarios passed. Broad Python run: 1,189 passed,
+68 skipped, two obsolete fixture failures corrected; all 20 targeted rechecks passed.
+Public login/health 200, unauthenticated MCP 401. No new carrier/acoustic acceptance.
+[Release evidence and limits](validation/main-publication-2026-10-27.md).
+
+
 ## 2026-10-27 — Interruption evidence/recovery loopback trial; not live-qualified
 
 M3-02/M5-03/VXP-06, US-05/06. 15 candidate loopback cases passed with real CPU
@@ -2154,7 +2167,7 @@ Keep the production admission limit at one call unless capacity is deliberately 
 | EXT-05 | Ubuntu CUDA/PyTorch/ASR/EMA compatibility and measured VRAM | U0-01; M2-02 | CUDA smoke and persistent ASR/EMA warm-up, concurrent synthetic streams and cancellation/recovery passed within 16 GB; broader quality, soak and deployment remain pending |
 | EXT-06 | Account access to requested model, streaming/settings and quota | M4-01 | Selected OpenRouter Pro streaming/tool requests verified; broader quota/capacity/latency acceptance pending (ADR 0005) |
 | EXT-07 | Owner license/distribution decision; exact dependency review | Release | Proposal only |
-| EXT-08 | Owner notification endpoint/credentials | M5-01 | Not provided |
+| EXT-08 | Owner Telegram bot token and verified private chat | M5-01 | Verified 2026-10-24: owner private chat paired, labeled test delivered; real post-call receipt pending |
 
 SSH access and the `~/ai/alojan` workspace were supplied/authorized on 2026-10-23. ADR 0003 makes this the primary build/test environment. Connection details remain in ignored local configuration; carrier prerequisites are still pending. Public security and conduct reporting channels remain release/community prerequisites.
 

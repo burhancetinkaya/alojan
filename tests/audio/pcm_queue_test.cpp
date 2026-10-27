@@ -21,6 +21,7 @@ int main() {
             require(queue.pop(reinterpret_cast<char *>(&value)), "queued frame lost");
             require(value == expected, "frame reordered or overwritten");
         }
+        require(queue.queued_frames() == 0, "drained queue telemetry is stale");
         std::atomic<bool> corrupted{false};
         std::thread producer([&] {
             for (std::uint64_t i = 0; i < 100000; ++i)
@@ -32,6 +33,8 @@ int main() {
                 std::uint64_t received;
                 while (!queue.pop(reinterpret_cast<char *>(&received)))
                     std::this_thread::yield();
+                if (queue.queued_frames() > 4)
+                    corrupted.store(true);
                 if (received != i)
                     corrupted.store(true);
             }

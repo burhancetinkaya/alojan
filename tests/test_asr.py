@@ -488,3 +488,35 @@ def test_asr_backend_selection_fails_closed_and_preserves_configuration(monkeypa
         ("whisper", {"replacements": "{}"}),
         ("nemotron", {"replacements": '{"Example Product":"Example Brand"}'}),
     ]
+
+
+def test_partial_hint_retimes_but_does_not_multiply_decode_budget():
+    async def scenario():
+        async with running() as (_, decoder, recognition, _):
+            events = [
+                e
+                async for e in recognition.StreamRecognize(
+                    frames(150, partial_hint=True), timeout=3
+                )
+            ]
+            assert [e.processed_audio_ms for e in events] == [600, 1600, 2600, 3000]
+            assert [e.is_final for e in events] == [False, False, False, True]
+            assert [size for size, _ in decoder.calls] == [19200, 51200, 83200, 96000]
+
+    asyncio.run(scenario())
+
+
+def test_hint_clears_on_resumption_and_final_covers_all_audio():
+    async def source():
+        for index in range(110):
+            yield frame(index, partial_hint=20 <= index < 25 or 70 <= index < 85)
+
+    async def scenario():
+        async with running() as (_, decoder, recognition, _):
+            events = [e async for e in recognition.StreamRecognize(source(), timeout=3)]
+            # First candidate clears before eligibility; a later hint replaces the 2 s partial.
+            assert [e.processed_audio_ms for e in events] == [1000, 1600, 2200]
+            assert events[-1].is_final
+            assert decoder.calls[-1][0] == 2200 * 32
+
+    asyncio.run(scenario())

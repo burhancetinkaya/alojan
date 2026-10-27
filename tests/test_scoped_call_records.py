@@ -383,18 +383,49 @@ def test_upgrade_pins_existing_jobs_without_assigning_legacy_calls(database, tmp
     migrate(database, old)
     account = Accounts(database)
     qualify(account)
-    token = routing.register(account)
-    scope = account.session(token)["workspaces"][0]["id"]
-    agent = Profiles(account).create(token, scope, content())["id"]
-    preparation, _, _ = routing.prepare_assets(account, (token, scope, agent), tmp_path)
-    # Seed the historical v1 contract; today's publisher requires newer schema migrations.
-    draft = validate_draft(Profiles(account).get(token, scope, agent)["content"])
-    release = str(uuid.uuid4())
+    # Seed v8 rows directly: current authoring/auth APIs require later migrations.
+    scope, user, agent, preparation, release, number, binding = (
+        str(uuid.uuid4()) for _ in range(7)
+    )
+    routed_call = call_uuid("managed-upgrade")
+    draft = validate_draft(content())
+    speech_digest = canonical_digest({"synthetic": "historical voice assets"})
     with connection(database) as c:
-        assets = c.execute(
-            "SELECT manifest FROM prepared_voice_assets WHERE scope_id=%s AND speech_digest=%s",
-            (scope, preparation["speech_digest"]),
-        ).fetchone()[0]
+        c.execute(
+            "INSERT INTO recipient_scopes(id,display_name,enabled) VALUES(%s,'Synthetic',true)",
+            (scope,),
+        )
+        c.execute(
+            "INSERT INTO users(id,login,display_name,password_hash) "
+            "VALUES(%s,'historical.owner','Synthetic',%s)",
+            (user, "not-an-authenticating-hash" * 5),
+        )
+        c.execute(
+            "INSERT INTO assistant_profiles(id,scope_id,label,enabled) "
+            "VALUES(%s,%s,'Historical assistant',true)",
+            (agent, scope),
+        )
+        c.execute(
+            """INSERT INTO agent_preparations(id,scope_id,profile_id,draft_version,
+            requested_by,model_id,model_revision,content,content_digest,speech_digest)
+            VALUES(%s,%s,%s,1,%s,%s,1,%s,%s,%s)""",
+            (
+                preparation,
+                scope,
+                agent,
+                user,
+                draft.model,
+                Jsonb(draft.model_dump()),
+                canonical_digest(draft.model_dump()),
+                speech_digest,
+            ),
+        )
+        assets = {"synthetic": "historical voice assets"}
+        c.execute(
+            "INSERT INTO prepared_voice_assets(scope_id,speech_digest,manifest,manifest_digest) "
+            "VALUES(%s,%s,%s,%s)",
+            (scope, speech_digest, Jsonb(assets), canonical_digest(assets)),
+        )
         manifest = dict(
             schema_version=1,
             content=draft.model_dump(),
@@ -425,22 +456,49 @@ def test_upgrade_pins_existing_jobs_without_assigning_legacy_calls(database, tmp
             speech_digest,manifest,manifest_digest,published_by)
             SELECT %s,scope_id,profile_id,1,id,speech_digest,%s,%s,requested_by
             FROM agent_preparations WHERE id=%s""",
-            (release, Jsonb(manifest), canonical_digest(manifest), preparation["id"]),
+            (release, Jsonb(manifest), canonical_digest(manifest), preparation),
         )
-    routing.bound(account, (token, scope, agent, release))
-    route = routing.initialize(account, "upgrade")
-    with connection(database) as c:
+        c.execute(
+            "INSERT INTO phone_numbers(id,scope_id,e164) VALUES(%s,%s,%s)",
+            (number, scope, routing.DID),
+        )
+        c.execute(
+            """INSERT INTO number_bindings(id,scope_id,number_id,revision,profile_id,
+            release_id,node_id,created_by) VALUES(%s,%s,%s,1,%s,%s,%s,%s)""",
+            (binding, scope, number, agent, release, routing.NODE, user),
+        )
+        c.execute(
+            "INSERT INTO calls(id,sip_call_id,direction,status) "
+            "VALUES(%s,'managed-upgrade','inbound','ended')",
+            (routed_call,),
+        )
+        c.execute(
+            """INSERT INTO call_route_snapshots(call_id,scope_id,number_id,binding_id,
+            profile_id,release_id,node_id,called_e164,called_source,manifest_digest)
+            VALUES(%s,%s,%s,%s,%s,%s,%s,%s,'request_uri',%s)""",
+            (
+                routed_call,
+                scope,
+                number,
+                binding,
+                agent,
+                release,
+                routing.NODE,
+                routing.DID,
+                canonical_digest(manifest),
+            ),
+        )
         c.execute(
             "INSERT INTO calls(id,sip_call_id,direction,status) VALUES(%s,'old-legacy','inbound','ended')",
             (call_uuid("old-legacy"),),
         )
-        for cid in (route.call_id, "old-legacy"):
-            c.execute("INSERT INTO summary_jobs(call_id) VALUES(%s)", (call_uuid(cid),))
+        for cid in (routed_call, call_uuid("old-legacy")):
+            c.execute("INSERT INTO summary_jobs(call_id) VALUES(%s)", (cid,))
     migrate(database)
     migrate(database)
     with connection(database) as c:
         jobs = dict(c.execute("SELECT call_id,scope_id FROM summary_jobs").fetchall())
-        assert str(jobs[call_uuid(route.call_id)]) == scope
+        assert str(jobs[routed_call]) == scope
         assert jobs[call_uuid("old-legacy")] is None
         assert c.execute("SELECT count(*) FROM call_finalizations").fetchone() == (0,)
         assert c.execute("SELECT count(*) FROM notification_outbox").fetchone() == (0,)

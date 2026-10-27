@@ -68,6 +68,7 @@ def test_field_numbers_remain_wire_compatible():
         "format": 6,
         "audio": 7,
         "generation_id": 8,
+        "partial_hint": 9,
     }
     assert {f.name: f.number for f in pb.AudioFrame.DESCRIPTOR.fields} == expected
     assert [f.type for f in pb.AudioFrame.DESCRIPTOR.fields] == [
@@ -79,13 +80,17 @@ def test_field_numbers_remain_wire_compatible():
         Field.TYPE_STRING,
         Field.TYPE_BYTES,
         Field.TYPE_STRING,
+        Field.TYPE_BOOL,
     ]
+    # An omitted hint preserves the old wire payload and scheduling default.
+    assert not pb.AudioFrame.FromString(b"").partial_hint
+    assert pb.AudioFrame(partial_hint=False).SerializeToString() == b""
     services = pb.DESCRIPTOR.services_by_name
-    recognition = services["Recognition"].methods[0]
+    recognition = services["Recognition"].methods_by_name["StreamRecognize"]
     assert recognition.client_streaming and recognition.server_streaming
-    assert services["Synthesis"].methods[0].server_streaming
-    assert not services["Synthesis"].methods[0].client_streaming
-    assert services["Agent"].methods[0].server_streaming
-    assert not services["Agent"].methods[0].client_streaming
-    assert not services["GenerationControl"].methods[0].server_streaming
-    assert not services["GenerationControl"].methods[0].client_streaming
+    assert services["Synthesis"].methods_by_name["StreamSynthesize"].server_streaming
+    assert not services["Synthesis"].methods_by_name["StreamSynthesize"].client_streaming
+    assert services["Agent"].methods_by_name["RunTurn"].server_streaming
+    assert not services["Agent"].methods_by_name["RunTurn"].client_streaming
+    assert not services["GenerationControl"].methods_by_name["CancelGeneration"].server_streaming
+    assert not services["GenerationControl"].methods_by_name["CancelGeneration"].client_streaming
