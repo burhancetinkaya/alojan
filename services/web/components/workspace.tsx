@@ -1,6 +1,7 @@
 "use client";
 import { ConnectionSetup } from "./connection-setup";
 import { PersonalTokens } from "./personal-tokens";
+import { Outbound } from "./outbound";
 import { Performance } from "./performance";
 import { Calls, CallDetail } from "./calls";
 import { useEffect, useState } from "react";
@@ -32,6 +33,7 @@ export type WorkspaceProps = { session: Session; scope: string; role: string };
 const navigation = [
   { href: "/agentler", label: "Agentler", icon: AudioLines },
   { href: "/numaralar", label: "Numaralar", icon: Phone },
+  { href: "/outbound", label: "Outbound", icon: Phone },
   { href: "/aramalar", label: "Aramalar", icon: History },
   { href: "/performans", label: "Performans", icon: Gauge },
   { href: "/baglantilar", label: "Bağlantılar", icon: Unplug },
@@ -252,6 +254,8 @@ export function Workspace() {
                   <Numbers {...props} />
                 ) : pathname === "/baglantilar" ? (
                   <Connections {...props} />
+                ) : pathname === "/outbound" ? (
+                  <Outbound {...props} />
                 ) : pathname === "/aramalar" ? (
                   <Calls {...props} />
                 ) : /^\/aramalar\/[a-f0-9-]{36}$/.test(pathname) ? (

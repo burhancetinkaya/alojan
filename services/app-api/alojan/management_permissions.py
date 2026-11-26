@@ -21,6 +21,8 @@ def required_permissions(resource, action, method):
         if action not in {None, "revoke", "discovery", "tools"}:
             raise AuthError("insufficient_scope", 403)
         return frozenset({"connections:read" if read else "connections:write"})
+    if resource == "outbound-calls":
+        return frozenset({"outbound:read" if read else "outbound:submit"})
     if resource == "calls":
         return frozenset(
             {"calls:read", "transcripts:read"} if action == "transcript" else {"calls:read"}

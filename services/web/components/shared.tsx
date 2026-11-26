@@ -52,6 +52,8 @@ export function Field({
   required?: boolean;
   maxLength?: number;
   minLength?: number;
+  min?: number;
+  max?: number;
   type?: string;
   autoComplete?: string;
   disabled?: boolean;

@@ -3663,3 +3663,10 @@ that calls were idle and taking a private rollback backup. Agent/EMA/ASR report
 SERVING; the existing gateway remains running. M4-01/02 acceptance stays open;
 owner's real phone test is pending. See the
 [live trial and rollback record](validation/grounded-dialogue-2026-10-24.md#owner-authorized-live-trial).
+
+## 2026-11-26 — Outbound announcement milestones
+
+[ADR 0016](ADR/0016-outbound-announcements.md) approves OUT-01 carrier
+qualification, OUT-02 gateway/queue, OUT-03 agent authoring/web history and
+OUT-04 customer API. OUT-01 is pending a verified outbound account route and
+handset trial. The working inbound line is separate evidence.

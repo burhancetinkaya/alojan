@@ -3210,3 +3210,14 @@ and gate reopened; speech peers unchanged. Real authenticated MCP task-outcome r
 configured read tools and exact grant; no release or number binding. No phone call,
 GPU/load benchmark or eight-tool real workload was performed.
 [Evidence](validation/mcp-deliver2ai-2026-10-27.md).
+
+## 2026-11-26 — OUT-01 carrier qualification
+
+Owner designated a handset for one test. SSH inspection confirmed a healthy
+incoming gateway and inbound bind/public/source settings. Outbound credentials
+and registrar were not configured in its Netgsm environment. A pinned PJSUA 2.16 client in a disposable container used the single enabled,
+verified DID and current carrier peer to send one INVITE to the authorized
+handset. The carrier returned 407 Proxy Authentication Required; the client
+acknowledged it. No authenticated INVITE, ringing, media or handset caller ID
+was verified. The incoming gateway kept its listener. Retry with the operator's
+SIP digest credentials and confirm handset identity, audio and teardown.

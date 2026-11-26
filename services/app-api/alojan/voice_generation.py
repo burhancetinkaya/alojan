@@ -28,6 +28,39 @@ def segments(text):
         remaining = remaining[end:].lstrip()
 
 
+def render_segments(synthesis, call, metadata, text, pcm, byte_limit, check):
+    for part in segments(text):
+        check()
+        generation = uuid.uuid4().hex
+        stream = synthesis.StreamSynthesize(
+            pb.SynthesisRequest(call_id=call, generation_id=generation, text=part),
+            metadata=metadata,
+            timeout=40,
+        )
+        count = 0
+        try:
+            for frame in stream:
+                check()
+                if (
+                    frame.call_id != call
+                    or frame.generation_id != generation
+                    or frame.sequence != count
+                    or frame.sample_rate_hz != 8000
+                    or frame.channels != 1
+                    or frame.format != "pcm_s16le"
+                    or len(frame.audio) != 320
+                ):
+                    raise ValueError("Invalid synthesis frame")
+                pcm.extend(frame.audio)
+                count += 1
+                if len(pcm) > byte_limit:
+                    raise ValueError("Speech exceeds prepared asset duration")
+        finally:
+            stream.cancel()
+        if not count:
+            raise ValueError("Empty synthesis")
+
+
 def generate_pack(endpoint, preparation, draft, preset, directory, check):
     call = "managed-assets-" + uuid.uuid4().hex
     profile = voice_profile(draft.voice, preset.voice_model_revision)
@@ -61,36 +94,15 @@ def generate_pack(endpoint, preparation, draft, preset, directory, check):
                 raise ValueError("Synthesis configuration rejected")
             for name, text in draft.speech_texts().items():
                 pcm = bytearray(bytes(preset.greeting_pad_ms * 16) if name == "greeting" else b"")
-                for part in segments(text):
-                    check()
-                    generation = uuid.uuid4().hex
-                    stream = synthesis.StreamSynthesize(
-                        pb.SynthesisRequest(call_id=call, generation_id=generation, text=part),
-                        metadata=metadata,
-                        timeout=40,
-                    )
-                    count = 0
-                    try:
-                        for frame in stream:
-                            check()
-                            if (
-                                frame.call_id != call
-                                or frame.generation_id != generation
-                                or frame.sequence != count
-                                or frame.sample_rate_hz != 8000
-                                or frame.channels != 1
-                                or frame.format != "pcm_s16le"
-                                or len(frame.audio) != 320
-                            ):
-                                raise ValueError("Invalid synthesis frame")
-                            pcm.extend(frame.audio)
-                            count += 1
-                            if len(pcm) > min(480000, preset.asset_max_duration_ms * 16):
-                                raise ValueError("Speech exceeds prepared asset duration")
-                    finally:
-                        stream.cancel()
-                    if not count:
-                        raise ValueError("Empty synthesis")
+                render_segments(
+                    synthesis,
+                    call,
+                    metadata,
+                    text,
+                    pcm,
+                    min(480000, preset.asset_max_duration_ms * 16),
+                    check,
+                )
                 output = io.BytesIO()
                 with wave.open(output, "wb") as wav:
                     wav.setnchannels(1)

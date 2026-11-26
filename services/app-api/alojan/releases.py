@@ -289,6 +289,8 @@ class Releases:
             manifest["schema_version"] = 10
         if draft.voice != "ema-default":
             manifest["schema_version"] = 11
+        if "outbound" in manifest["content"]:
+            manifest["schema_version"] = 12
         # Stay below the existing JSONB/preload budget, including PostgreSQL formatting.
         if len(json.dumps(manifest, ensure_ascii=False).encode()) > 131072 or (
             mcp_grant

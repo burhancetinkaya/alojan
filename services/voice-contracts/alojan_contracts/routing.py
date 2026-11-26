@@ -37,7 +37,7 @@ def validated_release(value, digest):
         raise ValueError("Invalid release manifest")
     if (
         type(value["schema_version"]) is not int
-        or value["schema_version"] not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+        or value["schema_version"] not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
         or canonical_digest(value) != digest
     ):
         raise ValueError("Unsupported or corrupt release")
@@ -60,7 +60,9 @@ def validated_release(value, digest):
     elif "mcp_grant" in value:
         raise ValueError("Unexpected MCP authorization")
     expected = (
-        11
+        12
+        if "outbound" in value["content"]
+        else 11
         if draft.voice != "ema-default"
         else 10
         if draft.prompt_template is not None

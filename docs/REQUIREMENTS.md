@@ -418,3 +418,12 @@ old agents retain their instructions. Reject undefined/duplicate/reserved names,
 invalid syntax/timezones and expansion over the existing prompt budget. No template
 expressions, recursive expansion, external lookup or secret injection is supported.
 The media path must not acquire new IO or mutable configuration dependencies.
+
+## Outbound announcement acceptance (ADR 0016)
+
+OUT-01 verifies carrier-authorized origination and handset caller ID. OUT-02
+requires one-way prepared voice playback with answer-gated media, configurable
+ring and post-playback timers, shared admission and safe restart. OUT-03 adds
+published per-agent opt-in, single-call web submission and scoped history.
+OUT-04 exposes the same operation with separate token permissions for submit
+and read, stable idempotency and workspace isolation.

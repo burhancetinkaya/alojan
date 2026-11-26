@@ -117,8 +117,19 @@ class TelegramAction(BaseModel):
         return value
 
 
+class OutboundSettings(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True, frozen=True)
+
+    enabled: bool = False
+    ring_timeout_seconds: int = Field(default=30, ge=1, le=120)
+    post_playback_seconds: int = Field(default=2, ge=0, le=30)
+
+
 class AgentDraft(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
+    outbound: OutboundSettings = Field(
+        default_factory=OutboundSettings, exclude_if=lambda settings: settings == OutboundSettings()
+    )
     agent_name: str = Field(min_length=1, max_length=100)
     owner_display_name: str = Field(min_length=1, max_length=100)
     owner_address: str = Field(min_length=1, max_length=120)
@@ -310,6 +321,9 @@ class AgentDraft(BaseModel):
                 raise ValueError("Only declared identity placeholders are supported")
         return template.format_map(names)
 
+    def ai_introduction(self):
+        return f"Merhaba, ben {self.agent_name}. {self.owner_genitive} yapay zekâ asistanıyım."
+
     def greeting(self):
         from alojan_contracts.transcript import DISCLOSURE
 
@@ -318,7 +332,7 @@ class AgentDraft(BaseModel):
             if any(getattr(a, "transcript_policy", None) for a in self.post_call_actions)
             else ""
         )
-        return f"Merhaba, ben {self.agent_name}. {self.owner_genitive} yapay zekâ asistanıyım. {disclosure}{self.greeting_text}"
+        return f"{self.ai_introduction()} {disclosure}{self.greeting_text}"
 
     def digest(self):
         return hashlib.sha256(

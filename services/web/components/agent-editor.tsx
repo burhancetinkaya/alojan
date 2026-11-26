@@ -32,6 +32,7 @@ import {
   type Connection,
   type Model,
 } from "@/lib/api";
+import { OutboundPolicy } from "./outbound";
 import { VoicePreview } from "./voice-preview";
 import { ResponseExperience } from "./response-experience";
 import { MCPTools } from "./mcp-tools";
@@ -403,6 +404,7 @@ export function AgentEditor({
                     </optgroup>
                   </SelectField>
                 </div>
+                <OutboundPolicy value={draft.outbound ?? {enabled:false, ring_timeout_seconds:30,post_playback_seconds:2}} onChange={v=>patch("outbound",v)}/>
                 <SelectField
                   label="Model bağlantısı"
                   value={draft.model_connection || ""}

@@ -504,3 +504,27 @@ def test_operator_catalog_revision_preserves_historical_preset(accounts, example
             conn.execute("SELECT count(*) FROM model_catalog_status WHERE enabled").fetchone()[0]
             == 0
         )
+
+
+def test_published_outbound_settings_pin_timing_and_require_capable_reader(
+    accounts, author, tmp_path
+):
+    from alojan_contracts.routing import validated_release
+
+    token, scope, agent = author
+    settings = {"enabled": True, "ring_timeout_seconds": 45, "post_playback_seconds": 0}
+    profiles = Profiles(accounts)
+    profiles.update(token, scope, agent, content() | {"outbound": settings}, 1)
+    preparation, _, _ = prepare_assets(accounts, author, tmp_path, version=2)
+    released = Releases(accounts).publish(token, scope, agent, preparation["id"], 0)
+    profiles.update(token, scope, agent, content(), 2)
+    with connection(accounts.dsn) as conn:
+        manifest = conn.execute(
+            "SELECT manifest FROM agent_releases WHERE id=%s", (released["id"],)
+        ).fetchone()[0]
+    assert manifest["schema_version"] == 12
+    assert manifest["content"]["outbound"] == settings
+    validated_release(manifest, canonical_digest(manifest))
+    manifest["schema_version"] = 1
+    with pytest.raises(ValueError, match="capability version"):
+        validated_release(manifest, canonical_digest(manifest))

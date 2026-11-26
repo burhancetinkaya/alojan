@@ -134,6 +134,7 @@ export async function api<T>(
     method?: string;
     body?: unknown;
     csrf?: string;
+    idempotencyKey?: string;
     version?: number;
     signal?: AbortSignal;
     responseType?: "blob";
@@ -148,6 +149,7 @@ export async function api<T>(
       ...(options.body !== undefined
         ? { "Content-Type": "application/json" }
         : {}),
+      ...(options.idempotencyKey ? { "Idempotency-Key": options.idempotencyKey } : {}),
       ...(options.csrf ? { "X-CSRF-Token": options.csrf } : {}),
       ...(options.version !== undefined
         ? { "If-Match": `"${options.version}"` }
@@ -233,7 +235,9 @@ export type PromptTemplate = {
   timezone: string;
   variables: { name: string; value: string }[];
 };
+export type OutboundSettings = {enabled:boolean;ring_timeout_seconds:number;post_playback_seconds:number};
 export type Draft = {
+  outbound?: OutboundSettings;
   response_experience?: {
     schema_version: 1;
     enabled: boolean;
