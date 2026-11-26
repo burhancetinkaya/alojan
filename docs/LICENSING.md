@@ -33,3 +33,21 @@ These are upstream observations, not a version-pinned redistribution clearance. 
 2. If accepted, add the exact license text, SPDX metadata and contributor guidance in a dedicated change; preserve third-party licensing independently.
 3. Before release, review actual binaries/images/models, provide required notices and corresponding source/build material as applicable, and resolve proprietary-runtime redistribution terms.
 4. Until then, README must state that no project license is selected. Do not market the repository as already licensed open source.
+
+## Pocket Turkish optional voices (ADR 0015)
+
+TTS-01 pins `pocket-tts-turkish==0.1.0` (Apache-2.0), `pocket-tts==3.3.0`
+(MIT code), and model `wite-tech/pocket-tts-turkish` revision
+`fcbd37c74dc127be846face0ff36062e9a939f7b` (CC-BY-4.0 model card),
+with SHA-256 verification of weights, tokenizer, config and all six bundled voices.
+The model is by Khaled Moawad, Ammar Rashed and Ekrem Cetinkaya, derived from
+Kyutai Pocket TTS. Preserve model attribution and upstream notices with deployment
+or redistribution; Alojan resamples the generated 24 kHz audio to telephone PCM.
+The bundled voices are described upstream as synthetic. No arbitrary user voice
+upload or consent workflow is introduced. `soxr==0.5.0.post1` provides streaming
+resampling; retain its LGPL-2.1-or-later/libsoxr notices. These are dependency
+observations, not approval of a project license or a full redistribution clearance.
+Sources: https://github.com/witetech/pocket-tts-turkish,
+https://huggingface.co/wite-tech/pocket-tts-turkish,
+https://github.com/kyutai-labs/pocket-tts,
+https://github.com/dofuuz/python-soxr.

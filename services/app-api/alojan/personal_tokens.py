@@ -16,6 +16,8 @@ PERMISSIONS = frozenset(
         "connections:read",
         "connections:write",
         "calls:read",
+        "outbound:read",
+        "outbound:submit",
         "transcripts:read",
         "releases:publish",
         "numbers:manage",
@@ -23,10 +25,12 @@ PERMISSIONS = frozenset(
         "deliveries:retry",
     }
 )
-READ = frozenset({"agents:read", "connections:read", "calls:read", "transcripts:read"})
+READ = frozenset(
+    {"agents:read", "connections:read", "calls:read", "transcripts:read", "outbound:read"}
+)
 ROLE_PERMISSIONS = {
     "viewer": READ,
-    "editor": READ | {"agents:write"},
+    "editor": READ | {"agents:write", "outbound:submit"},
     "owner": PERMISSIONS,
 }
 PATTERN = re.compile(r"alojan_pat_([a-f0-9]{32})_([A-Za-z0-9_-]{43})")

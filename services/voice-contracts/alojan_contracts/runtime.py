@@ -6,7 +6,7 @@ from dataclasses import asdict, dataclass, replace
 
 from alojan_contracts.configuration import AgentDraft, EnginePreset
 from alojan_contracts.routing import validated_release
-from alojan_contracts.synthesis import EMA_MODEL, SynthesisProfile
+from alojan_contracts.synthesis import SynthesisProfile, voice_profile
 from alojan_contracts.configuration import SPEECH_ABBREVIATIONS as ABBREVIATIONS
 
 CORE_POLICY = """# Platform rules (not editable by agent instructions)
@@ -280,7 +280,7 @@ def compile_agent(draft: AgentDraft, engine: EnginePreset, *, mcp_grant=None):
         + json.dumps(draft.render(draft.summary_role_template), ensure_ascii=False),
         engine=engine,
         speech=speech,
-        synthesis=SynthesisProfile(EMA_MODEL, engine.voice_model_revision, draft.voice),
+        synthesis=voice_profile(draft.voice, engine.voice_model_revision),
         offer_further_help=draft.offer_further_help,
         note_alias=note_alias,
         note_guidance=guidance,

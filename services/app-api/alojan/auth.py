@@ -133,9 +133,9 @@ class Accounts:
                     conn.execute(
                         """SELECT count(*) FROM schema_migrations WHERE name IN
                     ('0004_native_auth.sql','0005_agent_drafts.sql','0006_agent_releases.sql','0007_email_login.sql','0008_number_routing.sql',
-                     '0011_provider_connections.sql','0012_telegram_connections.sql','0013_action_grants.sql','0014_action_delivery.sql','0015_action_retries.sql','0016_voice_preparation_jobs.sql','0017_call_history.sql','0018_call_transcript.sql','0019_call_latency.sql','0020_mcp_discovery.sql','0021_mcp_tool_grants.sql','0022_mcp_execution.sql','0025_call_lifecycle_actions.sql','0026_publication_node.sql','0027_personal_access_tokens.sql','0028_management_operations.sql','0029_management_connection_setups.sql')"""
+                     '0011_provider_connections.sql','0012_telegram_connections.sql','0013_action_grants.sql','0014_action_delivery.sql','0015_action_retries.sql','0016_voice_preparation_jobs.sql','0017_call_history.sql','0018_call_transcript.sql','0019_call_latency.sql','0020_mcp_discovery.sql','0021_mcp_tool_grants.sql','0022_mcp_execution.sql','0025_call_lifecycle_actions.sql','0026_publication_node.sql','0027_personal_access_tokens.sql','0028_management_operations.sql','0029_management_connection_setups.sql','0030_pocket_voices.sql','0031_outbound_announcements.sql')"""
                     ).fetchone()[0]
-                    == 22
+                    == 24
                 )
         except psycopg.Error:
             return False

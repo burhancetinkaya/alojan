@@ -18,7 +18,7 @@ A personal, self-hosted Turkish phone assistant answers Netgsm 0850 calls, inclu
 | DEC-06 | Owner-controlled Turkcell forwarding and cancellation; no unattended USSD guarantee |
 | DEC-07 | C++ conversation control, VAD/turn decisions, jitter/playout, interruption, state, cancellation and echo policy |
 | DEC-08 | Configurable CUDA ASR: faster-whisper large-v3-turbo by default; optional Nemotron 3.5 under ADR 0008; application-managed partial transcription |
-| DEC-09 | canberkkkkkk/ema-lightning, Turkish single voice, stream(), lightning() warm-up; no cloning |
+| DEC-09 | EMA remains the default; ADR 0015 adds six pinned Pocket Turkish voices selected per agent, streaming and prepared assets; user voice cloning remains outside this slice |
 | DEC-10 | Silero ONNX VAD and Smart Turn v3.2, CPU inference |
 | DEC-11 | Python OpenAI Agents SDK, Responses streaming, native tools and MCP boundary; ADR 0011 selects per-agent model/provider/runtime settings from a validated catalog. Initial entry remains OpenRouter `openai/gpt-oss-120b` on Cerebras (ADR 0005); new entries require compatibility/quality/speed validation |
 | DEC-12 | C++/Python gRPC streaming with binary audio, cancellation, deadlines and backpressure |
@@ -134,7 +134,7 @@ Default to faster-whisper large-v3-turbo on CUDA with compute_type=float16. ADR 
 
 ### 8.2 TTS
 
-Pin code and model revisions for canberkkkkkk/ema-lightning. Construct one EMA instance per worker, call lightning() once for warm-up/compilation, and stream mono float32 chunks. The source baseline lists sample rates 8000/16000/24000/48000; verify against the pinned version and compare direct 8 kHz with 24/48 kHz resampling. Turkish only, single voice, no cloning/emotion controls. Test text normalization and foreign-word pronunciation. Version AI-generated greeting/fallback WAVs with provenance; bound inference queues and concurrent contexts.
+Pin code and model revisions for canberkkkkkk/ema-lightning. Construct one EMA instance per worker, call lightning() once for warm-up/compilation, and stream mono float32 chunks. The source baseline lists sample rates 8000/16000/24000/48000; verify against the pinned version and compare direct 8 kHz with 24/48 kHz resampling. ADR 0015 adds six bundled Turkish Pocket voices selected per agent alongside the default EMA voice; cloning uploads and emotion controls remain outside this slice. Load and warm one optional Pocket model with cached speaker states before readiness, preserve the existing synthesis admission limit, and resample its 24 kHz stream to 8 kHz with generation-local state. Bind both prepared assets and streaming inference to the selected pinned model/voice identity; reject unsupported capabilities rather than substituting speakers. Test text normalization and foreign-word pronunciation. Version AI-generated greeting/fallback WAVs with provenance; bound inference queues and concurrent contexts.
 
 ## 9. Agent and tools
 
@@ -418,3 +418,12 @@ old agents retain their instructions. Reject undefined/duplicate/reserved names,
 invalid syntax/timezones and expansion over the existing prompt budget. No template
 expressions, recursive expansion, external lookup or secret injection is supported.
 The media path must not acquire new IO or mutable configuration dependencies.
+
+## Outbound announcement acceptance (ADR 0016)
+
+OUT-01 verifies carrier-authorized origination and handset caller ID. OUT-02
+requires playback of only the submitted text in the selected voice with answer-gated media, configurable
+ring and post-playback timers, shared admission and safe restart. OUT-03 adds
+published per-agent opt-in, single-call web submission and scoped history.
+OUT-04 exposes the same operation with separate token permissions for submit
+and read, stable idempotency and workspace isolation.

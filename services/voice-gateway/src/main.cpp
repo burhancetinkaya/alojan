@@ -1,5 +1,6 @@
 #include "call_setup.hpp"
 #include "caller_identity.hpp"
+#include "outbound.hpp"
 #include "speech_media.hpp"
 #include <string_view>
 
@@ -48,6 +49,8 @@ struct Options {
     alojan::TurnSettings turn_settings;
     alojan::QuestionContext turn_context = alojan::QuestionContext::open;
     std::shared_ptr<alojan::TurnModels> turn_models;
+    std::filesystem::path outbound_dir;
+    std::string outbound_domain, outbound_user, outbound_password;
     std::string wav;
     std::string prompt_dir = "assets/prompts/tr-v3-ema";
     bool custom_wav = false, custom_prompt_dir = false;
@@ -189,6 +192,23 @@ Options options(int argc, char **argv) {
         } else
             throw std::invalid_argument("unknown option");
     }
+    if (const auto dir = std::getenv("ALOJAN_OUTBOUND_DIR")) {
+        result.outbound_dir = dir;
+        auto env = [](const char *name) -> std::string {
+            const auto value = std::getenv(name);
+            if (!value || !*value)
+                throw std::invalid_argument("outbound SIP configuration incomplete");
+            return value;
+        };
+        result.outbound_domain = env("ALOJAN_OUTBOUND_SIP_DOMAIN");
+        result.outbound_user = env("ALOJAN_OUTBOUND_SIP_USER");
+        result.outbound_password = env("ALOJAN_OUTBOUND_SIP_PASSWORD");
+        if (!std::regex_match(result.outbound_domain, std::regex("[a-zA-Z0-9.-]+(:[0-9]{1,5})?")) ||
+            !std::regex_match(result.outbound_user, std::regex("850[0-9]{7}")) ||
+            !result.outbound_dir.is_absolute() ||
+            !std::filesystem::is_directory(result.outbound_dir))
+            throw std::invalid_argument("invalid outbound SIP identity or spool");
+    }
     result.turn_settings.validate();
     if (result.custom_turn_settings && result.turn_model_dir.empty())
         throw std::invalid_argument("turn thresholds require turn models");
@@ -325,10 +345,12 @@ class Playback : public pj::AudioMediaPlayer {
 class Session : public pj::Call {
   public:
     bool disconnected = false, answered = false, media_started = false, ending = false;
+    std::optional<alojan::OutboundRequest> outbound;
     const unsigned serial;
     alojan::CallerIdentity identity;
     Clock::time_point created = Clock::now(), ringing_at{}, eof_at{}, last_rtp{}, next_rtp_check{};
     unsigned media_index = 0, received_packets = 0;
+    unsigned outbound_tx_start = 0, outbound_frames = 0;
     unsigned lost_packets = 0, reordered_packets = 0, duplicate_packets = 0;
     int jitter_max_us = 0;
     std::array<Playback, 2> playback;
@@ -357,6 +379,18 @@ class Session : public pj::Call {
             << " code=" << info.lastStatusCode << " elapsed_ms="
             << std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - created).count()
             << std::endl;
+        if (outbound && info.state == PJSIP_INV_STATE_CONFIRMED && !ending) {
+            answered = outbound->confirmed = true;
+        }
+        if (outbound && info.state == PJSIP_INV_STATE_DISCONNECTED && outbound->result.empty()) {
+            outbound->result =
+                eof_at != Clock::time_point{}                              ? "completed"
+                : answered                                                 ? "interrupted"
+                : info.lastStatusCode == 486 || info.lastStatusCode == 600 ? "busy"
+                : info.lastStatusCode == 408 || info.lastStatusCode == 480 ? "no_answer"
+                : info.lastStatusCode == 603 || info.lastStatusCode == 403 ? "rejected"
+                                                                           : "failed";
+        }
         if (info.state == PJSIP_INV_STATE_CONFIRMED && setup && !ending)
             setup->answered();
         if (info.state == PJSIP_INV_STATE_DISCONNECTED) {
@@ -389,6 +423,17 @@ class Session : public pj::Call {
         for (const auto &media : info.media) {
             if (media.type != PJMEDIA_TYPE_AUDIO || media.status != PJSUA_CALL_MEDIA_ACTIVE)
                 continue;
+            if (outbound) {
+                auto audio = getAudioMedia(static_cast<int>(media.index));
+                pjsua_stream_stat stats{};
+                if (pjsua_call_get_stream_stat(getId(), media.index, &stats) != PJ_SUCCESS)
+                    throw std::runtime_error("outbound RTP statistics unavailable");
+                outbound_tx_start = stats.rtcp.tx.pkt;
+                playback[0].startTransmit(audio);
+                media_started = true;
+                media_index = media.index;
+                return;
+            }
             pj::MediaFormatAudio format;
             format.init(PJMEDIA_FORMAT_PCM, InputMeter::rate_hz, 1, 20000, 16);
             playback_count = setup ? 2 : static_cast<unsigned>(config.playback_files.size());
@@ -655,11 +700,14 @@ class LocalAccount : public pj::Account {
         called_policy.trusted_ips = config.identity.trusted_ips;
         called_policy.turkish_national = config.called_national;
     }
-    void onIncomingCall(pj::OnIncomingCallParam &param) override {
+    bool occupied() const {
         unsigned active = 0;
         for (const auto &call : calls)
             active += !call->disconnected || (call->setup && !call->setup->finished());
-        const bool busy = stopping != 0 || admission_closed != 0 || active >= admission_limit;
+        return stopping != 0 || admission_closed != 0 || active >= admission_limit;
+    }
+    void onIncomingCall(pj::OnIncomingCallParam &param) override {
+        const bool busy = occupied();
         auto call = std::make_unique<Session>(*this, param.callId, next_serial++);
         char source[PJ_INET6_ADDRSTRLEN]{};
         if (param.rdata.pjRxData)
@@ -696,7 +744,52 @@ class LocalAccount : public pj::Account {
         if (busy || denied || invalid_called)
             session->ending = true;
     }
+    Clock::time_point next_outbound_check{};
+    void take_outbound(const Options &config) {
+        if (config.outbound_dir.empty() || occupied() || Clock::now() < next_outbound_check)
+            return;
+        next_outbound_check = Clock::now() + std::chrono::milliseconds(100);
+        const auto pending = config.outbound_dir / "pending",
+                   running = config.outbound_dir / "running";
+        if (!std::filesystem::exists(pending) || std::filesystem::exists(running))
+            return;
+        std::filesystem::rename(pending, running);
+        auto request = alojan::OutboundRequest::read(config.outbound_dir);
+        if (request.caller != "+90" + config.outbound_user) {
+            request.finish("failed");
+            return;
+        }
+        auto call = std::make_unique<Session>(*this, PJSUA_INVALID_ID, next_serial++);
+        call->outbound = request;
+        try {
+            call->playback[0].createPlayer((request.root / (request.id + ".wav")).string(),
+                                           PJMEDIA_FILE_NO_LOOP);
+            const auto info = call->playback[0].getInfo();
+            if (!info.sizeSamples || info.sizeSamples > 240 * 8000 || info.sizeSamples % 160 ||
+                info.payloadBitsPerSample != 16) {
+                request.finish("failed");
+                return;
+            }
+            call->outbound_frames = info.sizeSamples / 160;
+            request.report("dialing");
+            pj::CallOpParam op(true);
+            op.opt.audioCount = 1;
+            op.opt.videoCount = 0;
+            if (!config.allowed_sip_ips.empty()) {
+                pj::SipHeader route;
+                route.hName = "Route";
+                route.hValue = "<sip:" + config.allowed_sip_ips.front() + ":5060;lr>";
+                op.txOption.headers.push_back(route);
+            }
+            call->makeCall("sip:0" + request.destination.substr(3) + "@" + config.outbound_domain,
+                           op);
+            calls.push_back(std::move(call));
+        } catch (const pj::Error &) {
+            request.finish("failed");
+        }
+    }
     void tick(const Options &config) {
+        take_outbound(config);
         const int admission = admission_closed;
         if (!stopping && reported_admission != admission) {
             reported_admission = admission;
@@ -711,6 +804,41 @@ class LocalAccount : public pj::Account {
             if (call->disconnected || call->ending)
                 continue;
             auto now = Clock::now();
+            if (call->outbound) {
+                auto &job = *call->outbound;
+                if (job.confirmed) {
+                    job.report("answered");
+                    job.confirmed = false;
+                }
+                if (stopping || now - call->created > std::chrono::seconds(420)) {
+                    job.result = "failed";
+                    call->end("outbound_shutdown");
+                } else if (!call->answered &&
+                           now - call->created >= std::chrono::seconds(job.ring_seconds)) {
+                    job.result = "no_answer";
+                    call->end("outbound_timeout");
+                } else if (call->answered) {
+                    try {
+                        call->start_media(config);
+                        pjsua_stream_stat stats{};
+                        if (call->media_started && call->playback[0].eof.load() &&
+                            pjsua_call_get_stream_stat(call->getId(), call->media_index, &stats) ==
+                                PJ_SUCCESS &&
+                            stats.rtcp.tx.pkt - call->outbound_tx_start >= call->outbound_frames) {
+                            if (call->eof_at == Clock::time_point{})
+                                call->eof_at = now;
+                            if (now - call->eof_at >= std::chrono::seconds(job.wait_seconds)) {
+                                job.result = "completed";
+                                call->end("playback_complete");
+                            }
+                        }
+                    } catch (...) {
+                        job.result = "failed";
+                        call->end("outbound_media_failed");
+                    }
+                }
+                continue;
+            }
             // Before setup finishes only the infrastructure ceiling applies, never legacy CLI
             // defaults. Admission itself retains its independent 1.8-second deadline.
             const auto max_seconds = call->gateway_settings
@@ -818,6 +946,9 @@ class LocalAccount : public pj::Account {
             if (!call->disconnected || (call->speech && !call->speech->quiesced()) ||
                 (call->setup && !call->setup->finished()))
                 return false;
+            if (call->outbound)
+                call->outbound->finish(call->outbound->result.empty() ? "uncertain"
+                                                                      : call->outbound->result);
             if (call->setup)
                 std::cout << "event=setup_released call=" << call->serial
                           << " confirmed=" << call->setup->cleanup_confirmed() << std::endl;
@@ -890,6 +1021,13 @@ int main(int argc, char **argv) {
             LocalAccount account(config);
             pj::AccountConfig ac;
             ac.idUri = "sip:alojan@" + config.public_address;
+            if (!config.outbound_dir.empty()) {
+                ac.idUri = "sip:" + config.outbound_user + "@" + config.outbound_domain;
+                ac.sipConfig.authCreds.emplace_back("digest", "*", config.outbound_user, 0,
+                                                    config.outbound_password);
+                if (std::filesystem::exists(config.outbound_dir / "running"))
+                    alojan::OutboundRequest::read(config.outbound_dir).finish("uncertain");
+            }
             ac.regConfig.registerOnAdd = false;
             ac.mediaConfig.transportConfig.port = config.rtp_port;
             ac.mediaConfig.transportConfig.portRange = config.rtp_port_range;

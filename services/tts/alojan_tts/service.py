@@ -22,13 +22,19 @@ class InvalidText(ValueError):
 
 
 class SynthesisService(GenerationControl, rpc.SynthesisServicer):
-    def __init__(self, backend, *, require_agent_release=False):
+    def __init__(self, backend, *, require_agent_release=False, additional_backends=()):
         super().__init__()
         self.backend = backend
         profile = getattr(backend, "synthesis_profile", None)
         if profile is not None and not isinstance(profile, SynthesisProfile):
             raise ValueError("Invalid loaded synthesis profile")
         self.loaded_profile = profile
+        self.backends = {profile: backend} if profile is not None else {}
+        for candidate in additional_backends:
+            identity = getattr(candidate, "synthesis_profile", None)
+            if not isinstance(identity, SynthesisProfile) or identity in self.backends:
+                raise ValueError("Invalid or duplicate synthesis capability")
+            self.backends[identity] = candidate
         self.require_agent_release = require_agent_release
         self.configurations = {}
         self.executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="tts")
@@ -51,7 +57,7 @@ class SynthesisService(GenerationControl, rpc.SynthesisServicer):
             profile = SynthesisProfile.from_proto(request.configuration)
         except ValueError:
             await context.abort(grpc.StatusCode.INVALID_ARGUMENT, "invalid synthesis profile")
-        if self.loaded_profile is None or profile != self.loaded_profile:
+        if profile not in self.backends:
             await context.abort(grpc.StatusCode.FAILED_PRECONDITION, "synthesis worker mismatch")
         identity = (request.release_id, request.manifest_digest, profile)
         existing = self.configurations.get(request.call_id)
@@ -70,7 +76,9 @@ class SynthesisService(GenerationControl, rpc.SynthesisServicer):
         super().release_call(call_id)
         self.configurations.pop(call_id, None)
 
-    def produce(self, text, queue, loop, stop):
+    def produce(self, text, queue, loop, stop, backend=None):
+        backend = backend if backend is not None else self.backend
+
         async def enqueue(item):
             await queue.put(item)
             self.queue_peak = max(self.queue_peak, queue.qsize())
@@ -93,7 +101,7 @@ class SynthesisService(GenerationControl, rpc.SynthesisServicer):
         total = 0
         status = None
         try:
-            stream = self.backend.stream(text)
+            stream = backend.stream(text)
             while not stop.is_set():
                 try:
                     chunk = next(stream)
@@ -133,6 +141,11 @@ class SynthesisService(GenerationControl, rpc.SynthesisServicer):
             except Exception:
                 self.cleanup_failed = True
                 status = grpc.StatusCode.INTERNAL
+            # A generator may already be closed after raising from its own finally;
+            # calling close again cannot prove that native cleanup succeeded.
+            if not getattr(backend, "quiescence_confirmed", True):
+                self.cleanup_failed = True
+                status = grpc.StatusCode.INTERNAL
             tail.clear()
             if not stop.is_set():
                 put(status)
@@ -140,6 +153,8 @@ class SynthesisService(GenerationControl, rpc.SynthesisServicer):
     async def StreamSynthesize(self, request, context):
         if context.time_remaining() is None:
             await context.abort(grpc.StatusCode.INVALID_ARGUMENT, "deadline required")
+        if self.cleanup_failed:
+            await context.abort(grpc.StatusCode.UNAVAILABLE, "synthesis worker requires recovery")
         text = request.text.strip()
         if (
             not text
@@ -163,7 +178,11 @@ class SynthesisService(GenerationControl, rpc.SynthesisServicer):
         self.stop = stop = threading.Event()
         queue = asyncio.Queue(maxsize=8)
         loop = asyncio.get_running_loop()
-        self.inference = loop.run_in_executor(self.executor, self.produce, text, queue, loop, stop)
+        configuration = self.configurations.get(request.call_id)
+        backend = self.backends[configuration[2]] if configuration else self.backend
+        self.inference = loop.run_in_executor(
+            self.executor, self.produce, text, queue, loop, stop, backend
+        )
         self.inference.add_done_callback(
             lambda future: None if future.cancelled() else future.exception()
         )

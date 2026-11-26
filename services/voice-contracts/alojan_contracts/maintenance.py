@@ -51,6 +51,10 @@ class WorkerMaintenance(grpc.aio.ServerInterceptor):
             and not getattr(service, "turn_tasks", {})
             and not getattr(service, "cleanup_failed", False)
             and getattr(service.backend, "quiescence_confirmed", True)
+            and all(
+                getattr(backend, "quiescence_confirmed", True)
+                for backend in getattr(service, "backends", {}).values()
+            )
             and all(call.ended for call in getattr(service, "calls", {}).values())
             # A cancelled asyncio future cannot attest that its native thread has exited.
             and (
@@ -110,6 +114,10 @@ class WorkerMaintenance(grpc.aio.ServerInterceptor):
                             if self.quiescent
                             else health_pb2.HealthCheckResponse.NOT_SERVING
                         )
+                    )
+                if getattr(self.service, "cleanup_failed", False):
+                    return health_pb2.HealthCheckResponse(
+                        status=health_pb2.HealthCheckResponse.NOT_SERVING
                     )
                 return await handler.unary_unary(request, context)
 

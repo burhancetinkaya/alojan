@@ -10,6 +10,8 @@ const permissions: Record<string, string> = {
   "agents:write": "Agent oluştur, düzenle ve seslerini hazırla",
   "connections:read": "Bağlantıları ve araçları görüntüle",
   "connections:write": "Bağlantıları yönet ve araçları tara",
+  "outbound:submit": "Dış arama başlat",
+  "outbound:read": "Dış arama geçmişini oku",
   "calls:read": "Aramaları, özetleri ve gönderimleri oku",
   "transcripts:read": "Konuşma dökümlerini oku",
   "releases:publish": "Agent yayınla ve sürümü geri al",
@@ -47,8 +49,8 @@ export function PersonalTokens({ session, scope, role }: WorkspaceProps) {
     role === "owner"
       ? Object.keys(permissions)
       : role === "editor"
-        ? [...read, "agents:write", "transcripts:read"]
-        : [...read, "transcripts:read"];
+        ? [...read, "agents:write", "transcripts:read", "outbound:read", "outbound:submit"]
+        : [...read, "transcripts:read", "outbound:read"];
   async function refresh() {
     const data = await api<{ tokens: Token[]; mcp_url?: string }>(path);
     setTokens(data.tokens);

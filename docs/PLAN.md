@@ -1,5 +1,75 @@
 # Implementation plan
 
+## 2026-10-28 — Reviewed Pocket CUDA version deployed
+
+TTS-01 / M2-02 / US-01/05, ADR 0015: owner authorized testing, review and live
+promotion. Closed one cleanup-failure admission/health finding; preserve scoped
+Pocket tuning and EMA calibration. Linux 123 focused tests passed. Final-image
+actual GPU RPC checks passed all seven voices, cancellation/reuse and EMA return;
+30 timed syntheses measured Pocket greeting first/total medians 37.79/430.44 ms.
+Replaced only TTS and selected CUDA under existing drain/maintenance locks. All
+speech workers healthy, routes ready, admission open, preparer active, HTTPS health
+200; phone bindings unchanged. No new handset or concurrent-load acceptance.
+[Review, measurements and deployment](validation/pocket-gpu-release-2026-10-28.md).
+
+## 2026-10-28 — EMA autotuning calibration versus runtime measured
+
+TTS-01 / M2-02, US-01: owner asked whether EMA should also disable autotuning.
+Two isolated real CUDA graph builds and 120 syntheses separated initialization
+calibration from runtime flag changes. Turning the flag off after capture did not
+improve the greeting's total generation (7.20 versus 7.28 ms); building with tuning
+disabled was slower (9.00 ms). Paired runtime-toggle audio hashes matched. Preserve
+EMA calibration and the Pocket-specific correction; no production source or serving
+setting changed. [Evidence](validation/ema-autotune-2026-10-28.md).
+
+## 2026-10-27 — Pocket CUDA autotuner interaction corrected
+
+TTS-01 / M2-02 / US-01/05, ADR 0015: owner questioned the unexpectedly slow GPU
+onset. Stage timing and on/off/on trials identified EMA's process-wide cuDNN
+autotuner leaking into Pocket's variable-shape decoder. Scope benchmark=False to
+Pocket CUDA decode calls and restore the previous value even on exceptions; keep
+EMA calibration, precision, weights and CPU behavior unchanged. Linux: 76 regression
+tests passed; corrected real RPC service passed all seven voices, cancellation/reuse
+and EMA return. Thirty timed syntheses: Nazli greeting first/total median improved
+from 226.36/806.85 to 32.22/435.38 ms. This supersedes the previous CPU preference
+based on uncorrected CUDA timings. Candidate is built/tested, not deployed; live
+Pocket remains CPU and its serving image is unchanged.
+[Root cause and measured evidence](validation/pocket-cuda-autotuner-2026-10-27.md).
+
+## 2026-10-27 — Pocket CPU/CUDA comparison completed
+
+TTS-01 / M2-02 / US-01/05, ADR 0015: owner requested actual GPU testing. Isolated
+Linux RTX 4080 candidate passed all seven voice profiles, cancellation/reuse and EMA
+return with both Pocket devices. Sixty timed syntheses covered three authored texts,
+two voices and five repeats per device. Pocket CUDA reduced total generation by
+1.77–2.42x but increased first-frame latency by 2.27–3.45x versus CPU. For the Nazli
+greeting, medians were CPU 66.72/1431.01 ms and CUDA 226.36/806.85 ms (first/total).
+The original recommendation was to keep CPU; the subsequent autotuner investigation
+above supersedes that performance conclusion. No device, binding or image was changed.
+Candidate removed; live TTS healthy and GPU memory returned to baseline.
+[Measurements and limits](validation/pocket-cpu-cuda-2026-10-27.md).
+
+## 2026-10-27 — Selectable Pocket TTS deployed
+
+TTS-01 / M2-02 / AGP-03/06, US-01/02/05: owner approved Pocket as an additional
+agent voice provider and a Nazli preview. ADR 0015 records six bundled voices,
+unchanged EMA defaults, release v11 and additive migration 0030. Linux: 112 focused
+tests, 79 call/MCP regressions and 49 HTTPS browser scenarios passed. Real mixed
+EMA CUDA / Pocket CPU RPC checks passed for all seven voices, cancellation, reuse
+and return to EMA; Pocket first frames were 43.76–57.84 ms in this warm isolated run.
+Coordinated live rollout completed with healthy workers, ready routes, open admission,
+unchanged number bindings and active pinned voice preparer. Synthetic Nazli previews
+were generated privately; no Nazli draft, release or number binding was changed.
+Carrier listening, concurrent capacity and broader voice quality remain unqualified.
+[Evidence and deployment limits](validation/pocket-tts-2026-10-27.md).
+
+Owner follow-up: published the six synthetic previews temporarily through the
+Linux HTTP ingress with a mobile-friendly listening/download page. Only the isolated
+preview directory is mounted read-only; no private voice store or call recordings.
+HTTPS page/audio hashes, MIME types, byte ranges, missing-file handling and existing
+login/health/MCP authentication checks passed. No speech service or binding changed.
+
+
 ## 2026-10-27 — Qualified platform publication and private MCP configuration
 
 M5-03 / AGP-03/06 / MCP-06, US-02/05/06: owner ended noise experiments and
@@ -3593,3 +3663,21 @@ that calls were idle and taking a private rollback backup. Agent/EMA/ASR report
 SERVING; the existing gateway remains running. M4-01/02 acceptance stays open;
 owner's real phone test is pending. See the
 [live trial and rollback record](validation/grounded-dialogue-2026-10-24.md#owner-authorized-live-trial).
+
+## 2026-11-26 — Outbound announcements
+
+[ADR 0016](ADR/0016-outbound-announcements.md) and [operator/API guide](OUTBOUND.md)
+cover OUT-01–04. Published opt-in and timing, queue submission, release/number
+pinning, prepared voice, shared native admission, authenticated SIP origination,
+web history and scoped customer HTTP operations are implemented on the feature
+branch. OUT-01 is partial: digest signaling reached the carrier; both authenticated
+trials ended with 486 before answer. Live handset caller ID, audio, closing delay
+and customer acceptance remain open. Production inbound stayed healthy.
+See the [call log](CALL_TEST_PLAN.md#2026-11-26--out-01-carrier-qualification).
+
+OUT-02 deployment (2026-11-26): live UI, API, queue worker and gateway deployed.
+Production authenticated panel acceptance remains pending with the owner. See
+the OUT-02 production rollout entry in CALL_TEST_PLAN.md.
+
+OUT-02/03: deployed text-only outbound synthesis and the revised announcement
+form, history and details layout. Validation is recorded in CALL_TEST_PLAN.md.

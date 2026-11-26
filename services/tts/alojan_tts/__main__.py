@@ -11,9 +11,16 @@ from .model import REVISION, EmaBackend
 from .service import SynthesisService, create_server
 
 
-async def serve(port, require_agent_release=False):
+async def serve(port, require_agent_release=False, pocket=False, pocket_device="cpu"):
     backend = EmaBackend()
-    service = SynthesisService(backend, require_agent_release=require_agent_release)
+    additional = []
+    if pocket:
+        from .pocket import load_backends
+
+        additional = load_backends(pocket_device)
+    service = SynthesisService(
+        backend, require_agent_release=require_agent_release, additional_backends=additional
+    )
     admission = WorkerMaintenance.from_environment(service)
     server = create_server(service, maintenance=admission)
     readiness = health.aio.HealthServicer()
@@ -46,11 +53,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--port", type=int, default=15072)
     parser.add_argument("--require-agent-release", action="store_true")
+    parser.add_argument("--pocket", action="store_true", help="Load the six pinned Pocket voices")
+    parser.add_argument("--pocket-device", choices=("cpu", "cuda"), default="cpu")
     args = parser.parse_args()
     if not 1024 <= args.port <= 65535:
         parser.error("port must be between 1024 and 65535")
     try:
-        asyncio.run(serve(args.port, args.require_agent_release))
+        asyncio.run(serve(args.port, args.require_agent_release, args.pocket, args.pocket_device))
     except Exception as error:
         # Model/transport exceptions may contain paths or data; keep startup output bounded.
         print(f"event=tts_startup_failed kind={type(error).__name__}", flush=True)

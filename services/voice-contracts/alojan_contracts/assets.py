@@ -9,6 +9,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from alojan_contracts.configuration import canonical_digest
+from alojan_contracts.synthesis import voice_profile
 
 
 class VoiceFile(BaseModel):
@@ -21,7 +22,9 @@ class VoiceFile(BaseModel):
 class VoiceManifest(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True, frozen=True)
     schema_version: Literal[1] = 1
-    model: Literal["canberkkkkkk/ema-lightning"] = "canberkkkkkk/ema-lightning"
+    model: Literal["canberkkkkkk/ema-lightning", "wite-tech/pocket-tts-turkish"] = (
+        "canberkkkkkk/ema-lightning"
+    )
     model_revision: str = Field(pattern=r"^[0-9a-f]{40}$")
     speech_digest: str = Field(pattern=r"^[0-9a-f]{64}$")
     sample_rate_hz: Literal[8000] = 8000
@@ -37,7 +40,9 @@ def speech_identity(draft, preset):
             "schema_version": 1,
             "texts": draft.speech_texts(),
             "voice": draft.voice,
-            "model_revision": preset.voice_model_revision,
+            "model_revision": voice_profile(
+                draft.voice, preset.voice_model_revision
+            ).model_revision,
             "sample_rate_hz": preset.asset_sample_rate_hz,
             "greeting_pad_ms": preset.greeting_pad_ms,
         }
@@ -48,7 +53,9 @@ def validate_manifest(value, draft, preset):
     manifest = VoiceManifest.model_validate(value)
     if (
         manifest.speech_digest != speech_identity(draft, preset)
-        or manifest.model_revision != preset.voice_model_revision
+        or manifest.model_revision
+        != voice_profile(draft.voice, preset.voice_model_revision).model_revision
+        or manifest.model != voice_profile(draft.voice, preset.voice_model_revision).model
         or manifest.greeting_pad_ms != preset.greeting_pad_ms
     ):
         raise ValueError("Voice pack does not match this preparation")

@@ -79,6 +79,9 @@ def create_app(
     connections = Connections(accounts, secrets)
     action_grants = ActionGrants(accounts)
     deliveries = Deliveries(accounts)
+    from alojan.outbound import OutboundCalls
+
+    outbound = OutboundCalls(accounts)
     calls = Calls(accounts)
     latency = Latency(accounts)
     telegram = TelegramConnections(accounts, secrets)
@@ -274,6 +277,29 @@ def create_app(
                         ):
                             raise AuthError("invalid_call_filter", 400)
                         return latency.get(token, scope, **dict(pairs)), None, 200
+                    if resource == "outbound-calls":
+                        query = request.query_params
+                        if set(query) - (
+                            {"after"} if action is None and request.method == "GET" else set()
+                        ):
+                            raise AuthError("invalid_call_filter", 400)
+                        if action == "eligible":
+                            return outbound.agents(token, scope), None, 200
+                        if request.method == "POST":
+                            return (
+                                outbound.submit(
+                                    token, scope, body, request.headers.get("idempotency-key")
+                                ),
+                                None,
+                                202,
+                            )
+                        return (
+                            outbound.history(
+                                token, scope, request.path_params.get("call"), query.get("after")
+                            ),
+                            None,
+                            200,
+                        )
                     if resource == "calls":
                         pairs = list(request.query_params.multi_items())
                         allowed = (
@@ -629,6 +655,9 @@ def create_app(
         ("personal-tokens", ["GET", "POST"], None),
         ("personal-tokens/{personal_token:uuid}/revoke", ["POST"], "revoke"),
         ("agents", ["GET", "POST"], None),
+        ("outbound-calls", ["GET", "POST"], None),
+        ("outbound-calls/eligible", ["GET"], "eligible"),
+        ("outbound-calls/{call:uuid}", ["GET"], "call"),
         ("calls", ["GET"], None),
         ("performance", ["GET"], None),
         ("calls/{call:uuid}", ["GET"], "call"),

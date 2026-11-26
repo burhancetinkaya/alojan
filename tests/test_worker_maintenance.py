@@ -460,6 +460,11 @@ def test_failed_inference_or_stream_cleanup_cannot_attest_idle(kind, tmp_path):
             assert not await ready(channel)
             if kind != "asr":
                 assert service.cleanup_failed
+                reply = await health_pb2_grpc.HealthStub(channel).Check(
+                    health_pb2.HealthCheckRequest(service="voice.v1." + KINDS[kind][3]),
+                    timeout=1,
+                )
+                assert reply.status == health_pb2.HealthCheckResponse.NOT_SERVING
 
     asyncio.run(run())
 

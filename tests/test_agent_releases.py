@@ -20,6 +20,7 @@ from alojan.profiles import Profiles, validate_draft
 from alojan.releases import Releases
 from alojan.voice_assets import import_pack
 from alojan_contracts.assets import speech_identity
+from alojan_contracts.synthesis import voice_profile
 from alojan_contracts.configuration import EnginePreset, canonical_digest
 from test_agent_drafts import content
 from test_native_auth import ORIGIN, PASSWORD, register
@@ -60,10 +61,11 @@ def pack(tmp_path, draft, preset=None):
     preset = preset or EnginePreset()
     path = tmp_path / uuid.uuid4().hex
     path.mkdir()
+    voice = voice_profile(draft.voice, preset.voice_model_revision)
     manifest = {
         "schema_version": 1,
-        "model": "canberkkkkkk/ema-lightning",
-        "model_revision": preset.voice_model_revision,
+        "model": voice.model,
+        "model_revision": voice.model_revision,
         "speech_digest": speech_identity(draft, preset),
         "sample_rate_hz": 8000,
         "greeting_pad_ms": preset.greeting_pad_ms,
@@ -502,3 +504,28 @@ def test_operator_catalog_revision_preserves_historical_preset(accounts, example
             conn.execute("SELECT count(*) FROM model_catalog_status WHERE enabled").fetchone()[0]
             == 0
         )
+
+
+@pytest.mark.parametrize("voice", ["ema-default", "pocket-female_2"])
+def test_published_outbound_settings_pin_timing_and_require_capable_reader(
+    accounts, author, tmp_path, voice
+):
+    from alojan_contracts.routing import validated_release
+
+    token, scope, agent = author
+    settings = {"enabled": True, "ring_timeout_seconds": 45, "post_playback_seconds": 0}
+    profiles = Profiles(accounts)
+    profiles.update(token, scope, agent, content() | {"outbound": settings, "voice": voice}, 1)
+    preparation, _, _ = prepare_assets(accounts, author, tmp_path, version=2)
+    released = Releases(accounts).publish(token, scope, agent, preparation["id"], 0)
+    profiles.update(token, scope, agent, content(), 2)
+    with connection(accounts.dsn) as conn:
+        manifest = conn.execute(
+            "SELECT manifest FROM agent_releases WHERE id=%s", (released["id"],)
+        ).fetchone()[0]
+    assert manifest["schema_version"] == 12
+    assert manifest["content"]["outbound"] == settings
+    validated_release(manifest, canonical_digest(manifest))
+    manifest["schema_version"] = 1
+    with pytest.raises(ValueError, match="capability version"):
+        validated_release(manifest, canonical_digest(manifest))

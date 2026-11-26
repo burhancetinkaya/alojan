@@ -76,6 +76,8 @@ def grant_management(dsn, role):
     with connection(dsn) as conn:
         schema, target = dedicated_role(conn, role)
         grants = {
+            "outbound_receipts": "SELECT",
+            "outbound_calls": "SELECT, INSERT",
             "management_connection_setups": "SELECT, INSERT, UPDATE(connection_id)",
             "management_operations": "SELECT, INSERT, UPDATE(result)",
             "personal_access_tokens": "SELECT, INSERT, UPDATE(revoked_at,last_used_at)",
@@ -589,6 +591,23 @@ def grant_actions(dsn, role):
             raise ValueError("Action worker role must not read passwords")
 
 
+def grant_outbound(dsn, role):
+    with connection(dsn) as conn:
+        _, target = dedicated_role(conn, role)
+        for table, privileges in {
+            "recipient_scopes": "SELECT(id)",
+            "outbound_receipts": "INSERT",
+            "outbound_calls": "SELECT, DELETE, UPDATE(status,answered_at,ended_at,failure_code,message)",
+            "agent_releases": "SELECT(id,scope_id,manifest,manifest_digest)",
+            "phone_numbers": "SELECT(id,scope_id,enabled,status,active_binding_id)",
+        }.items():
+            conn.execute(
+                sql.SQL("GRANT {} ON {} TO {}").format(
+                    sql.SQL(privileges), sql.Identifier(table), target
+                )
+            )
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("role", help="Existing dedicated database role; no password arguments")
@@ -596,6 +615,7 @@ def main():
         "--purpose",
         choices=[
             "management",
+            "outbound",
             "routing",
             "records",
             "summaries",
@@ -613,6 +633,8 @@ def main():
             from alojan.legacy_roles import grant_legacy_rollback
 
             grant_legacy_rollback(os.environ["ALOJAN_DATABASE_URL"], args.role)
+        elif args.purpose == "outbound":
+            grant_outbound(os.environ["ALOJAN_DATABASE_URL"], args.role)
         elif args.purpose == "actions":
             grant_actions(os.environ["ALOJAN_DATABASE_URL"], args.role)
         elif args.purpose == "credentials":

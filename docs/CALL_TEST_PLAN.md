@@ -1,5 +1,52 @@
 # Call acceptance and external validation
 
+## 2026-10-28 — Pocket GPU release acceptance
+
+TTS-01 / M2-02 / US-01/05: 123 focused regressions passed, including failed-cleanup
+rejection and health reporting. The final image passed actual GPU RPC checks for
+all seven voices, cancellation/reuse and EMA return, plus 30 timed syntheses.
+TTS-only CUDA rollout completed: speech workers healthy, routes ready, admission
+open, preparer active, existing phone bindings preserved. No new carrier call or
+subjective listening acceptance. [Evidence](validation/pocket-gpu-release-2026-10-28.md).
+
+## 2026-10-28 — EMA autotuning isolation
+
+TTS-01 / M2-02, US-01: 120 actual-model direct-adapter syntheses compared calibration
+and runtime flags independently. EMA did not show the Pocket onset penalty; tuning
+at graph construction retained a small total-generation advantage. Runtime-toggle
+PCM hashes matched. No carrier call, production change or load qualification.
+[Evidence](validation/ema-autotune-2026-10-28.md).
+
+## 2026-10-27 — Corrected Pocket CUDA decoder tuning
+
+TTS-01 / M2-02 / US-01/05: stage timing and reversible tuning trials identified the
+EMA/Pocket cuDNN autotuner interaction. 76 regression tests and corrected actual-GPU
+RPC checks passed, including all voices, cancellation/reuse and EMA return. Thirty
+timed syntheses measured the final candidate. No live device change or handset
+quality acceptance occurred. [Evidence](validation/pocket-cuda-autotuner-2026-10-27.md).
+
+## 2026-10-27 — Pocket CUDA latency comparison
+
+TTS-01 / M2-02 / US-01/05: real-model isolated Linux RPC comparison, 60 timed
+syntheses plus all-voice cancellation/reuse checks on both devices. CUDA produced
+complete utterances faster but first frames later than CPU. Live configuration
+remains unchanged; no carrier call or listening-quality acceptance was performed.
+[Measured results](validation/pocket-cpu-cuda-2026-10-27.md).
+
+## 2026-10-27 — Pocket voices: service validation and live deployment
+
+TTS-01 / M2-02 / AGP-03/06, US-01/02/05: real Linux mixed EMA CUDA and Pocket CPU
+service accepted all seven pinned voice profiles, framed audio, cancellation/reuse
+and return to EMA. 112 focused tests, 79 call/MCP regressions and 49 browser scenarios
+passed. Deployed compatible readers, preparer, TTS and UI with unchanged phone bindings;
+routes ready and admission open. Nazli audio is a synthetic authored preview, not a
+carrier recording. No handset, simultaneous-call or subjective quality acceptance
+is claimed. [Evidence](validation/pocket-tts-2026-10-27.md).
+
+Follow-up: the owner requested temporary domain-accessible previews. Six synthetic
+files and a listening page were published on Linux; HTTPS hashes/MIME/range handling
+and existing protected endpoints were verified. No handset test or new call occurred.
+
 ## 2026-10-27 — Qualified platform publication and private MCP configuration
 
 M5-03 / AGP-03/06 / MCP-06, US-02/05/06: owner ended noise experiments and
@@ -3163,3 +3210,44 @@ and gate reopened; speech peers unchanged. Real authenticated MCP task-outcome r
 configured read tools and exact grant; no release or number binding. No phone call,
 GPU/load benchmark or eight-tool real workload was performed.
 [Evidence](validation/mcp-deliver2ai-2026-10-27.md).
+
+## 2026-11-26 — OUT-01 carrier qualification
+
+The isolated PJSUA 2.16 client used the configured Netgsm peer, an enabled
+verified DID and an owner-authorized handset. Initial INVITE received 407.
+With the operator-issued SIP identity and digest secret, both supervised attempts
+received 407, sent ACK and an authenticated INVITE, then received 100, 183 and
+486 and sent ACK. Neither attempt reached 200 OK. The reported zero outbound
+counter and possible lack of credit do not establish the carrier's cause.
+No destination, credentials or packet capture retained in this log.
+
+Linux isolated development: **116 passed** covering outbound settings, releases
+(including Pocket), POST idempotency and concurrency, personal tokens, native
+auth, role grants, retention, synthesis configuration and voice preparation.
+**20 passed** across native loopback origination, inbound carrier regressions
+and a full cookie-authenticated API → PostgreSQL → worker → scripted TTS gRPC
+→ native gateway → SIP/RTP → history test. Python emitted one audioop deprecation
+warning. Confirmed 0/2-second closing, early-media silence, remote hangup,
+busy/rejected/timed-out outcomes, busy inbound admission and no repeat INVITE
+after restart. These are loopback signaling and scripted-inference measurements.
+
+Web and worker Docker images built on Linux. Worker import, web typecheck,
+and one Chromium form/history test passed; the browser test used mocked HTTP
+responses against the Linux web image. No new live GPU acoustic qualification
+or production migration/rollout. The running inbound gateway remained healthy.
+
+OUT-02 production rollout, 2026-11-26: The authorized handset qualification
+received a confirmed answer, attached the prepared greeting and received a
+successful response to BYE. Handset audibility was not independently verified.
+Applied migration 0031 and dedicated runtime grants. Drained the native gateway
+to zero local calls, deployed compatible release readers, preserved active DID
+bindings, verified route readiness and reopened admission. The outbound worker
+connected to PostgreSQL. The public Outbound URL returned HTTP 200 and served
+the new JavaScript bundle. The history endpoint required authentication (401).
+The saved smoke-login credentials were rejected, so authenticated production UI
+acceptance and the first panel-originated call remain pending with the owner.
+
+OUT-02/03 follow-up: Linux outbound settings and exact-message synthesis tests
+passed (10). The production web build passed TypeScript. Chromium exercised
+the deployed page with synthetic, intercepted API traffic (1 passed). The
+worker and web were replaced with the queue idle; no carrier call was placed.
