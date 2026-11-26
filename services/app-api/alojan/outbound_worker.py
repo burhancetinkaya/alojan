@@ -52,7 +52,7 @@ def synthesize(job, path, endpoint):
                 synthesizer,
                 call,
                 metadata,
-                draft.ai_introduction() + " " + job["message"],
+                job["message"],
                 audio,
                 240 * 16000,
                 lambda: None,

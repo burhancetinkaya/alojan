@@ -3,7 +3,7 @@
 Publish the agent's outbound settings and bind that release to a verified DID.
 The Outbound page lets a workspace editor or owner choose a line, enter a
 Turkish geographic or mobile destination, submit text, and override the timers.
-Viewers can inspect history. Each release supplies its AI introduction and voice.
+Viewers can inspect history. Each release supplies the voice. Only the submitted message is spoken.
 The complete message is prepared before dialing. Completed means the gateway
 sent the announcement. It does not identify a human recipient.
 

@@ -5,7 +5,7 @@ agent release scope in ADR 0011. See [requirements](../REQUIREMENTS.md).
 
 A published agent may opt into single-recipient announcements using its verified
 Netgsm line and released voice. Pin release, line, exact message and timing with
-the request. Prepare the AI introduction and message before dialing. Start
+the request. Prepare only the submitted announcement before dialing (owner revision, 2026-11-26). Start
 playback on confirmed answer and active media. Finish after the configured delay
 from the last sent audio frame. A recipient hangup cancels pending playback.
 Completion records sent audio; it cannot attest that a human listened.

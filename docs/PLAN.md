@@ -3678,3 +3678,6 @@ See the [call log](CALL_TEST_PLAN.md#2026-11-26--out-01-carrier-qualification).
 OUT-02 deployment (2026-11-26): live UI, API, queue worker and gateway deployed.
 Production authenticated panel acceptance remains pending with the owner. See
 the OUT-02 production rollout entry in CALL_TEST_PLAN.md.
+
+OUT-02/03: deployed text-only outbound synthesis and the revised announcement
+form, history and details layout. Validation is recorded in CALL_TEST_PLAN.md.

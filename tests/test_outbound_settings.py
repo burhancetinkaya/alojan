@@ -84,7 +84,7 @@ def test_synthesis_uses_release_voice_and_preserves_message(tmp_path):
         try:
             path = tmp_path / "test.wav"
             await asyncio.to_thread(synthesize, job, path, f"127.0.0.1:{port}")
-            assert backend.calls == [d.ai_introduction() + " " + message]
+            assert backend.calls == [message]
             with wave.open(str(path)) as wav:
                 assert wav.getframerate() == 8000 and wav.getnframes() > 0
             assert not service.leases

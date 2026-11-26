@@ -11,6 +11,7 @@ import {
   AudioLines,
   Gauge,
   Phone,
+  PhoneOutgoing,
   History,
   Unplug,
   ChevronRight,
@@ -33,7 +34,7 @@ export type WorkspaceProps = { session: Session; scope: string; role: string };
 const navigation = [
   { href: "/agentler", label: "Agentler", icon: AudioLines },
   { href: "/numaralar", label: "Numaralar", icon: Phone },
-  { href: "/outbound", label: "Outbound", icon: Phone },
+  { href: "/outbound", label: "Outbound", icon: PhoneOutgoing },
   { href: "/aramalar", label: "Aramalar", icon: History },
   { href: "/performans", label: "Performans", icon: Gauge },
   { href: "/baglantilar", label: "Bağlantılar", icon: Unplug },

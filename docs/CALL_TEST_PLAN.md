@@ -3246,3 +3246,8 @@ connected to PostgreSQL. The public Outbound URL returned HTTP 200 and served
 the new JavaScript bundle. The history endpoint required authentication (401).
 The saved smoke-login credentials were rejected, so authenticated production UI
 acceptance and the first panel-originated call remain pending with the owner.
+
+OUT-02/03 follow-up: Linux outbound settings and exact-message synthesis tests
+passed (10). The production web build passed TypeScript. Chromium exercised
+the deployed page with synthetic, intercepted API traffic (1 passed). The
+worker and web were replaced with the queue idle; no carrier call was placed.

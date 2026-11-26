@@ -194,10 +194,12 @@ export function Outbound({ scope, session, role }: WorkspaceProps) {
   return (
     <>
       <h1>Outbound</h1>
+      <div className="outbound-layout">
       {error && <Notice error>{error}</Notice>}
       {role !== "viewer" && (
-        <form onSubmit={submit}>
-          <fieldset disabled={busy || !line}>
+        <form className="outbound-panel" onSubmit={submit}>
+          <h2 className="section-title">Yeni arama</h2>
+          <fieldset className="outbound-fields" disabled={busy || !line}>
             <SelectField
               label="Arayan ajan"
               value={lineIndex}
@@ -210,7 +212,7 @@ export function Outbound({ scope, session, role }: WorkspaceProps) {
               ))}
             </SelectField>
             {line ? (
-              <p>Ses: {line.voice}</p>
+              <p className="outbound-voice">Seçilen ses · {line.voice === "ema-default" ? "EMA" : line.voice}</p>
             ) : (
               <p>
                 Dış arama için yayınlanmış ve doğrulanmış bir hatta bağlı ajan
@@ -256,12 +258,14 @@ export function Outbound({ scope, session, role }: WorkspaceProps) {
           </fieldset>
         </form>
       )}
-      {receipt && <p role="status">Arama sıraya alındı · {receipt}</p>}
-      <h2>Arama geçmişi</h2>
+      <div className="outbound-results">
+      {receipt && <div className="outbound-receipt" role="status">Arama sıraya alındı <small>{receipt}</small></div>}
+      <section className="outbound-panel">
+      <h2 className="section-title">Arama geçmişi</h2>
       {rows.length === 0 ? (
-        <p>Henüz arama yok.</p>
+        <p className="muted">Henüz arama yok.</p>
       ) : (
-        <table>
+        <div className="outbound-table"><table>
           <thead>
             <tr>
               <th>Ajan</th>
@@ -272,7 +276,7 @@ export function Outbound({ scope, session, role }: WorkspaceProps) {
           </thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r.id}>
+              <tr key={r.id} data-selected={r.id === selected}>
                 <td>{r.agent_name}</td>
                 <td>
                   <button
@@ -286,24 +290,25 @@ export function Outbound({ scope, session, role }: WorkspaceProps) {
                   </button>
                 </td>
                 <td>{date(r.queued_at)}</td>
-                <td>{labels[r.status]}</td>
+                <td><span className="outbound-status">{labels[r.status]}</span></td>
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       )}
       {after && <Button onClick={() => setAfter("")}>İlk sayfa</Button>}
       {next && <Button onClick={() => setAfter(next)}>Sonraki sayfa</Button>}
+      </section>
       {detail && (
-        <section>
-          <h2>Arama detayı</h2>
+        <section className="outbound-panel outbound-detail">
+          <h2 className="section-title">Arama detayı</h2>
           <p>
             {detail.agent_name} · {detail.caller_e164} → {detail.destination}
           </p>
           <p>
-            {labels[detail.status]} · {detail.id}
+            <span className="outbound-status">{labels[detail.status]}</span> <small>{detail.id}</small>
           </p>
-          <p>{detail.message}</p>
+          <p className="outbound-message">{detail.message}</p>
           <p>
             Çalma zaman aşımı {detail.ring_timeout_seconds} sn · Anons sonrası{" "}
             {detail.post_playback_seconds} sn
@@ -313,6 +318,8 @@ export function Outbound({ scope, session, role }: WorkspaceProps) {
           {detail.failure_code && <p>{detail.failure_code}</p>}
         </section>
       )}
+      </div>
+      </div>
     </>
   );
 }
