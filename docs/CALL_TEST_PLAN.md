@@ -3235,3 +3235,14 @@ Web and worker Docker images built on Linux. Worker import, web typecheck,
 and one Chromium form/history test passed; the browser test used mocked HTTP
 responses against the Linux web image. No new live GPU acoustic qualification
 or production migration/rollout. The running inbound gateway remained healthy.
+
+OUT-02 production rollout, 2026-11-26: The authorized handset qualification
+received a confirmed answer, attached the prepared greeting and received a
+successful response to BYE. Handset audibility was not independently verified.
+Applied migration 0031 and dedicated runtime grants. Drained the native gateway
+to zero local calls, deployed compatible release readers, preserved active DID
+bindings, verified route readiness and reopened admission. The outbound worker
+connected to PostgreSQL. The public Outbound URL returned HTTP 200 and served
+the new JavaScript bundle. The history endpoint required authentication (401).
+The saved smoke-login credentials were rejected, so authenticated production UI
+acceptance and the first panel-originated call remain pending with the owner.

@@ -3674,3 +3674,7 @@ branch. OUT-01 is partial: digest signaling reached the carrier; both authentica
 trials ended with 486 before answer. Live handset caller ID, audio, closing delay
 and customer acceptance remain open. Production inbound stayed healthy.
 See the [call log](CALL_TEST_PLAN.md#2026-11-26--out-01-carrier-qualification).
+
+OUT-02 deployment (2026-11-26): live UI, API, queue worker and gateway deployed.
+Production authenticated panel acceptance remains pending with the owner. See
+the OUT-02 production rollout entry in CALL_TEST_PLAN.md.

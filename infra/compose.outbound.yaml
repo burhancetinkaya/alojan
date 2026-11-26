@@ -27,7 +27,7 @@ services:
       - ${ALOJAN_STATE_DIR}/outbound-spool:/run/alojan-outbound
     secrets: [outbound_worker_env]
     command: [uv, run, --frozen, --no-sync, --project, services/voice-preparer, --env-file, /run/secrets/outbound_worker_env, python, -m, alojan.outbound_worker]
-    tmpfs: [/tmp:size=32m,mode=1777]
+    tmpfs: ["/tmp:size=32m,mode=1777"]
 secrets:
   outbound_sip_env:
     file: ${ALOJAN_STATE_DIR}/outbound-sip.env
