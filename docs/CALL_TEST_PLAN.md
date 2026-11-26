@@ -3213,11 +3213,25 @@ GPU/load benchmark or eight-tool real workload was performed.
 
 ## 2026-11-26 — OUT-01 carrier qualification
 
-Owner designated a handset for one test. SSH inspection confirmed a healthy
-incoming gateway and inbound bind/public/source settings. Outbound credentials
-and registrar were not configured in its Netgsm environment. A pinned PJSUA 2.16 client in a disposable container used the single enabled,
-verified DID and current carrier peer to send one INVITE to the authorized
-handset. The carrier returned 407 Proxy Authentication Required; the client
-acknowledged it. No authenticated INVITE, ringing, media or handset caller ID
-was verified. The incoming gateway kept its listener. Retry with the operator's
-SIP digest credentials and confirm handset identity, audio and teardown.
+The isolated PJSUA 2.16 client used the configured Netgsm peer, an enabled
+verified DID and an owner-authorized handset. Initial INVITE received 407.
+With the operator-issued SIP identity and digest secret, both supervised attempts
+received 407, sent ACK and an authenticated INVITE, then received 100, 183 and
+486 and sent ACK. Neither attempt reached 200 OK. The reported zero outbound
+counter and possible lack of credit do not establish the carrier's cause.
+No destination, credentials or packet capture retained in this log.
+
+Linux isolated development: **116 passed** covering outbound settings, releases
+(including Pocket), POST idempotency and concurrency, personal tokens, native
+auth, role grants, retention, synthesis configuration and voice preparation.
+**20 passed** across native loopback origination, inbound carrier regressions
+and a full cookie-authenticated API → PostgreSQL → worker → scripted TTS gRPC
+→ native gateway → SIP/RTP → history test. Python emitted one audioop deprecation
+warning. Confirmed 0/2-second closing, early-media silence, remote hangup,
+busy/rejected/timed-out outcomes, busy inbound admission and no repeat INVITE
+after restart. These are loopback signaling and scripted-inference measurements.
+
+Web and worker Docker images built on Linux. Worker import, web typecheck,
+and one Chromium form/history test passed; the browser test used mocked HTTP
+responses against the Linux web image. No new live GPU acoustic qualification
+or production migration/rollout. The running inbound gateway remained healthy.

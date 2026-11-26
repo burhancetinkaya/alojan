@@ -6,6 +6,10 @@ cd "$root"
 : "${ALOJAN_SIP_BIND:?Set the Linux LAN IPv4}"
 : "${ALOJAN_SIP_PUBLIC:?Set the forwarded public IPv4}"
 : "${ALOJAN_SIP_SOURCE:?Set the verified carrier signaling IPv4}"
+if [ -n "${ALOJAN_OUTBOUND_SIP_ENV:-}" ]; then
+    . "$ALOJAN_OUTBOUND_SIP_ENV"
+    export ALOJAN_OUTBOUND_SIP_USER ALOJAN_OUTBOUND_SIP_PASSWORD ALOJAN_OUTBOUND_SIP_DOMAIN
+fi
 case "${ALOJAN_VOICE_PROFILE:-greeting}" in
     greeting) set -- --max-call-seconds 20 "$@" ;;
     interruption)

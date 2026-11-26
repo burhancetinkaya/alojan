@@ -3664,9 +3664,13 @@ SERVING; the existing gateway remains running. M4-01/02 acceptance stays open;
 owner's real phone test is pending. See the
 [live trial and rollback record](validation/grounded-dialogue-2026-10-24.md#owner-authorized-live-trial).
 
-## 2026-11-26 — Outbound announcement milestones
+## 2026-11-26 — Outbound announcements
 
-[ADR 0016](ADR/0016-outbound-announcements.md) approves OUT-01 carrier
-qualification, OUT-02 gateway/queue, OUT-03 agent authoring/web history and
-OUT-04 customer API. OUT-01 is pending a verified outbound account route and
-handset trial. The working inbound line is separate evidence.
+[ADR 0016](ADR/0016-outbound-announcements.md) and [operator/API guide](OUTBOUND.md)
+cover OUT-01–04. Published opt-in and timing, queue submission, release/number
+pinning, prepared voice, shared native admission, authenticated SIP origination,
+web history and scoped customer HTTP operations are implemented on the feature
+branch. OUT-01 is partial: digest signaling reached the carrier; both authenticated
+trials ended with 486 before answer. Live handset caller ID, audio, closing delay
+and customer acceptance remain open. Production inbound stayed healthy.
+See the [call log](CALL_TEST_PLAN.md#2026-11-26--out-01-carrier-qualification).

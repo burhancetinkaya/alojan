@@ -24,7 +24,7 @@ TIMERS = {"ring_timeout_seconds", "post_playback_seconds"}
 HISTORY = """o.id,o.profile_id AS agent_id,r.manifest->'content'->>'agent_name' AS agent_name,
     o.status,o.queued_at,o.answered_at,o.ended_at,o.failure_code"""
 FROM_HISTORY = """FROM outbound_calls o JOIN agent_releases r
-    ON (r.scope_id,r.profile_id,r.id)=(o.scope_id,o.profile_id,o.release_id) WHERE o.scope_id=%s AND o.destination IS NOT NULL"""
+    ON (r.scope_id,r.profile_id,r.id)=(o.scope_id,o.profile_id,o.release_id) WHERE o.scope_id=%s"""
 
 
 # Turkish national numbering plan. Exclude non-geographic ranges, including
@@ -105,8 +105,9 @@ class OutboundCalls:
                 "SELECT pg_advisory_xact_lock(hashtextextended(%s,0))", (f"{scope}:{operation}",)
             )
             previous = conn.execute(
-                "SELECT id,request_digest FROM outbound_calls WHERE scope_id=%s AND operation_key=%s",
-                (scope, operation),
+                """SELECT id,request_digest FROM outbound_calls WHERE scope_id=%s AND operation_key=%s
+                UNION ALL SELECT id,request_digest FROM outbound_receipts WHERE scope_id=%s AND operation_key=%s""",
+                (scope, operation, scope, operation),
             ).fetchone()
             if previous:
                 if bytes(previous[1]) != digest:

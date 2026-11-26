@@ -84,8 +84,12 @@ class Worker:
                     (scope, self.node, int(os.getenv("ALOJAN_OUTBOUND_TEXT_DAYS", "30"))),
                 )
                 self.conn.execute(
-                    """UPDATE outbound_calls SET destination=NULL WHERE scope_id=%s AND node_id=%s
-                    AND destination IS NOT NULL AND ended_at < now()-make_interval(days=>%s)""",
+                    """WITH expired AS (
+                        DELETE FROM outbound_calls WHERE scope_id=%s AND node_id=%s
+                        AND ended_at < now()-make_interval(days=>%s)
+                        RETURNING scope_id,operation_key,id,request_digest)
+                    INSERT INTO outbound_receipts(scope_id,operation_key,id,request_digest)
+                    SELECT scope_id,operation_key,id,request_digest FROM expired""",
                     (scope, self.node, int(os.getenv("ALOJAN_OUTBOUND_HISTORY_DAYS", "90"))),
                 )
 

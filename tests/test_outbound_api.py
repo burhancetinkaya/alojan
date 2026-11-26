@@ -15,6 +15,7 @@ from alojan.releases import Releases
 from test_agent_drafts import content
 from test_native_auth import ORIGIN, PASSWORD
 
+dedicated = numbers.dedicated
 accounts, database, author = releases.accounts, releases.database, releases.author
 
 
@@ -106,12 +107,9 @@ def test_queue_recovers_without_redial_and_expires_content(accounts, line, tmp_p
             "alojan.outbound_worker.synthesize",
             lambda job, path, endpoint: Path(path).write_bytes(b"synthetic"),
         )
-        job = service.submit(
-            token,
-            scope,
-            {"agent_id": agent, "to": "02120000000", "text": "Deneme"},
-            str(uuid.uuid4()),
-        )
+        operation = str(uuid.uuid4())
+        body = {"agent_id": agent, "to": "02120000000", "text": "Deneme"}
+        job = service.submit(token, scope, body, operation)
         assert worker.step()
         key = uuid.UUID(job["id"]).hex
         (tmp_path / "pending").rename(tmp_path / "running")
@@ -127,7 +125,34 @@ def test_queue_recovers_without_redial_and_expires_content(accounts, line, tmp_p
         conn.execute("UPDATE outbound_calls SET ended_at=now()-interval '91 days'")
         worker.expire()
         assert service.history(token, scope)["calls"] == []
-        assert conn.execute("SELECT message,destination FROM outbound_calls").fetchone() == (
-            None,
-            None,
-        )
+        assert conn.execute("SELECT count(*) FROM outbound_calls").fetchone()[0] == 0
+        assert service.submit(token, scope, body, operation) == job
+        assert not worker.step()
+
+
+def test_real_deployment_roles_can_submit_and_consume(
+    accounts, line, dedicated, tmp_path, monkeypatch
+):
+    import psycopg
+    from alojan.auth import Accounts
+    from alojan.outbound_worker import Worker
+
+    session, scope, agent = line
+    service = OutboundCalls(Accounts(dedicated("management")))
+    job = service.submit(
+        session,
+        scope,
+        {"agent_id": agent, "to": "05320000000", "text": "Deneme."},
+        str(uuid.uuid4()),
+    )
+
+    def fail(*args):
+        raise ValueError("synthetic failure")
+
+    monkeypatch.setattr("alojan.outbound_worker.synthesize", fail)
+    with psycopg.connect(dedicated("outbound"), autocommit=True) as conn:
+        worker = Worker(conn, tmp_path, numbers.NODE, "unused")
+        worker.expire()
+        assert worker.step()
+    assert service.history(session, scope, job["id"])["failure_code"] == "synthesis_failed"
+    assert not (tmp_path / "pending").exists()

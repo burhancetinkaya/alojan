@@ -775,6 +775,12 @@ class LocalAccount : public pj::Account {
             pj::CallOpParam op(true);
             op.opt.audioCount = 1;
             op.opt.videoCount = 0;
+            if (!config.allowed_sip_ips.empty()) {
+                pj::SipHeader route;
+                route.hName = "Route";
+                route.hValue = "<sip:" + config.allowed_sip_ips.front() + ":5060;lr>";
+                op.txOption.headers.push_back(route);
+            }
             call->makeCall("sip:0" + request.destination.substr(3) + "@" + config.outbound_domain,
                            op);
             calls.push_back(std::move(call));

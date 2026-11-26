@@ -506,15 +506,16 @@ def test_operator_catalog_revision_preserves_historical_preset(accounts, example
         )
 
 
+@pytest.mark.parametrize("voice", ["ema-default", "pocket-female_2"])
 def test_published_outbound_settings_pin_timing_and_require_capable_reader(
-    accounts, author, tmp_path
+    accounts, author, tmp_path, voice
 ):
     from alojan_contracts.routing import validated_release
 
     token, scope, agent = author
     settings = {"enabled": True, "ring_timeout_seconds": 45, "post_playback_seconds": 0}
     profiles = Profiles(accounts)
-    profiles.update(token, scope, agent, content() | {"outbound": settings}, 1)
+    profiles.update(token, scope, agent, content() | {"outbound": settings, "voice": voice}, 1)
     preparation, _, _ = prepare_assets(accounts, author, tmp_path, version=2)
     released = Releases(accounts).publish(token, scope, agent, preparation["id"], 0)
     profiles.update(token, scope, agent, content(), 2)

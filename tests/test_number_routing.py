@@ -327,7 +327,11 @@ def dedicated(accounts):
         with connection(accounts.dsn) as conn:
             conn.execute(psycopg.sql.SQL("CREATE ROLE {} NOLOGIN").format(role))
         roles.append((name, role))
-        if purpose == "mcp-execution":
+        if purpose == "outbound":
+            from alojan.roles import grant_outbound
+
+            grant_outbound(accounts.dsn, name)
+        elif purpose == "mcp-execution":
             from alojan.mcp_execution_roles import grant_execution
 
             grant_execution(accounts.dsn, name)

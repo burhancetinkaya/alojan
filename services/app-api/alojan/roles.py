@@ -76,6 +76,7 @@ def grant_management(dsn, role):
     with connection(dsn) as conn:
         schema, target = dedicated_role(conn, role)
         grants = {
+            "outbound_receipts": "SELECT",
             "outbound_calls": "SELECT, INSERT",
             "management_connection_setups": "SELECT, INSERT, UPDATE(connection_id)",
             "management_operations": "SELECT, INSERT, UPDATE(result)",
@@ -595,7 +596,8 @@ def grant_outbound(dsn, role):
         _, target = dedicated_role(conn, role)
         for table, privileges in {
             "recipient_scopes": "SELECT(id)",
-            "outbound_calls": "SELECT, UPDATE(status,answered_at,ended_at,failure_code,message,destination)",
+            "outbound_receipts": "INSERT",
+            "outbound_calls": "SELECT, DELETE, UPDATE(status,answered_at,ended_at,failure_code,message)",
             "agent_releases": "SELECT(id,scope_id,manifest,manifest_digest)",
             "phone_numbers": "SELECT(id,scope_id,enabled,status,active_binding_id)",
         }.items():
