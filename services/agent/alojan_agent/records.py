@@ -25,7 +25,7 @@ from .store import Store, call_uuid
 NO_ANSWER_JOB = """INSERT INTO summary_jobs(call_id,scope_id,release_id)
     SELECT s.call_id,s.scope_id,s.release_id FROM call_route_snapshots s
     JOIN agent_releases r ON (r.scope_id,r.id)=(s.scope_id,s.release_id)
-    WHERE s.call_id=%s AND r.manifest->>'schema_version' IN ('7','8','9','10')
+    WHERE s.call_id=%s AND r.manifest->>'schema_version' IN ('7','8','9','10','11')
     AND r.manifest->'content'->'post_call_actions' @> '[{"condition":"no_answer"}]'::jsonb
     ON CONFLICT DO NOTHING"""
 

@@ -1,4 +1,4 @@
-"""Bounded synthesis through the resident EMA service, inside an operator-owned window."""
+"""Bounded synthesis through the resident speech service, inside an operator-owned window."""
 
 import hashlib
 import io
@@ -10,7 +10,7 @@ import grpc
 from voice.v1 import voice_pb2 as pb
 from voice.v1 import voice_pb2_grpc as rpc
 from alojan_contracts.assets import speech_identity, validate_manifest, validate_wav
-from alojan_contracts.synthesis import EMA_MODEL, SynthesisProfile
+from alojan_contracts.synthesis import voice_profile
 
 
 def segments(text):
@@ -30,13 +30,13 @@ def segments(text):
 
 def generate_pack(endpoint, preparation, draft, preset, directory, check):
     call = "managed-assets-" + uuid.uuid4().hex
+    profile = voice_profile(draft.voice, preset.voice_model_revision)
     manifest = dict(
-        model=EMA_MODEL,
-        model_revision=preset.voice_model_revision,
+        model=profile.model,
+        model_revision=profile.model_revision,
         speech_digest=speech_identity(draft, preset),
         greeting_pad_ms=preset.greeting_pad_ms,
     )
-    profile = SynthesisProfile(EMA_MODEL, preset.voice_model_revision, draft.voice)
     with grpc.insecure_channel(
         endpoint, options=[("grpc.max_receive_message_length", 65536)]
     ) as channel:

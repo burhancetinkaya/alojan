@@ -390,7 +390,17 @@ export function AgentEditor({
                     value={draft.voice}
                     onChange={(v) => patch("voice", v)}
                   >
-                    <option value="ema-default">EMA · Türkçe</option>
+                    <optgroup label="EMA · Türkçe">
+                      <option value="ema-default">EMA · Mevcut ses</option>
+                    </optgroup>
+                    <optgroup label="Pocket · Türkçe">
+                      <option value="pocket-female_1">Pocket · Kadın 1 · Canlı</option>
+                      <option value="pocket-female_2">Pocket · Kadın 2 · Sıcak</option>
+                      <option value="pocket-female_3">Pocket · Kadın 3 · Net</option>
+                      <option value="pocket-male_1">Pocket · Erkek 1 · Sakin</option>
+                      <option value="pocket-male_2">Pocket · Erkek 2 · Canlı</option>
+                      <option value="pocket-male_3">Pocket · Erkek 3 · Net</option>
+                    </optgroup>
                   </SelectField>
                 </div>
                 <SelectField

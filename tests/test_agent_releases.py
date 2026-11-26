@@ -20,6 +20,7 @@ from alojan.profiles import Profiles, validate_draft
 from alojan.releases import Releases
 from alojan.voice_assets import import_pack
 from alojan_contracts.assets import speech_identity
+from alojan_contracts.synthesis import voice_profile
 from alojan_contracts.configuration import EnginePreset, canonical_digest
 from test_agent_drafts import content
 from test_native_auth import ORIGIN, PASSWORD, register
@@ -60,10 +61,11 @@ def pack(tmp_path, draft, preset=None):
     preset = preset or EnginePreset()
     path = tmp_path / uuid.uuid4().hex
     path.mkdir()
+    voice = voice_profile(draft.voice, preset.voice_model_revision)
     manifest = {
         "schema_version": 1,
-        "model": "canberkkkkkk/ema-lightning",
-        "model_revision": preset.voice_model_revision,
+        "model": voice.model,
+        "model_revision": voice.model_revision,
         "speech_digest": speech_identity(draft, preset),
         "sample_rate_hz": 8000,
         "greeting_pad_ms": preset.greeting_pad_ms,

@@ -1,0 +1,6 @@
+# Optional pinned Pocket voices; use with the existing voice/maintenance overlays.
+services:
+  tts:
+    volumes:
+      - ${ALOJAN_STATE_DIR:?Set absolute private state directory}/pocket:/opt/alojan/.local/pocket:ro
+    command: [services/tts/.venv/bin/python, infra/docker/supervise.py, tts, --, services/tts/.venv/bin/python, -m, alojan_tts, --port, "15072", --pocket, --pocket-device, cuda]

@@ -5,6 +5,18 @@ import re
 
 EMA_MODEL = "canberkkkkkk/ema-lightning"
 EMA_VOICE = "ema-default"
+POCKET_MODEL = "wite-tech/pocket-tts-turkish"
+POCKET_REVISION = "fcbd37c74dc127be846face0ff36062e9a939f7b"
+POCKET_VOICES = tuple(f"pocket-{gender}_{i}" for gender in ("female", "male") for i in (1, 2, 3))
+
+
+def voice_profile(voice, ema_revision):
+    """Resolve operator-pinned speech capabilities without changing historical EMA presets."""
+    if voice == EMA_VOICE:
+        return SynthesisProfile(EMA_MODEL, ema_revision, voice)
+    if voice in POCKET_VOICES:
+        return SynthesisProfile(POCKET_MODEL, POCKET_REVISION, voice)
+    raise ValueError("Unsupported voice")
 
 
 @dataclass(frozen=True)

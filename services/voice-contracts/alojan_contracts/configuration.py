@@ -181,7 +181,15 @@ class AgentDraft(BaseModel):
     )
     model: Literal["gpt-oss-120b-cerebras"] = "gpt-oss-120b-cerebras"
     model_connection: str | None = None
-    voice: Literal["ema-default"] = "ema-default"
+    voice: Literal[
+        "ema-default",
+        "pocket-female_1",
+        "pocket-female_2",
+        "pocket-female_3",
+        "pocket-male_1",
+        "pocket-male_2",
+        "pocket-male_3",
+    ] = "ema-default"
     language: Literal["tr"] = "tr"
     post_call_actions: list[TelegramAction | HTTPAction] = Field(default_factory=list, max_length=4)
     vocabulary: list[str] = Field(default_factory=list, max_length=100)

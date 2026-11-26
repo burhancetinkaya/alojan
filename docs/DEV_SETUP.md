@@ -1590,3 +1590,55 @@ For public ingress, copy `infra/examples/management-mcp.nginx.conf` to an ignore
 operator file, replace `YOUR_DEPLOYMENT_HOST` there, and set
 `ALOJAN_MCP_NGINX_CONFIG` to that absolute private path. The serving container must
 mount the private copy, so source synchronization cannot overwrite its routing.
+
+## Optional Pocket Turkish voices (ADR 0015)
+
+TTS-01 adds six `pocket-female_1`–`pocket-female_3` / `pocket-male_1`–`pocket-male_3`
+voices alongside `ema-default`. The existing UI voice selector, HTTP draft and
+management MCP share this enum. No user-provided paths, URLs or reference uploads
+are accepted. Voice changes invalidate prepared audio and require normal preparation
+and publication. Pocket releases use v11; historical EMA bytes remain unchanged.
+Never retune an existing voice identity to a different model revision.
+
+On Linux, sync the frozen TTS environment and download the pinned model before startup:
+
+```sh
+uv sync --frozen --project services/tts
+PYTHONPATH=services/tts:services/voice-contracts:generated/python \
+  uv run --frozen --project services/tts python -m alojan_tts.pocket
+```
+
+The cache is `.local/pocket/huggingface/hub`; `ALOJAN_POCKET_CACHE` can select an
+operator-managed absolute cache directory. Runtime loading is local-only and verifies
+all nine file hashes. Add `infra/compose.pocket.yaml` after the existing voice overlays
+or pass `--pocket --pocket-device cuda` to the resident worker on the qualified GPU
+host. The CLI default remains CPU; select `--pocket-device cpu` explicitly for CPU use. One model warms six cached
+speaker states before readiness; cancellation closes the producer before slot reuse.
+The existing single-synthesis capacity is unchanged.
+
+The optional CUDA path disables cuDNN autotuning only during Pocket decoder calls,
+then restores the process-wide value. EMA enables autotuning during initialization;
+letting that setting leak into Pocket repeatedly delayed its variable-shape decoder.
+Keep the existing single-admitted-synthesis boundary when sharing these backends.
+Do not globally disable EMA calibration, change precision or reduce sampler steps
+to reproduce the corrected CUDA measurements. See
+`docs/validation/pocket-cuda-autotuner-2026-10-27.md` for the root cause and
+`docs/validation/pocket-gpu-release-2026-10-28.md` for deployment evidence. Failed
+producer cleanup blocks further synthesis and reports unhealthy status so the
+existing worker supervisor can recover before accepting another generation.
+
+Apply additive migration 0030, then coordinate compatible management, agent,
+background consumers, pinned voice-preparer source, TTS and web images under existing
+admission fences. The MCP HTTP transport needs no change: it reads the authoring
+schema from management. Keep the original EMA cache and rollback images. Do not
+publish Pocket releases until all consumers support v11; rollback to an EMA release
+before downgrading readers. A Pocket-only source rollback cannot consume v11 releases.
+
+Temporary owner-requested Pocket listening samples are served by the existing Linux
+HTTP ingress, using its private configuration and the additional Compose file
+`.local/pocket-public/compose.override.json`. Keep that overlay when recreating the
+ingress while the preview is needed. Only `.local/pocket-public/assets` is mounted;
+never mount the prepared voice store or recordings. To remove the preview, remove
+its two location blocks from the private ingress configuration, validate Nginx,
+then recreate only `management-ingress` using the base Compose file. The samples and
+rollback configuration remain ignored; they are synthetic owner-authorized examples.
